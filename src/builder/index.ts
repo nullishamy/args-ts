@@ -1,5 +1,3 @@
-import { ArgumentType } from '../types'
-
 interface ParseResultOk<T> {
   ok: true
   passedValue: string
@@ -12,6 +10,8 @@ interface ParseResultErr {
 }
 
 export type ParseResult<T> = ParseResultOk<T> | ParseResultErr
+
+export type ArgumentType = 'boolean' | 'string' | 'number' | 'custom'
 
 export abstract class Argument<TArgType> {
   public _default: TArgType | undefined = undefined

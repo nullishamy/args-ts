@@ -1,14 +1,18 @@
 import { Argument } from './builder'
 import { ParseError } from './error'
-import { tokenise, parse, matchValuesWithDeclarations } from './parser'
-import { ParserOpts, WrappedDeclaration } from './types'
+import { tokenise, parse, matchValuesWithDeclarations, WrappedDeclaration } from './parser'
+export interface Opts {
+  name: string
+  description: string
+  unknownArgBehaviour: 'skip' | 'throw'
+}
 
 export class Args<TArgTypes = {
   [k: string]: boolean | string | number | undefined
 }> {
   private declarations: Record<string, WrappedDeclaration> = {}
 
-  constructor (private readonly opts: ParserOpts) {}
+  constructor (private readonly opts: Opts) {}
 
   public add<
     // The declared argument type

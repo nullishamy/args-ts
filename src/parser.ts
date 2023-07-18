@@ -1,6 +1,11 @@
-import { ParseResult } from './builder'
+import { Opts } from './args'
+import { Argument, ParseResult } from './builder'
 import { ParseError } from './error'
-import { ParserOpts, WrappedDeclaration } from './types.js'
+export interface WrappedDeclaration {
+  inner: Argument<any>
+  longFlag: string
+  shortFlag: string | undefined
+}
 
 export type TokenType = 'flag' | 'ident' | 'value'
 
@@ -126,7 +131,7 @@ export interface MatchedValue {
 export async function matchValuesWithDeclarations (
   values: ParsedPair[],
   declarations: Record<string, WrappedDeclaration>,
-  opts: ParserOpts
+  opts: Opts
 ): Promise<Map<WrappedDeclaration, MatchedValue>> {
   const out = new Map<WrappedDeclaration, MatchedValue>()
 

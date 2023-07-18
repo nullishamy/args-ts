@@ -1,6 +1,6 @@
 {
     "name": "args.ts",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "description": "Argument parsing, built for TypeScript.",
     "main": "lib/index.js",
     "engines": {
@@ -18,7 +18,8 @@
         "test:coverage:watch": "jest --watchAll --config jest.coverage.js",
         "lint": "eslint . --ext .ts",
         "doc": "typedoc --out docs src",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "prepublishOnly": "npm run build"
     },
     "repository": {
         "type": "git",
