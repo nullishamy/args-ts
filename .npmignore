@@ -1,0 +1,11 @@
+.envrc
+.eslintignore
+.eslintrc
+.github/*
+.husky/*
+.nvmrc
+flake*
+jest*
+src/*
+test/*
+tsconfig.json
