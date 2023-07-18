@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { parserOpts } from '.'
-import { Parser } from '../src'
+import { Args } from '../src'
 import { a, Argument, ParseResult } from '../src/builder'
 
 class CustomParseClass extends Argument<{ thatValue: string }> {
@@ -11,8 +11,8 @@ class CustomParseClass extends Argument<{ thatValue: string }> {
   public parse (value: string): ParseResult<{ thatValue: string }> {
     return {
       ok: true,
-      oldValue: value,
-      parsedValue: {
+      passedValue: value,
+      returnedValue: {
         thatValue: value
       }
     }
@@ -27,8 +27,8 @@ class AsyncParseClass extends Argument<{ asyncMe: string }> {
   public async parse (value: string): Promise<ParseResult<{ asyncMe: string }>> {
     return {
       ok: true,
-      oldValue: value,
-      parsedValue: {
+      passedValue: value,
+      returnedValue: {
         asyncMe: value
       }
     }
@@ -37,7 +37,7 @@ class AsyncParseClass extends Argument<{ asyncMe: string }> {
 
 describe('Complex parsing', () => {
   it('can utilise custom classes in arguments', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--class'], new CustomParseClass())
 
     const result = await parser.parse('--class sentinel')
@@ -47,7 +47,7 @@ describe('Complex parsing', () => {
   })
 
   it('can utilise async classes in arguments', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--async'], new AsyncParseClass())
 
     const result = await parser.parse('--async sentinel')
@@ -57,7 +57,7 @@ describe('Complex parsing', () => {
   })
 
   it('can parse schemas with many arguments', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--async'], new AsyncParseClass())
       .add(['--class'], new CustomParseClass())
       .add(['--numeric'], a.Number())
@@ -81,28 +81,28 @@ describe('Complex parsing', () => {
   })
 
   it('fails when numbers are below lower bounds', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--number'], a.Number().lowerBound(5))
 
     await expect(async () => await parser.parse('--number 1')).rejects.toMatchInlineSnapshot(`[Error: encountered error whilst parsing: '1' is less than lower bound 5]`)
   })
 
   it('fails when numbers are above upper bounds', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--number'], a.Number().upperBound(5))
 
     await expect(async () => await parser.parse('--number 10')).rejects.toMatchInlineSnapshot(`[Error: encountered error whilst parsing: '10' is greater than upper bound 5]`)
   })
 
   it('fails when numbers are not in range', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--number'], a.Number().inRange(10, 20))
 
     await expect(async () => await parser.parse('--number 3')).rejects.toMatchInlineSnapshot(`[Error: encountered error whilst parsing: '3' is less than lower bound 10]`)
   })
 
   it('catches custom callback errors', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--custom', '-c'], a.Custom(() => {
         throw new Error('Error from custom callback')
       }))
@@ -111,14 +111,14 @@ describe('Complex parsing', () => {
   })
 
   it('fails when dependencies are not met', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--numeric'], a.Number().dependsOn('--str'))
       .add(['--str'], a.String().optional())
 
     await expect(async () => await parser.parse('--numeric 123')).rejects.toMatchInlineSnapshot(`[Error: unmet dependency '--str' for '--numeric']`)
   })
   it('passes when dependencies are met', async () => {
-    const parser = new Parser(parserOpts)
+    const parser = new Args(parserOpts)
       .add(['--numeric'], a.Number().dependsOn('--str'))
       .add(['--str'], a.String())
 

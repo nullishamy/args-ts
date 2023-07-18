@@ -167,8 +167,8 @@ export async function matchValuesWithDeclarations (
     } else {
       parsedValueResult = {
         ok: true,
-        oldValue: '<unknown>',
-        parsedValue: defaultValue
+        passedValue: '<unknown>',
+        returnedValue: defaultValue
       }
     }
 
@@ -181,7 +181,7 @@ export async function matchValuesWithDeclarations (
     out.set(declaration, {
       declaration,
       pair: token,
-      parsed: parsedValueResult.parsedValue
+      parsed: parsedValueResult.returnedValue
     })
   }
 

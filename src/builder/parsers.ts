@@ -13,8 +13,8 @@ export class StringArgument extends Argument<string> {
   parse (value: string): ParseResult<string> {
     return {
       ok: true,
-      oldValue: value,
-      parsedValue: value
+      passedValue: value,
+      returnedValue: value
     }
   }
 }
@@ -32,7 +32,7 @@ export class NumberArgument extends Argument<number> {
     if (isNaN(num)) {
       return {
         ok: false,
-        value,
+        passedValue: value,
         error: new ParseError(`'${value}' is not a number`)
       }
     }
@@ -40,22 +40,22 @@ export class NumberArgument extends Argument<number> {
     if (this._lowerBound && num < this._lowerBound) {
       return {
         ok: false,
-        value,
+        passedValue: value,
         error: new ParseError(`'${value}' is less than lower bound ${this._lowerBound}`)
       }
     }
     if (this._upperBound && num > this._upperBound) {
       return {
         ok: false,
-        value,
+        passedValue: value,
         error: new ParseError(`'${value}' is greater than upper bound ${this._upperBound}`)
       }
     }
 
     return {
       ok: true,
-      oldValue: value,
-      parsedValue: num
+      passedValue: value,
+      returnedValue: num
     }
   }
 
@@ -87,15 +87,15 @@ export class BooleanArgument extends Argument<boolean> {
     if (!(value === 'true' || value === 'false')) {
       return {
         ok: false,
-        value,
+        passedValue: value,
         error: new ParseError(`'${value}' is not a boolean`)
       }
     }
 
     return {
       ok: true,
-      oldValue: value,
-      parsedValue: value === 'true'
+      passedValue: value,
+      returnedValue: value === 'true'
     }
   }
 }
@@ -115,7 +115,7 @@ export class CustomArgument<T> extends Argument<T> {
     if (!this.cb) {
       return {
         ok: false,
-        value,
+        passedValue: value,
         error: new ParseError('callback was not provided')
       }
     }

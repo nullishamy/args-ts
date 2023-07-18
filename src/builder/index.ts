@@ -2,12 +2,12 @@ import { ArgumentType } from '../types'
 
 interface ParseResultOk<T> {
   ok: true
-  oldValue: string
-  parsedValue: T
+  passedValue: string
+  returnedValue: T
 }
 interface ParseResultErr {
   ok: false
-  value: string
+  passedValue: string
   error: Error
 }
 
