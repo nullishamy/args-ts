@@ -84,7 +84,7 @@ export function tokenise (argString: string): Token[] {
 
 export interface ParsedPair {
   ident: IdentToken
-  value?: ValueToken
+  values: ValueToken[]
 }
 
 export function parse (tokens: Token[]): ParsedPair[] {
@@ -98,19 +98,29 @@ export function parse (tokens: Token[]): ParsedPair[] {
         index++
       }
 
-      const [ident, value] = [tokens[++index], tokens[++index]]
+      const ident = tokens[++index]
 
       if (!ident || ident.type !== 'ident') {
         throw new ParseError(`expected identifier, got ${ident?.type}`)
       }
 
-      if (value && value.type !== 'value') {
-        throw new ParseError(`expected value, got ${value?.type}`)
+      index++
+
+      const valueTokens = []
+
+      while (index < tokens.length) {
+        const token = tokens[index]
+        if (token.type === 'value') {
+          valueTokens.push(token)
+        } else {
+          break
+        }
+        index++
       }
 
       values.push({
         ident,
-        value
+        values: valueTokens
       })
 
       index++
@@ -125,7 +135,7 @@ export function parse (tokens: Token[]): ParsedPair[] {
 export interface MatchedValue {
   pair: ParsedPair | undefined
   declaration: WrappedDeclaration
-  parsed: unknown
+  parsed: unknown[]
 }
 
 export async function matchValuesWithDeclarations (
@@ -146,7 +156,7 @@ export async function matchValuesWithDeclarations (
       throw new ParseError(`argument '--${declaration.longFlag}' is missing`)
     }
 
-    if (!declaration.inner._optional && defaultValue === undefined && !token?.value) {
+    if (!declaration.inner._optional && defaultValue === undefined && !token?.values.length) {
       throw new Error(`argument '${declaration.longFlag}' is not declared as optional, does not have a default, and was not provided a value`)
     }
 
@@ -158,35 +168,53 @@ export async function matchValuesWithDeclarations (
       }
     }
 
-    let parsedValueResult: ParseResult<any>
-    const inputValue = token?.value?.userValue
-    if (inputValue) {
-      // User specified input, parse it
+    let parsingResults: Array<ParseResult<any>> = []
+    const inputValues = token?.values?.map(v => v.userValue) ?? []
+
+    // If the user passes any values, parse them all
+    if (inputValues.length) {
       try {
-        parsedValueResult = await declaration.inner.parse(inputValue)
+        parsingResults = await declaration.inner.parseMulti(inputValues)
       } catch (err) {
         throw new ParseError(`user callback threw error: ${(err as Error)?.message ?? err}`, {
           cause: err
         })
       }
     } else {
-      parsedValueResult = {
+      parsingResults.push({
         ok: true,
-        passedValue: '<unknown>',
+        passedValue: `<no value passed for --${declaration.longFlag}>`,
         returnedValue: defaultValue
+      })
+    }
+
+    // Check if any parses failed
+    // for-i loop so we can provide some more diagnostics (index)
+    const errors: Array<{ index: number, error: Error, value: string }> = []
+    const parsedValues: unknown[] = []
+
+    for (let i = 0; i < parsingResults.length; i++) {
+      const result = parsingResults[i]
+
+      if (result.ok) {
+        parsedValues.push(result.returnedValue)
+      } else {
+        errors.push({
+          index: i,
+          value: result.passedValue,
+          error: result.error
+        })
       }
     }
 
-    if (!parsedValueResult.ok) {
-      throw new ParseError(`encountered error whilst parsing: ${parsedValueResult.error.message}`, {
-        cause: parsedValueResult.error
-      })
+    if (errors.length) {
+      throw new ParseError(`encountered ${errors.length} error(s) whilst parsing:\n\n${errors.map(e => `error "${e.error.message}" whilst parsing "--${declaration.longFlag} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`)
     }
 
     out.set(declaration, {
       declaration,
       pair: token,
-      parsed: parsedValueResult.returnedValue
+      parsed: parsedValues
     })
   }
 

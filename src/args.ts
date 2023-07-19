@@ -5,6 +5,7 @@ export interface Opts {
   name: string
   description: string
   unknownArgBehaviour: 'skip' | 'throw'
+  excessArgBehaviour: 'drop' | 'throw'
 }
 
 export class Args<TArgTypes = {
@@ -74,7 +75,18 @@ export class Args<TArgTypes = {
     const tokens = tokenise(argString)
     const parsed = parse(tokens)
     const matched = await matchValuesWithDeclarations(parsed, this.declarations, this.opts)
-    return Object.fromEntries([...matched.entries()].map(([key, value]) => [key.longFlag, value.parsed])) as TArgTypes
+    return Object.fromEntries([...matched.entries()].map(([key, value]) => {
+      if (key.inner._isMultiType) {
+        return [key.longFlag, value.parsed]
+      } else {
+        const singleValue = value.parsed[0]
+        // Only throw if undefined is unexpected (not optional)
+        if (singleValue === undefined && !key.inner._optional) {
+          throw new ParseError(`impossible; no single value set for ${value.declaration.longFlag} / ${value.declaration.shortFlag}`)
+        }
+        return [key.longFlag, singleValue]
+      }
+    })) as TArgTypes
   }
 
   public reset (): void {

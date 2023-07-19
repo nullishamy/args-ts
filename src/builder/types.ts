@@ -5,12 +5,12 @@ function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TCo
   return (...args: any[]) => new ArgClass(...args)
 }
 
-export class StringArgument extends Argument<string> {
+class StringArgument extends Argument<string> {
   constructor () {
     super('string')
   }
 
-  parse (value: string): ParseResult<string> {
+  async parse (value: string): Promise<ParseResult<string>> {
     return {
       ok: true,
       passedValue: value,
@@ -19,7 +19,7 @@ export class StringArgument extends Argument<string> {
   }
 }
 
-export class NumberArgument extends Argument<number> {
+class NumberArgument extends Argument<number> {
   private _lowerBound: number | undefined = undefined
   private _upperBound: number | undefined = undefined
 
@@ -27,7 +27,7 @@ export class NumberArgument extends Argument<number> {
     super('number')
   }
 
-  parse (value: string): ParseResult<number> {
+  async parse (value: string): Promise<ParseResult<number>> {
     const num = parseInt(value, 10)
     if (isNaN(num)) {
       return {
@@ -76,14 +76,14 @@ export class NumberArgument extends Argument<number> {
   }
 }
 
-export class BooleanArgument extends Argument<boolean> {
+class BooleanArgument extends Argument<boolean> {
   constructor () {
     super('boolean')
     // Booleans default to true (ie unspecified argument) unless specified otherwise
     super._default = true
   }
 
-  parse (value: string): ParseResult<boolean> {
+  async parse (value: string): Promise<ParseResult<boolean>> {
     if (!(value === 'true' || value === 'false')) {
       return {
         ok: false,
@@ -105,12 +105,12 @@ export const String = makeExport<StringArgument, typeof StringArgument>(StringAr
 export const Number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
 export const Boolean = makeExport<BooleanArgument, typeof BooleanArgument>(BooleanArgument)
 
-export class CustomArgument<T> extends Argument<T> {
+class CustomArgument<T> extends Argument<T> {
   constructor (private readonly cb: (value: string) => ParseResult<T> | Promise<ParseResult<T>>) {
     super('custom')
   }
 
-  public parse (value: string): ParseResult<T> | Promise<ParseResult<T>> {
+  public async parse (value: string): Promise<ParseResult<T>> {
     // User passed no callback
     if (!this.cb) {
       return {
@@ -119,7 +119,7 @@ export class CustomArgument<T> extends Argument<T> {
         error: new ParseError('callback was not provided')
       }
     }
-    return this.cb(value)
+    return await this.cb(value)
   }
 }
 // Needs special treatment to handle the generic

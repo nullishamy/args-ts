@@ -1,5 +1,8 @@
-export const parserOpts = {
+import { Opts } from '../src'
+
+export const parserOpts: Opts = {
   name: 'program-name',
   description: 'program description',
-  unknownArgBehaviour: 'throw'
+  unknownArgBehaviour: 'throw',
+  excessArgBehaviour: 'throw'
 } as const
