@@ -101,9 +101,9 @@ class BooleanArgument extends Argument<boolean> {
 }
 
 // Explicitly typed generices because the inference would not cooperate
-export const String = makeExport<StringArgument, typeof StringArgument>(StringArgument)
-export const Number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
-export const Boolean = makeExport<BooleanArgument, typeof BooleanArgument>(BooleanArgument)
+export const string = makeExport<StringArgument, typeof StringArgument>(StringArgument)
+export const number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
+export const bool = makeExport<BooleanArgument, typeof BooleanArgument>(BooleanArgument)
 
 class CustomArgument<T> extends Argument<T> {
   constructor (private readonly cb: (value: string) => ParseResult<T> | Promise<ParseResult<T>>) {
@@ -123,6 +123,6 @@ class CustomArgument<T> extends Argument<T> {
   }
 }
 // Needs special treatment to handle the generic
-export const Custom = <T> (...args: ConstructorParameters<typeof CustomArgument<T>>): CustomArgument<T> => {
+export const custom = <T> (...args: ConstructorParameters<typeof CustomArgument<T>>): CustomArgument<T> => {
   return new CustomArgument<T>(...args)
 }

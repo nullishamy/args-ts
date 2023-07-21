@@ -1,10 +1,17 @@
-import { Opts } from './args'
-import { Argument, ParseResult } from './builder'
+import { Args, ParserOpts } from './args'
+import { Argument, Command, ParseResult } from './builder'
 import { ParseError } from './error'
 export interface WrappedDeclaration {
   inner: Argument<any>
   longFlag: string
   shortFlag: string | undefined
+}
+
+export interface WrappedCommand {
+  inner: Command
+  name: string
+  parser: Args<unknown>
+  aliases: string[]
 }
 
 export type TokenType = 'flag' | 'ident' | 'value'
@@ -87,7 +94,7 @@ export interface ParsedPair {
   values: ValueToken[]
 }
 
-export function parse (tokens: Token[]): ParsedPair[] {
+export function parseArgumentTokens (tokens: Token[]): ParsedPair[] {
   const values: ParsedPair[] = []
   let index = 0
 
@@ -125,25 +132,25 @@ export function parse (tokens: Token[]): ParsedPair[] {
 
       index++
     } else {
-      throw new ParseError(`unexepcted token ${JSON.stringify(tokens[index])}`)
+      throw new ParseError(`unexpected token ${JSON.stringify(tokens[index])}`)
     }
   }
 
   return values
 }
 
-export interface MatchedValue {
+export interface RuntimeValue {
   pair: ParsedPair | undefined
   declaration: WrappedDeclaration
   parsed: unknown[]
 }
 
-export async function matchValuesWithDeclarations (
+export async function coerceParsedValues (
   values: ParsedPair[],
   declarations: Record<string, WrappedDeclaration>,
-  opts: Opts
-): Promise<Map<WrappedDeclaration, MatchedValue>> {
-  const out = new Map<WrappedDeclaration, MatchedValue>()
+  opts: ParserOpts
+): Promise<Map<WrappedDeclaration, RuntimeValue>> {
+  const out = new Map<WrappedDeclaration, RuntimeValue>()
 
   // First, iterate the declarations, to weed out any missing arguments
   for (const declaration of Object.values(declarations)) {
