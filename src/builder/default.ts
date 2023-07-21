@@ -41,14 +41,14 @@ class NumberArgument extends Argument<number> {
       return {
         ok: false,
         passedValue: value,
-        error: new ParseError(`'${value}' is less than lower bound ${this._lowerBound}`)
+        error: new ParseError(`${value} is less than lower bound ${this._lowerBound}`)
       }
     }
     if (this._upperBound && num > this._upperBound) {
       return {
         ok: false,
         passedValue: value,
-        error: new ParseError(`'${value}' is greater than upper bound ${this._upperBound}`)
+        error: new ParseError(`${value} is greater than upper bound ${this._upperBound}`)
       }
     }
 

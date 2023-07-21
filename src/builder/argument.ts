@@ -24,15 +24,6 @@ export abstract class Argument<TArgType> {
   }
 
   public abstract parse (value: string): Promise<ParseResult<TArgType>>
-  public async parseMulti (values: string[]): Promise<Array<ParseResult<TArgType>>> {
-    const out = []
-
-    for (const value of values) {
-      out.push(await this.parse(value))
-    }
-
-    return out
-  }
 
   public optional (): Argument<TArgType | undefined> {
     this._optional = true

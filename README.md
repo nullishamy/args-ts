@@ -7,13 +7,17 @@ An argument parser, similar to yargs and co, but with superiour typing, extensib
 First, install the package from npm: `npm i args.ts`.
 Then, you can get up and running with the following sample:
 ```js
-import { Args, a } from 'args.ts'
+import { Args, ParserOpts, a } from 'args.ts'
 
-const parser = new Args({
-  name: 'program-name',
-  description: 'program description',
-  unknownArgBehaviour: 'throw'
-})
+
+export const parserOpts: ParserOpts = {
+  programName: 'program-name',
+  programDescription: 'program description',
+  unknownArgBehaviour: 'throw',
+  excessArgBehaviour: 'throw'
+}
+
+const parser = new Args(parserOpts)
     // Short arguments are optional, long arguments are required
     .add(['--long-arg', '-l'], a.String())
     // You can chain calls to type to change how it is parsed

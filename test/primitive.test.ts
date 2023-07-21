@@ -111,11 +111,7 @@ describe('Primitive parsing', () => {
     const parser = new Args(parserOpts)
       .add(['--custom', '-c'], a.custom(undefined as any))
 
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`
-[Error: encountered 1 error(s) whilst parsing:
-
-error "callback was not provided" whilst parsing "--custom this" (argument number 1)]
-`)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: encountered error: \`callback was not provided\` when coercing "--custom this"]`)
   })
 
   it('throws if there is additional arguments', async () => {

@@ -1,5 +1,6 @@
 import assert from 'assert'
-import { Args, ParserOpts } from '../src'
+import { Args } from '../src'
+import { ParserOpts } from '../src/opts'
 
 export const parserOpts: ParserOpts = {
   programName: 'program-name',
@@ -16,6 +17,6 @@ export async function runArgsExecution <T> (parser: Args<T>, argString: string):
 
 export async function runCommandExecution (parser: Args<unknown>, argString: string): Promise<unknown> {
   const result = await parser.parse(argString)
-  assert(result.mode === 'command-exec', 'result was not of mode command-exec')
-  return result.executionResult
+  assert(result.mode === 'command', 'result was not of mode command')
+  return await result.command.run(result.parsedArgs)
 }
