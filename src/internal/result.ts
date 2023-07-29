@@ -11,15 +11,39 @@ interface ResultErr<T> {
 export type Result<T, E = unknown> = ResultOk<T> | ResultErr<E>
 
 export function Ok<T> (val: T): ResultOk<T> {
-  return {
+  const object = {
     ok: true,
     val
-  }
+  } as const
+
+  const stringify = (): string => `Ok(${val})`
+
+  Object.defineProperty(object, 'toString', {
+    value: stringify
+  })
+
+  Object.defineProperty(object, 'toJSON', {
+    value: stringify
+  })
+
+  return object
 }
 
-export function Err<E> (err: E): ResultErr<E> {
-  return {
+export function Err<E extends Error> (err: E): ResultErr<E> {
+  const object = {
     ok: false,
     err
-  }
+  } as const
+
+  const stringify = (): string => `Err(${err.constructor.name} { ${err.message} })`
+
+  Object.defineProperty(object, 'toString', {
+    value: stringify
+  })
+
+  Object.defineProperty(object, 'toJSON', {
+    value: stringify
+  })
+
+  return object
 }

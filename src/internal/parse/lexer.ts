@@ -47,7 +47,7 @@ export class TokenIterator {
   }
 }
 
-export function tokenise (argString: string): Result<TokenIterator> {
+export function tokenise (argString: string): Result<TokenIterator, Error> {
   if (typeof argString !== 'string') {
     return Err(new TypeError(`expected 'string', got ${typeof argString} (${argString})`))
   }

@@ -68,21 +68,21 @@ describe('Complex parsing', () => {
     const parser = new Args(parserOpts)
       .add(['--number'], a.number().lowerBound(5))
 
-    await expect(async () => await runArgsExecution(parser, '--number 1')).rejects.toMatchInlineSnapshot(`[Error: encountered error: \`1 is less than lower bound 5\` when coercing "--number 1"]`)
+    await expect(async () => await runArgsExecution(parser, '--number 1')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { encountered error: \`1 is less than lower bound 5\` when coercing "--number 1" })]`)
   })
 
   it('fails when numbers are above upper bounds', async () => {
     const parser = new Args(parserOpts)
       .add(['--number'], a.number().upperBound(5))
 
-    await expect(async () => await runArgsExecution(parser, '--number 10')).rejects.toMatchInlineSnapshot(`[Error: encountered error: \`10 is greater than upper bound 5\` when coercing "--number 10"]`)
+    await expect(async () => await runArgsExecution(parser, '--number 10')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { encountered error: \`10 is greater than upper bound 5\` when coercing "--number 10" })]`)
   })
 
   it('fails when numbers are not in range', async () => {
     const parser = new Args(parserOpts)
       .add(['--number'], a.number().inRange(10, 20))
 
-    await expect(async () => await runArgsExecution(parser, '--number 3')).rejects.toMatchInlineSnapshot(`[Error: encountered error: \`3 is less than lower bound 10\` when coercing "--number 3"]`)
+    await expect(async () => await runArgsExecution(parser, '--number 3')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { encountered error: \`3 is less than lower bound 10\` when coercing "--number 3" })]`)
   })
 
   it('catches custom callback errors', async () => {
@@ -99,7 +99,7 @@ describe('Complex parsing', () => {
       .add(['--numeric'], a.number().dependsOn('--str'))
       .add(['--str'], a.string().optional())
 
-    await expect(async () => await runArgsExecution(parser, '--numeric 123')).rejects.toMatchInlineSnapshot(`[Error: unmet dependency '--str' for '--numeric']`)
+    await expect(async () => await runArgsExecution(parser, '--numeric 123')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { unmet dependency '--str' for '--numeric' })]`)
   })
   it('passes when dependencies are met', async () => {
     const parser = new Args(parserOpts)
@@ -151,9 +151,9 @@ describe('Complex parsing', () => {
       .add(['--array'], a.number().array())
 
     await expect(async () => await runArgsExecution(parser, '--array 123 783 true 1235')).rejects.toMatchInlineSnapshot(`
-[Error: encountered 1 error(s) during coercion:
+[Error: Err(CoercionError { encountered 1 error(s) during coercion:
 
-error: \`'true' is not a number\` whilst parsing "--array true" (argument number 3)]
+error: \`'true' is not a number\` whilst parsing "--array true" (argument number 3) })]
 `)
   })
 
@@ -180,9 +180,9 @@ error: \`'true' is not a number\` whilst parsing "--array true" (argument number
       .add(['--array'], a.number().inRange(100, 1000).array())
 
     await expect(async () => await runArgsExecution(parser, '--array 123 783 1235')).rejects.toMatchInlineSnapshot(`
-[Error: encountered 1 error(s) during coercion:
+[Error: Err(CoercionError { encountered 1 error(s) during coercion:
 
-error: \`1235 is greater than upper bound 1000\` whilst parsing "--array 1235" (argument number 3)]
+error: \`1235 is greater than upper bound 1000\` whilst parsing "--array 1235" (argument number 3) })]
 `)
   })
 })

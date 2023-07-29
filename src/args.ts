@@ -1,5 +1,5 @@
 import { Argument, Command } from './builder'
-import { ArgError, CommandError } from './error'
+import { ArgError, CoercionError, CommandError, ParseError } from './error'
 import { tokenise } from './internal/parse/lexer'
 import { MultiParsedValue, parseAndCoerce, SingleParsedValue } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue } from './internal/parse/types'
@@ -116,7 +116,7 @@ export class Args<TArgTypes = {
     return Object.fromEntries([...coerced.entries()].map(([key, value]) => [key.longFlag, value.coerced])) as TArgTypes
   }
 
-  public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>>> {
+  public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError | Error>> {
     const tokenResult = tokenise(argString)
     if (!tokenResult.ok) {
       return tokenResult
@@ -147,9 +147,17 @@ export class Args<TArgTypes = {
 
     // Caller wants us to execute, return the result of the execution
     if (executeCommands) {
+      let executionResult
+
+      try {
+        await commandObject.command.run(this.intoObject(commandObject.arguments))
+      } catch (err) {
+        executionResult = err
+      }
+
       return Ok({
         mode: 'command-exec',
-        executionResult: await commandObject.command.run(this.intoObject(commandObject.arguments))
+        executionResult
       })
     }
 
@@ -163,5 +171,6 @@ export class Args<TArgTypes = {
 
   public reset (): void {
     this.arguments = {}
+    this.commands = {}
   }
 }
