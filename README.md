@@ -19,10 +19,10 @@ export const parserOpts: ParserOpts = {
 
 const parser = new Args(parserOpts)
     // Short arguments are optional, long arguments are required
-    .add(['--long-arg', '-l'], a.String())
+    .add(['--long-arg', '-l'], a.string())
     // You can chain calls to type to change how it is parsed
     // and this will reflect in the parsed types, if appropriate
-    .add(['--optional'], a.String().optional()) 
+    .add(['--optional'], a.string().optional()) 
 
 const result = await parser.parse('-l "hello world"') 
 // { 'long-arg': 'hello world', optional: undefined }
