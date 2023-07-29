@@ -1,3 +1,5 @@
+import { Err, Ok, Result } from '../result'
+
 export type TokenType = 'flag' | 'ident' | 'value'
 
 export interface FlagToken {
@@ -45,7 +47,11 @@ export class TokenIterator {
   }
 }
 
-export function tokenise (argString: string): TokenIterator {
+export function tokenise (argString: string): Result<TokenIterator> {
+  if (typeof argString !== 'string') {
+    return Err(new TypeError(`expected 'string', got ${typeof argString} (${argString})`))
+  }
+
   const tokens: Token[] = []
   const chars = [...argString]
   let index = 0
@@ -99,5 +105,5 @@ export function tokenise (argString: string): TokenIterator {
     }
   }
 
-  return new TokenIterator(tokens)
+  return Ok(new TokenIterator(tokens))
 }

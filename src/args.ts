@@ -3,6 +3,7 @@ import { ArgError, CommandError } from './error'
 import { tokenise } from './internal/parse/lexer'
 import { MultiParsedValue, parseAndCoerce, SingleParsedValue } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue } from './internal/parse/types'
+import { Ok, Result } from './internal/result'
 import { ParserOpts } from './opts'
 
 // What happened when we parsed
@@ -21,6 +22,8 @@ interface ParsedArgs<T> {
   mode: 'args'
   args: T
 }
+
+type ParseSuccess<TArgTypes> = FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>
 
 export class Args<TArgTypes = {
   [k: string]: CoercedValue
@@ -113,37 +116,49 @@ export class Args<TArgTypes = {
     return Object.fromEntries([...coerced.entries()].map(([key, value]) => [key.longFlag, value.coerced])) as TArgTypes
   }
 
-  public async parse (argString: string, executeCommands = false): Promise<FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>> {
-    const tokens = tokenise(argString)
-    const commandObject = await parseAndCoerce(
+  public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>>> {
+    const tokenResult = tokenise(argString)
+    if (!tokenResult.ok) {
+      return tokenResult
+    }
+
+    const tokens = tokenResult.val
+
+    const commandResult = await parseAndCoerce(
       tokens,
       this.opts,
       this.commands,
       this.arguments
     )
 
+    if (!commandResult.ok) {
+      return commandResult
+    }
+
+    const commandObject = commandResult.val
+
     // No command was found, just return the args
     if (commandObject.isDefault) {
-      return {
+      return Ok({
         mode: 'args',
         args: this.intoObject(commandObject.arguments)
-      }
+      })
     }
 
     // Caller wants us to execute, return the result of the execution
     if (executeCommands) {
-      return {
+      return Ok({
         mode: 'command-exec',
         executionResult: await commandObject.command.run(this.intoObject(commandObject.arguments))
-      }
+      })
     }
 
     // Command was found, return it
-    return {
+    return Ok({
       mode: 'command',
       parsedArgs: this.intoObject(commandObject.arguments),
       command: commandObject.command
-    }
+    })
   }
 
   public reset (): void {

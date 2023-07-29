@@ -2,6 +2,7 @@ import assert from 'assert'
 import { Command } from '../../builder'
 import { CoercionError, ParseError } from '../../error'
 import { ParserOpts } from '../../opts'
+import { Err, Ok, Result } from '../result'
 import { IdentToken, TokenIterator, ValueToken } from './lexer'
 import { CoercedValue, InternalArgument, InternalCommand } from './types'
 
@@ -37,7 +38,12 @@ interface ParsedPair {
   values: ValueToken[]
 }
 
-function extractCommandObject (tokens: TokenIterator, commands: Record<string, InternalCommand>): [ParsedCommand | DefaultCommand, InternalCommand | undefined] {
+interface CommandExtraction {
+  object: ParsedCommand | DefaultCommand
+  internal: InternalCommand | undefined
+}
+
+function extractCommandObject (tokens: TokenIterator, commands: Record<string, InternalCommand>): Result<CommandExtraction> {
   const maybeRootCommand = tokens.current()
   let commandObject: ParsedCommand | DefaultCommand
   let internalCommand
@@ -57,7 +63,7 @@ function extractCommandObject (tokens: TokenIterator, commands: Record<string, I
 
     if (!internalCommand) {
       // TODO: Should this be configurable?
-      throw new ParseError(`unknown command root ${rootCommandName}`)
+      return Err(new ParseError(`unknown command root ${rootCommandName}`))
     }
 
     let currentCommand = internalCommand
@@ -66,7 +72,7 @@ function extractCommandObject (tokens: TokenIterator, commands: Record<string, I
 
       if (!currentCommand.inner._subcommands[subcommand]) {
       // TODO: Should this be configurable?
-        throw new ParseError(`could not find subcommand with path ${rootCommandName}/${subcommandKeys.slice(i).join('/')}`)
+        return Err(new ParseError(`could not find subcommand with path ${rootCommandName}/${subcommandKeys.slice(i).join('/')}`))
       }
 
       currentCommand = currentCommand.inner._subcommands[subcommand]
@@ -85,7 +91,10 @@ function extractCommandObject (tokens: TokenIterator, commands: Record<string, I
     }
   }
 
-  return [commandObject, internalCommand]
+  return Ok({
+    object: commandObject,
+    internal: internalCommand
+  })
 }
 
 export async function parseAndCoerce (
@@ -93,9 +102,15 @@ export async function parseAndCoerce (
   opts: ParserOpts,
   commands: Record<string, InternalCommand>,
   internalArguments: Record<string, InternalArgument>
-): Promise<ParsedCommand | DefaultCommand> {
+): Promise<Result<ParsedCommand | DefaultCommand>> {
   // First take the commands / subcommands
-  const [commandObject, maybeInternalCommand] = extractCommandObject(tokens, commands)
+  const extractionResult = extractCommandObject(tokens, commands)
+
+  if (!extractionResult.ok) {
+    return extractionResult
+  }
+
+  const { object: commandObject, internal: maybeInternalCommand } = extractionResult.val
 
   if (!commandObject.isDefault) {
     assert(!!maybeInternalCommand)
@@ -118,7 +133,7 @@ export async function parseAndCoerce (
     const ident = tokens.next()
 
     if (!ident || ident.type !== 'ident') {
-      throw new ParseError(`expected ident, got ${JSON.stringify(ident)}`)
+      return Err(new ParseError(`expected ident, got ${JSON.stringify(ident)}`))
     }
 
     // Gather all the user provided values
@@ -147,18 +162,18 @@ export async function parseAndCoerce (
     const defaultValue = argument.inner._default
 
     if (!extractedPair && !argument.inner._optional) {
-      throw new ParseError(`argument '--${argument.longFlag}' is missing`)
+      return Err(new ParseError(`argument '--${argument.longFlag}' is missing`))
     }
 
     if (!argument.inner._optional && defaultValue === undefined && !extractedPair?.values.length) {
-      throw new CoercionError(`argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`)
+      return Err(new CoercionError(`argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
     }
 
     const dependencies = argument.inner._dependencies ?? []
     for (const dependency of dependencies) {
       const dependencyValue = extractedPairs.find(v => v.ident.lexeme === dependency)
       if (!dependencyValue) {
-        throw new CoercionError(`unmet dependency '--${dependency}' for '--${argument.longFlag}'`)
+        return Err(new CoercionError(`unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
       }
     }
 
@@ -172,7 +187,7 @@ export async function parseAndCoerce (
         // Throw if appropriate, slice off the other arguments if not
         const { excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
-          throw new CoercionError(`excess argument(s) to --${argument.longFlag} '${inputValues.slice(1).join(' ')}'`)
+          return Err(new CoercionError(`excess argument(s) to --${argument.longFlag} '${inputValues.slice(1).join(' ')}'`))
         }
 
         inputValues = inputValues.slice(0, 1)
@@ -197,7 +212,7 @@ export async function parseAndCoerce (
         }
 
         if (errors.length) {
-          throw new CoercionError(`encountered ${errors.length} error(s) during coercion:\n\n${errors.map(e => `error: \`${e.error.message}\` whilst parsing "--${argument.longFlag} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`)
+          return Err(new CoercionError(`encountered ${errors.length} error(s) during coercion:\n\n${errors.map(e => `error: \`${e.error.message}\` whilst parsing "--${argument.longFlag} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`))
         }
 
         // True if nothing failed to parse/push
@@ -210,7 +225,7 @@ export async function parseAndCoerce (
       } else {
         const result = await argument.inner.parse(inputValues[0])
         if (!result.ok) {
-          throw new CoercionError(`encountered error: \`${result.error.message}\` when coercing "--${argument.longFlag} ${inputValues[0]}"`)
+          return Err(new CoercionError(`encountered error: \`${result.error.message}\` when coercing "--${argument.longFlag} ${inputValues[0]}"`))
         }
 
         parsedValues = {
@@ -237,7 +252,7 @@ export async function parseAndCoerce (
     if (!declaration) {
       const { unknownArgBehaviour } = opts
       if (unknownArgBehaviour === 'throw') {
-        throw new CoercionError(`unexpected argument '--${value.ident.lexeme}'`)
+        return Err(new CoercionError(`unexpected argument '--${value.ident.lexeme}'`))
       }
 
       // Otherwise, skip it
@@ -246,5 +261,5 @@ export async function parseAndCoerce (
   }
 
   // Now, return the finished command object
-  return commandObject
+  return Ok(commandObject)
 }

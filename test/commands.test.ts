@@ -2,10 +2,10 @@
 import { parserOpts, runCommandExecution } from '.'
 import { a, Args, Command, ParserOpts } from '../src'
 
-class TestCommand extends Command {
+class BaseCommand extends Command {
   constructor (opts: ParserOpts) {
     super({
-      description: 'epic foo command',
+      description: 'base command',
       parserOpts: {
         ...opts,
         unknownArgBehaviour: 'skip'
@@ -14,10 +14,31 @@ class TestCommand extends Command {
   }
 
   args = (parser: Args<unknown>) =>
-    parser.add(['--another'], a.string())
+    parser.add(['--passed'], a.string())
 
   run = this.runner(async (args) => {
-    return args.another
+    return args.passed
+  })
+}
+
+class SubCommandHolder extends Command {
+  constructor (opts: ParserOpts) {
+    super({
+      description: 'epic foo command',
+      parserOpts: {
+        ...opts,
+        unknownArgBehaviour: 'skip'
+      }
+    })
+
+    this.subcommand(['sub', 'sub-alias'], new Subcommand(opts))
+  }
+
+  args = (parser: Args<unknown>) =>
+    parser.add(['--passed'], a.string())
+
+  run = this.runner(async (args) => {
+    return args.passed
   })
 }
 
@@ -32,59 +53,36 @@ class Subcommand extends Command {
     })
   }
 
-  args = (parser: Args<unknown>) => parser
-  run = this.runner(async (args) => {
-    return 'sub'
-  })
-}
-
-class WithSubcommands extends Command {
-  constructor (opts: ParserOpts) {
-    super({
-      description: 'epic foo command',
-      parserOpts: {
-        ...opts,
-        unknownArgBehaviour: 'skip'
-      }
-    })
-
-    this.subcommand(['sub', 'sub-alias'], new Subcommand(opts))
-  }
-
   args = (parser: Args<unknown>) =>
-    parser.add(['--another'], a.string())
+    parser.add(['--test'], a.string())
 
   run = this.runner(async (args) => {
-    return 'parent'
+    return `sub ${args.test}`
   })
-
-  subcommands = {
-    sub: new Subcommand(this.opts.parserOpts)
-  }
 }
 
 describe('Command parsing', () => {
   it('parses basic commands', async () => {
     const parser = new Args(parserOpts)
-      .command(['test'], new TestCommand(parserOpts))
+      .command(['test'], new BaseCommand(parserOpts))
 
-    const result = await runCommandExecution(parser, 'test --another owo')
+    const result = await runCommandExecution(parser, 'test --passed owo')
     expect(result).toBe('owo')
   })
 
   it('skips unknown arguments', async () => {
     const parser = new Args(parserOpts)
-      .command(['test'], new TestCommand(parserOpts))
+      .command(['test'], new BaseCommand(parserOpts))
 
-    const result = await runCommandExecution(parser, 'test --another owo --unknown-argument-here value')
+    const result = await runCommandExecution(parser, 'test --passed owo --unknown-argument-here value')
     expect(result).toBe('owo')
   })
 
   it('supports subcommands', async () => {
     const parser = new Args(parserOpts)
-      .command(['test'], new WithSubcommands(parserOpts))
+      .command(['test'], new SubCommandHolder(parserOpts))
 
-    const result = await runCommandExecution(parser, 'test sub-alias')
-    expect(result).toBe('sub')
+    const result = await runCommandExecution(parser, 'test sub-alias --test epic')
+    expect(result).toBe('sub epic')
   })
 })

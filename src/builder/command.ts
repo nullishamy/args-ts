@@ -10,16 +10,16 @@ export abstract class Command {
 
   public _subcommands: Record<string, InternalCommand> = {}
 
-  // Must use unknown for it to accept the subtyping this function actually performs
-  // Black magic happens later on to extract the real subtype out of this `unknown`
-  abstract args: <T> (parser: Args<T>) => Args<unknown>
+  // Must use any for it to accept the subtyping this function actually performs
+  // Black magic happens later on to extract the real subtype out of this `any`
+  abstract args: <T> (parser: Args<T>) => Args<any>
   abstract run: (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown>
 
   runner (runFn: (args: (ExtractArgType<ReturnType<this['args']>>)) => Promise<unknown>): (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown> {
     return async (args) => await runFn(args)
   }
 
-  subcommand ([name, ...aliases]: [string, ...string[]], subcommand: SubCommand): this {
+  subcommand ([name, ...aliases]: [string, ...string[]], subcommand: Command): this {
     if (this._subcommands[name]) {
       throw new CommandError(`subcommand ${name} already registered`)
     }
@@ -52,13 +52,5 @@ export abstract class Command {
     }
 
     return this
-  }
-}
-
-export abstract class SubCommand extends Command {
-  constructor (
-    public readonly opts: CommandOpts
-  ) {
-    super(opts)
   }
 }
