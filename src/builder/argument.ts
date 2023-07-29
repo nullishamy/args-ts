@@ -23,6 +23,22 @@ export abstract class Argument<TArgType> {
     this._isMultiType = isMultiType
   }
 
+  protected ok <T> (passedValue: string, returnedValue: T): ParseResultOk<T> {
+    return {
+      ok: true,
+      passedValue,
+      returnedValue
+    }
+  }
+
+  protected err (passedValue: string, error: Error): ParseResultErr {
+    return {
+      ok: false,
+      passedValue,
+      error
+    }
+  }
+
   public abstract parse (value: string): Promise<ParseResult<TArgType>>
 
   public optional (): Argument<TArgType | undefined> {

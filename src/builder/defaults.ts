@@ -1,5 +1,5 @@
 import { Argument, ParseResult } from '.'
-import { ParseError } from '../error'
+import { CoercionError } from '../error'
 
 function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TConst): (...args: ConstructorParameters<TConst>) => T {
   return (...args: any[]) => new ArgClass(...args)
@@ -11,11 +11,7 @@ class StringArgument extends Argument<string> {
   }
 
   async parse (value: string): Promise<ParseResult<string>> {
-    return {
-      ok: true,
-      passedValue: value,
-      returnedValue: value
-    }
+    return this.ok(value, value)
   }
 }
 
@@ -30,33 +26,18 @@ class NumberArgument extends Argument<number> {
   async parse (value: string): Promise<ParseResult<number>> {
     const num = parseInt(value, 10)
     if (isNaN(num)) {
-      return {
-        ok: false,
-        passedValue: value,
-        error: new ParseError(`'${value}' is not a number`)
-      }
+      return this.err(value, new CoercionError(`'${value}' is not a number`))
     }
 
     if (this._lowerBound && num < this._lowerBound) {
-      return {
-        ok: false,
-        passedValue: value,
-        error: new ParseError(`${value} is less than lower bound ${this._lowerBound}`)
-      }
-    }
-    if (this._upperBound && num > this._upperBound) {
-      return {
-        ok: false,
-        passedValue: value,
-        error: new ParseError(`${value} is greater than upper bound ${this._upperBound}`)
-      }
+      return this.err(value, new CoercionError(`${value} is less than lower bound ${this._lowerBound}`))
     }
 
-    return {
-      ok: true,
-      passedValue: value,
-      returnedValue: num
+    if (this._upperBound && num > this._upperBound) {
+      return this.err(value, new CoercionError(`${value} is greater than upper bound ${this._upperBound}`))
     }
+
+    return this.ok(value, num)
   }
 
   lowerBound (bound: number): NumberArgument {
@@ -85,18 +66,10 @@ class BooleanArgument extends Argument<boolean> {
 
   async parse (value: string): Promise<ParseResult<boolean>> {
     if (!(value === 'true' || value === 'false')) {
-      return {
-        ok: false,
-        passedValue: value,
-        error: new ParseError(`'${value}' is not a boolean`)
-      }
+      return this.err(value, new CoercionError(`'${value}' is not a boolean`))
     }
 
-    return {
-      ok: true,
-      passedValue: value,
-      returnedValue: value === 'true'
-    }
+    return this.ok(value, value === 'true')
   }
 }
 
@@ -113,12 +86,9 @@ class CustomArgument<T> extends Argument<T> {
   public async parse (value: string): Promise<ParseResult<T>> {
     // User passed no callback
     if (!this.cb) {
-      return {
-        ok: false,
-        passedValue: value,
-        error: new ParseError('callback was not provided')
-      }
+      return this.err(value, new CoercionError('callback was not provided'))
     }
+
     return await this.cb(value)
   }
 }

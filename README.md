@@ -29,24 +29,16 @@ const result = await parser.parse('-l "hello world"')
 ```
 
 args.ts can parse Numbers, Booleans and Strings by default, but you can add your own types with the Custom type, or with a custom argument class:
-```js
+```ts
 const myCustomCallback = async (value: string): Promise<ParseResult<number>> => {
     if (value == 'success') {
-        return {
-            ok: true,
-            passedValue: value,
-            returnedValue: 69
-        }
+        return this.ok(value, 69)
     }
 
-    return {
-        ok: false,
-        passedValue: value,
-        error: new Error('error whilst parsing') 
-    }
+    return this.err(value, new Error('error whilst parsing') )
 }
 ```
-```js
+```ts
 class CustomParseClass extends Argument<number> {
   constructor () {
     super('custom')
@@ -54,18 +46,10 @@ class CustomParseClass extends Argument<number> {
 
   public async parse (value: string): Promise<ParseResult<number}>> {
     if (value == 'success') {
-        return {
-            ok: true,
-            passedValue: value,
-            returnedValue: 69
-        }
+        return this.ok(value, 69)
     }
 
-    return {
-        ok: false,
-        passedValue: value,
-        error: new Error('error whilst parsing') 
-    }
+    return this.err(value, new Error('error whilst parsing') )
 }
 ```
 These fetchers can both be async, and the parser will await all promises returned.

@@ -1,3 +1,3 @@
 export * from './argument'
 export * from './command'
-export * as a from './default'
+export * as a from './defaults'
