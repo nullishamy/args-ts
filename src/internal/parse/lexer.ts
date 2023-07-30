@@ -20,21 +20,26 @@ export type Token = FlagToken | IdentToken | ValueToken
 
 export class TokenIterator {
   private idx = 0
-  constructor (private readonly tokens: Token[]) {}
+  constructor (private readonly tokens: Token[]) {
+  }
+
+  index (): number {
+    return this.idx
+  }
 
   get (index: number): Token | undefined {
     return this.tokens[index]
   }
 
-  next (): Token {
-    if (this.idx + 1 >= this.tokens.length) {
-      throw new Error(`out of bounds for length ${this.tokens.length} @ index ${this.idx} + 1`)
-    }
+  next (): Token | undefined {
     this.idx++
     return this.tokens[this.idx]
   }
 
-  current (): Token {
+  current (): Token | undefined {
+    if (!this.tokens.length) {
+      return undefined
+    }
     return this.tokens[this.idx]
   }
 

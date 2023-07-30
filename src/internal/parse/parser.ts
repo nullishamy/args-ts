@@ -2,8 +2,9 @@ import { Command } from '../../builder'
 import { CoercionError, InternalError, ParseError } from '../../error'
 import { ParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
+import { getArgDenotion } from '../util'
 import { IdentToken, TokenIterator, ValueToken } from './lexer'
-import { CoercedValue, InternalArgument, InternalCommand } from './types'
+import { CoercedValue, InternalArgument, InternalCommand, InternalFlagArgument, InternalPositionalArgument } from './types'
 
 export interface SingleParsedValue {
   isMulti: false
@@ -32,8 +33,14 @@ export interface DefaultCommand {
   arguments: Map<InternalArgument, SingleParsedValue | MultiParsedValue>
 }
 
-interface ParsedPair {
+interface ParsedFlag {
+  type: 'flag'
   ident: IdentToken
+  values: ValueToken[]
+}
+interface ParsedPositional {
+  type: 'positional'
+  index: number
   values: ValueToken[]
 }
 
@@ -42,7 +49,7 @@ interface CommandExtraction {
   internal: InternalCommand | undefined
 }
 
-function extractCommandObject (tokens: TokenIterator, commands: Record<string, InternalCommand>): Result<CommandExtraction, ParseError> {
+function extractCommandObject (tokens: TokenIterator, commands: Record<string, InternalCommand>): CommandExtraction {
   const maybeRootCommand = tokens.current()
   let commandObject: ParsedCommand | DefaultCommand
   let internalCommand
@@ -51,29 +58,32 @@ function extractCommandObject (tokens: TokenIterator, commands: Record<string, I
     const subcommandKeys = []
     const rootCommandName = maybeRootCommand.userValue
 
-    let current = tokens.peek()
-    while (current && current.type === 'value') {
-      tokens.next()
-      subcommandKeys.push(current.userValue)
-      current = tokens.peek()
-    }
-
     internalCommand = commands[rootCommandName]
 
     if (!internalCommand) {
-      return Err(new ParseError(`unknown command root ${rootCommandName}`))
-    }
-
-    let currentCommand = internalCommand
-    for (let i = 0; i < subcommandKeys.length; i++) {
-      const subcommand = subcommandKeys[i]
-
-      if (!currentCommand.inner._subcommands[subcommand]) {
-        return Err(new ParseError(`could not find subcommand with path ${rootCommandName}/${subcommandKeys.slice(i).join('/')}`))
+      commandObject = {
+        isDefault: true,
+        arguments: new Map()
       }
 
-      currentCommand = currentCommand.inner._subcommands[subcommand]
+      return {
+        object: commandObject,
+        internal: internalCommand
+      }
+    }
+
+    let currentToken = tokens.next()
+    let currentCommand = internalCommand
+    while (currentToken && currentToken.type === 'value') {
+      if (!currentCommand.inner._subcommands[currentToken.userValue]) {
+        break
+      }
+
+      subcommandKeys.push(currentToken.userValue)
+      currentCommand = currentCommand.inner._subcommands[currentToken.userValue]
       internalCommand = currentCommand
+
+      currentToken = tokens.next()
     }
 
     commandObject = {
@@ -88,14 +98,28 @@ function extractCommandObject (tokens: TokenIterator, commands: Record<string, I
     }
   }
 
-  return Ok({
+  return {
     object: commandObject,
     internal: internalCommand
-  })
+  }
 }
 
-function extractPairs (tokens: TokenIterator): Result<ParsedPair[], ParseError> {
-  const extractedPairs: ParsedPair[] = []
+function extractValues (tokens: TokenIterator): Result<[ParsedFlag[], ParsedPositional[]], ParseError> {
+  const positionals: ParsedPositional[] = []
+  const flags: ParsedFlag[] = []
+
+  // First, pull out all positional arguments
+  let idx = 0
+  for (let current = tokens.current(); current?.type === 'value'; current = tokens.next()) {
+    positionals.push({
+      type: 'positional',
+      index: idx,
+      values: [current] // Will be collected into a single later on, once we have multi type metadata available
+    })
+    idx++
+  }
+
+  // Then, pull out all flags
   while (tokens.hasMoreTokens()) {
     while (tokens.peek()?.type === 'flag-denotion') {
       tokens.next()
@@ -119,38 +143,54 @@ function extractPairs (tokens: TokenIterator): Result<ParsedPair[], ParseError> 
       currentValue = tokens.peek()
     }
 
-    extractedPairs.push({
+    flags.push({
+      type: 'flag',
       ident,
       values: valueTokens
     })
   }
 
-  return Ok(extractedPairs)
+  return Ok([flags, positionals])
 }
 
-function performInitialValidation (extractedPairs: ParsedPair[], argument: InternalArgument): Result<ParsedPair | undefined, ParseError | CoercionError> {
-  const extractedPair = extractedPairs.find(v => v.ident.lexeme === argument.longFlag || v.ident.lexeme === argument.shortFlag)
+function initiallyValidateFlag (flags: ParsedFlag[], argument: InternalFlagArgument): Result<ParsedFlag | undefined, ParseError | CoercionError> {
+  const foundFlag = flags.find(v => v.ident?.lexeme === argument.longFlag || v.ident?.lexeme === argument.shortFlag)
 
-  // The token does not exist, or the value within the token does not exist ('--value <empty>' cases)
-  const defaultValue = argument.inner._default
+  const specifiedDefault = argument.inner._specifiedDefault
+  const unspecifiedDefault = argument.inner._unspecifiedDefault
 
-  if (!extractedPair && !argument.inner._optional) {
+  if (!foundFlag && !argument.inner._optional && unspecifiedDefault === undefined) {
     return Err(new ParseError(`argument '--${argument.longFlag}' is missing`))
   }
 
-  if (!argument.inner._optional && defaultValue === undefined && !extractedPair?.values.length) {
+  if (!argument.inner._optional && specifiedDefault === undefined && !foundFlag?.values.length) {
     return Err(new CoercionError(`argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
   const dependencies = argument.inner._dependencies ?? []
   for (const dependency of dependencies) {
-    const dependencyValue = extractedPairs.find(v => v.ident.lexeme === dependency)
+    const dependencyValue = flags.find(v => v.ident?.lexeme === dependency)
     if (!dependencyValue) {
       return Err(new CoercionError(`unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
     }
   }
 
-  return Ok(extractedPair)
+  return Ok(foundFlag)
+}
+
+function initiallyValidatePositional (positionals: ParsedPositional[], argument: InternalPositionalArgument): Result<ParsedPositional | undefined, ParseError | CoercionError> {
+  const foundFlag = positionals.find(v => v.index === argument.index)
+  const defaultValue = argument.inner._specifiedDefault
+
+  if (!foundFlag && !argument.inner._optional) {
+    return Err(new ParseError(`positional argument '<${argument.key}>' is missing`))
+  }
+
+  if (!argument.inner._optional && defaultValue === undefined && !foundFlag?.values) {
+    return Err(new CoercionError(`positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
+  }
+
+  return Ok(foundFlag)
 }
 
 async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<MultiParsedValue, CoercionError>> {
@@ -172,7 +212,8 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
   }
 
   if (errors.length) {
-    return Err(new CoercionError(`encountered ${errors.length} error(s) during coercion:\n\n${errors.map(e => `error: \`${e.error.message}\` whilst parsing "--${argument.longFlag} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`))
+    return Err(new CoercionError(`encountered ${errors.length} error(s) during coercion:
+    ${errors.map(e => `error: \`${e.error.message}\` whilst parsing "${getArgDenotion(argument)} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`))
   }
 
   // Will pass if nothing failed to parse, just sanity checking the error catching process above
@@ -190,7 +231,7 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
 async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<SingleParsedValue, CoercionError>> {
   const result = await argument.inner.coerce(inputValues[0])
   if (!result.ok) {
-    return Err(new CoercionError(`encountered error: \`${result.error.message}\` when coercing "--${argument.longFlag} ${inputValues[0]}"`))
+    return Err(new CoercionError(`encountered error: \`${result.error.message}\` when coercing "${getArgDenotion(argument)} ${inputValues[0]}"`))
   }
 
   return Ok({
@@ -207,59 +248,78 @@ export async function parseAndCoerce (
   internalArguments: Record<string, InternalArgument>
 ): Promise<Result<ParsedCommand | DefaultCommand, CoercionError | ParseError>> {
   // First take the commands / subcommands
-  const extractionResult = extractCommandObject(tokens, commands)
-  if (!extractionResult.ok) { return extractionResult }
-
-  const { object: commandObject, internal: maybeInternalCommand } = extractionResult.val
+  const { object: commandObject, internal } = extractCommandObject(tokens, commands)
 
   if (!commandObject.isDefault) {
-    if (!maybeInternalCommand) {
+    if (!internal) {
       return Err(new InternalError('no internal command provided for non-default command'))
     }
 
     // Set our context to the state of the command/subcommand parser
-    commands = maybeInternalCommand.parser.commands
-    internalArguments = maybeInternalCommand.parser.arguments
-    opts = maybeInternalCommand.parser.opts
+    commands = internal.parser.commands
+    internalArguments = internal.parser.arguments
+    opts = internal.parser.opts
   }
 
   // Next, parse out the arguments in their pairs
-  const pairResult = extractPairs(tokens)
+  const pairResult = extractValues(tokens)
   if (!pairResult.ok) { return pairResult }
 
-  const extractedPairs = pairResult.val
+  const [flags, positionals] = pairResult.val
 
   // Next, coerce and validate all the arguments
   // Iterate the declarations, to weed out any missing arguments
   for (const argument of Object.values(internalArguments)) {
-    const defaultValue = argument.inner._default
-
     // Validate 'schema-level' properties, such as optionality, depedencies, etc
     // Do NOT consider 'value-level' properties such as value correctness
-    const pairResult = performInitialValidation(extractedPairs, argument)
-    if (!pairResult.ok) { return pairResult }
+    let findResult
+    if (argument.type === 'flag') {
+      findResult = initiallyValidateFlag(flags, argument)
+    } else {
+      findResult = initiallyValidatePositional(positionals, argument)
+    }
+
+    if (!findResult.ok) { return findResult }
 
     let parsedValues: Result<SingleParsedValue | MultiParsedValue, CoercionError | ParseError>
+    let foundArgument = findResult.val
 
-    const extractedPair = pairResult.val
-    if (!extractedPair || !extractedPair.values.length) {
-      // If the pair is undefined, or there was no value passed, we will fallback to the default value
-      // performInitialValidation will verify this is an acceptable path (ie. the arg has a default, is not required, etc)
+    // If the pair is undefined, or there was no value was passed, we will fallback to the default value
+    // the initial validation will verify this is an acceptable path (ie. the arg has a default, is not required, etc)
+    if (!foundArgument) {
       parsedValues = Ok({
         isMulti: false,
-        raw: `<default value for --${argument.longFlag}>`,
-        coerced: defaultValue
+        raw: `<default value for ${getArgDenotion(argument)}`,
+        coerced: argument.inner._unspecifiedDefault
+      })
+    } else if (foundArgument.type === 'flag' && !foundArgument.values.length) {
+      if (argument.type !== 'flag') {
+        return Err(new InternalError(`argument.type !== flag, got ${argument.type}`))
+      }
+
+      parsedValues = Ok({
+        isMulti: false,
+        raw: `<default value for ${getArgDenotion(argument)}`,
+        coerced: argument.inner._specifiedDefault
       })
     } else {
+      if (foundArgument.type === 'positional' && argument.inner._isMultiType) {
+        // Collate all positionals together into this one
+        foundArgument = {
+          type: 'positional',
+          index: foundArgument.index,
+          values: positionals.flatMap(p => p.values)
+        }
+      }
       // Otherwise, parse all values
-      let inputValues = extractedPair.values.map(v => v.userValue)
+      let inputValues = foundArgument.values.map(v => v.userValue)
 
       // User passed more than one argument, and this is not a multi type
       if (!argument.inner._isMultiType && inputValues.length > 1) {
         // Throw if appropriate, slice off the other arguments if not (acts as a skip)
         const { excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
-          return Err(new CoercionError(`excess argument(s) to --${argument.longFlag} '${inputValues.slice(1).join(' ')}'`))
+          return Err(new CoercionError(`excess argument(s) to ${getArgDenotion(argument)} '${inputValues.slice(1).join(' ')}'`))
         }
 
         inputValues = inputValues.slice(0, 1)
@@ -282,8 +342,8 @@ export async function parseAndCoerce (
   }
 
   // Then, iterate the parsed values, to weed out excess arguments
-  for (const value of extractedPairs) {
-    const argument = internalArguments[value.ident.lexeme]
+  for (const value of flags) {
+    const argument = internalArguments[value.ident.lexeme ?? '']
 
     // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
     if (!argument) {

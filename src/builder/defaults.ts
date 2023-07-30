@@ -6,11 +6,48 @@ function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TCo
 }
 
 class StringArgument extends Argument<string> {
+  private _regex: RegExp | undefined
+  private _minLength: number | undefined
+  private _maxLength: number | undefined
+
   constructor () {
     super('string')
   }
 
+  matches (regex: RegExp): StringArgument {
+    this._regex = regex
+    return this
+  }
+
+  max (length: number): StringArgument {
+    this._maxLength = length
+    return this
+  }
+
+  min (length: number): StringArgument {
+    this._minLength = length
+    return this
+  }
+
+  nonEmpty (): StringArgument {
+    return this.min(1)
+  }
+
   async coerce (value: string): Promise<CoercionResult<string>> {
+    if (this._regex) {
+      const match = value.match(this._regex)
+      if (!match) {
+        return this.err(value, new CoercionError(`'${value}' does not match '${this._regex}'`))
+      }
+    }
+
+    if (this._minLength && value.length < this._minLength) {
+      return this.err(value, new CoercionError(`value must be at least length ${this._minLength}, got '${value}'`))
+    }
+
+    if (this._maxLength && value.length > this._maxLength) {
+      return this.err(value, new CoercionError(`value must be at most length ${this._maxLength}, got '${value}'`))
+    }
     return this.ok(value, value)
   }
 }
@@ -60,8 +97,8 @@ class NumberArgument extends Argument<number> {
 class BooleanArgument extends Argument<boolean> {
   constructor () {
     super('boolean')
-    // Booleans default to true (ie unspecified argument) unless specified otherwise
-    super._default = true
+    super._specifiedDefault = true
+    super._unspecifiedDefault = false
   }
 
   async coerce (value: string): Promise<CoercionResult<boolean>> {

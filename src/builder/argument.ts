@@ -15,8 +15,11 @@ export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 
 export type ArgumentType = 'boolean' | 'string' | 'number' | 'array' | 'custom'
 
+export type MinimalArgument<T> = Pick<Argument<T>, '_unspecifiedDefault' | '_specifiedDefault' | '_isMultiType' | '_optional' | '_dependencies' | 'coerce'>
+
 export abstract class Argument<T> {
-  public _default: T | undefined = undefined
+  public _specifiedDefault: T | undefined = undefined
+  public _unspecifiedDefault: T | undefined = undefined
   public _optional: boolean = false
   public _isMultiType: boolean = false
   public _dependencies: string[] = []
@@ -43,18 +46,19 @@ export abstract class Argument<T> {
 
   public abstract coerce (value: string): Promise<CoercionResult<T>>
 
-  public optional (): Argument<T | undefined> {
+  public optional (): Omit<Argument<T | undefined>, 'required' | 'default'> {
     this._optional = true
     return this
   }
 
-  public required (): Argument<NonNullable<T>> {
+  public required (): Omit<Argument<NonNullable<T>>, 'optional'> {
     this._optional = false
     return this as Argument<NonNullable<T>>
   }
 
-  public default (arg: T): Argument<T> {
-    this._default = arg
+  public default (arg: T): Omit<Argument<T>, 'required'> {
+    this._unspecifiedDefault = arg
+    this._optional = true
     return this
   }
 

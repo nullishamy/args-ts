@@ -1,4 +1,4 @@
-import { Args } from '../args'
+import { Args, DefaultArgTypes } from '../args'
 import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
 import { ExtractArgType } from '../internal/types'
@@ -15,7 +15,7 @@ export abstract class Command {
   abstract args: <T> (parser: Args<T>) => Args<any>
   abstract run: (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown>
 
-  runner (runFn: (args: (ExtractArgType<ReturnType<this['args']>>)) => Promise<unknown>): (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown> {
+  runner (runFn: (args: (ExtractArgType<ReturnType<this['args']>> & DefaultArgTypes)) => Promise<unknown>): (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown> {
     return async (args) => await runFn(args)
   }
 

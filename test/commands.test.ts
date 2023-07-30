@@ -14,7 +14,7 @@ class BaseCommand extends Command {
   }
 
   args = (parser: Args<unknown>) =>
-    parser.add(['--passed'], a.string())
+    parser.arg(['--passed'], a.string())
 
   run = this.runner(async (args) => {
     return args.passed
@@ -35,7 +35,7 @@ class SubCommandHolder extends Command {
   }
 
   args = (parser: Args<unknown>) =>
-    parser.add(['--passed'], a.string())
+    parser.arg(['--passed'], a.string())
 
   run = this.runner(async (args) => {
     return args.passed
@@ -54,7 +54,7 @@ class Subcommand extends Command {
   }
 
   args = (parser: Args<unknown>) =>
-    parser.add(['--test'], a.string())
+    parser.arg(['--test'], a.string())
 
   run = this.runner(async (args) => {
     return `sub ${args.test}`

@@ -16,7 +16,7 @@ export function Ok<T> (val: T): ResultOk<T> {
     val
   } as const
 
-  const stringify = (): string => `Ok(${val})`
+  const stringify = (): string => `Ok(${JSON.stringify(val, undefined, 2)})`
 
   Object.defineProperty(object, 'toString', {
     value: stringify

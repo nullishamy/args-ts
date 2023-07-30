@@ -1,9 +1,9 @@
-import { Argument, Command } from './builder'
-import { ArgError, CoercionError, CommandError, ParseError } from './error'
+import { Command, MinimalArgument } from './builder'
+import { ArgError, CoercionError, CommandError, ParseError, SchemaError } from './error'
 import { tokenise } from './internal/parse/lexer'
 import { MultiParsedValue, parseAndCoerce, SingleParsedValue } from './internal/parse/parser'
-import { InternalCommand, InternalArgument, CoercedValue } from './internal/parse/types'
-import { Ok, Result } from './internal/result'
+import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
+import { Err, Ok, Result } from './internal/result'
 import { ParserOpts } from './opts'
 
 // What happened when we parsed
@@ -24,18 +24,21 @@ interface ParsedArgs<T> {
 }
 
 type ParseSuccess<TArgTypes> = FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>
-
-export class Args<TArgTypes = {
+export interface DefaultArgTypes {
   [k: string]: CoercedValue
-}> {
+}
+
+export class Args<TArgTypes = DefaultArgTypes> {
   public arguments: Record<string, InternalArgument> = {}
   public commands: Record<string, InternalCommand> = {}
+  private positionalIndex = 0
 
   constructor (public readonly opts: ParserOpts) {}
 
   public command<TName extends string, TCommand extends Command> (
     [name, ...aliases]: [`${TName}`, ...string[]],
-    command: TCommand
+    command: TCommand,
+    inherit = false
   ): Args<TArgTypes> {
     if (this.commands[name]) {
       throw new CommandError(`command ${name} already declared`)
@@ -45,6 +48,10 @@ export class Args<TArgTypes = {
       ...this.opts,
       ...command.opts.parserOpts
     })
+
+    if (inherit) {
+      parser.arguments = this.arguments
+    }
 
     parser = command.args(parser)
 
@@ -71,9 +78,32 @@ export class Args<TArgTypes = {
     return this
   }
 
-  public add<TArg extends CoercedValue = never, TLong extends string = never> (
+  public positional<TArg extends CoercedValue, TKey extends string> (
+    key: `<${TKey}>`,
+    declaration: MinimalArgument<TArg>
+  ): Args<TArgTypes & {
+      [key in TKey]: TArg
+    }> {
+    if (!key.startsWith('<') && !key.endsWith('>')) {
+      throw new ArgError(`keys must start with < and end with >, got ${key}`)
+    }
+
+    const slicedKey = key.slice(1, key.length - 1)
+
+    this.arguments[slicedKey] = {
+      type: 'positional',
+      inner: declaration,
+      key: slicedKey,
+      index: this.positionalIndex++
+    }
+
+    // @ts-expect-error
+    return this
+  }
+
+  public arg<TArg extends CoercedValue, TLong extends string> (
     [longFlag, shortFlag]: [`--${TLong}`, `-${string}`?],
-    declaration: Argument<TArg>
+    declaration: MinimalArgument<TArg>
   ): Args<TArgTypes & {
       // Add the key to our object of known args
       [key in TLong]: TArg
@@ -87,6 +117,7 @@ export class Args<TArgTypes = {
     }
 
     this.arguments[longFlag.substring(2)] = {
+      type: 'flag',
       inner: declaration,
       longFlag: longFlag.substring(2),
       shortFlag: shortFlag?.substring(1)
@@ -102,6 +133,7 @@ export class Args<TArgTypes = {
       }
 
       this.arguments[shortFlag.substring(1)] = {
+        type: 'flag',
         inner: declaration,
         longFlag: longFlag.substring(2),
         shortFlag: shortFlag.substring(1)
@@ -113,11 +145,36 @@ export class Args<TArgTypes = {
   }
 
   private intoObject (coerced: Map<InternalArgument, MultiParsedValue | SingleParsedValue>): TArgTypes {
-    return Object.fromEntries([...coerced.entries()].map(([key, value]) => [key.longFlag, value.coerced])) as TArgTypes
+    return Object.fromEntries([...coerced.entries()].map(([key, value]) => {
+      if (key.type === 'flag') {
+        return [key.longFlag, value.coerced]
+      } else {
+        return [key.key, value.coerced]
+      }
+    })) as TArgTypes
+  }
+
+  public validate (): Result<this, SchemaError> {
+    const positionals: InternalPositionalArgument[] = []
+    const flags: InternalFlagArgument[] = []
+
+    for (const value of Object.values(this.arguments)) {
+      if (value.type === 'flag') {
+        flags.push(value)
+      } else {
+        positionals.push(value)
+      }
+    }
+
+    if (positionals.filter(p => p.inner._isMultiType).length > 1) {
+      return Err(new SchemaError('multiple multi-type positionals found'))
+    }
+    return Ok(this)
   }
 
   public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError | Error>> {
     const tokenResult = tokenise(argString)
+
     if (!tokenResult.ok) {
       return tokenResult
     }

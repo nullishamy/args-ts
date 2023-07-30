@@ -1,12 +1,24 @@
 import { Args } from '../../args'
-import { Argument, Command } from '../../builder'
+import { Command, MinimalArgument } from '../../builder'
 import { IdentToken, ValueToken } from './lexer'
 
-export interface InternalArgument {
-  inner: Argument<CoercedValue>
+interface ArgumentBase {
+  inner: MinimalArgument<CoercedValue>
+}
+
+export interface InternalFlagArgument extends ArgumentBase {
+  type: 'flag'
   longFlag: string
   shortFlag: string | undefined
 }
+
+export interface InternalPositionalArgument extends ArgumentBase {
+  type: 'positional'
+  key: string
+  index: number
+}
+
+export type InternalArgument = InternalFlagArgument | InternalPositionalArgument
 
 export interface InternalCommand {
   inner: Command

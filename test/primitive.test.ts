@@ -6,15 +6,31 @@ import { a } from '../src/builder'
 describe('Primitive parsing', () => {
   it('can parse a long-flag flag', async () => {
     const parser = new Args(parserOpts)
-      .add(['--boolean'], a.bool().optional().required())
+      .arg(['--boolean'], a.bool())
 
     const result = await runArgsExecution(parser, '--boolean')
     expect(result.boolean).toBe(true)
   })
 
+  it('can correcty assign defaults for unspecified flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--boolean'], a.bool())
+
+    const result = await runArgsExecution(parser, '')
+    expect(result.boolean).toBe(false)
+  })
+
+  it('can correcty assign defaults for unspecified flags with overrides', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--boolean'], a.bool().default(true))
+
+    const result = await runArgsExecution(parser, '')
+    expect(result.boolean).toBe(true)
+  })
+
   it('can parse a short-flag flag', async () => {
     const parser = new Args(parserOpts)
-      .add(['--boolean', '-b'], a.bool())
+      .arg(['--boolean', '-b'], a.bool())
 
     const result = await runArgsExecution(parser, '-b')
 
@@ -23,7 +39,7 @@ describe('Primitive parsing', () => {
 
   it('can parse short-flag numbers', async () => {
     const parser = new Args(parserOpts)
-      .add(['--number', '-n'], a.number())
+      .arg(['--number', '-n'], a.number())
 
     const result = await runArgsExecution(parser, '-n 12')
 
@@ -32,7 +48,7 @@ describe('Primitive parsing', () => {
 
   it('can parse long-flag numbers', async () => {
     const parser = new Args(parserOpts)
-      .add(['--number'], a.number())
+      .arg(['--number'], a.number())
 
     const result = await runArgsExecution(parser, '--number 12')
 
@@ -41,7 +57,7 @@ describe('Primitive parsing', () => {
 
   it('can parse long-flag strings', async () => {
     const parser = new Args(parserOpts)
-      .add(['--string'], a.string())
+      .arg(['--string'], a.string())
 
     const result = await runArgsExecution(parser, '--string string')
 
@@ -50,7 +66,7 @@ describe('Primitive parsing', () => {
 
   it('can parse short-flag strings', async () => {
     const parser = new Args(parserOpts)
-      .add(['--string', '-s'], a.string())
+      .arg(['--string', '-s'], a.string())
 
     const result = await runArgsExecution(parser, '-s string')
 
@@ -59,7 +75,7 @@ describe('Primitive parsing', () => {
 
   it('can parse short-flag quoted strings', async () => {
     const parser = new Args(parserOpts)
-      .add(['--string', '-s'], a.string())
+      .arg(['--string', '-s'], a.string())
 
     const result = await runArgsExecution(parser, "-s 'string'")
 
@@ -68,7 +84,7 @@ describe('Primitive parsing', () => {
 
   it('can parse long-flag quoted strings', async () => {
     const parser = new Args(parserOpts)
-      .add(['--string', '-s'], a.string())
+      .arg(['--string', '-s'], a.string())
 
     const result = await runArgsExecution(parser, "--string 'string'")
 
@@ -83,7 +99,7 @@ describe('Primitive parsing', () => {
 
   it('can parse short-flag custom values', async () => {
     const parser = new Args(parserOpts)
-      .add(['--custom', '-c'], a.custom(customCallback))
+      .arg(['--custom', '-c'], a.custom(customCallback))
 
     const result = await runArgsExecution(parser, '-c test')
 
@@ -92,7 +108,7 @@ describe('Primitive parsing', () => {
 
   it('can parse long-flag custom values', async () => {
     const parser = new Args(parserOpts)
-      .add(['--custom'], a.custom(customCallback))
+      .arg(['--custom'], a.custom(customCallback))
 
     const result = await runArgsExecution(parser, '--custom test')
 
@@ -101,21 +117,21 @@ describe('Primitive parsing', () => {
 
   it('throws if there is a missing arg', async () => {
     const parser = new Args(parserOpts)
-      .add(['--custom', '-c'], a.custom(customCallback))
+      .arg(['--custom', '-c'], a.custom(customCallback))
 
-    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: Err(ParseError { argument '--custom' is missing })]`)
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing]`)
   })
 
   it('throws if there is a missing custom parser', async () => {
     const parser = new Args(parserOpts)
-      .add(['--custom', '-c'], a.custom(undefined as any))
+      .arg(['--custom', '-c'], a.custom(undefined as any))
 
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { encountered error: \`callback was not provided\` when coercing "--custom this" })]`)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: encountered error: \`callback was not provided\` when coercing "--custom this"]`)
   })
 
   it('throws if there is additional arguments', async () => {
     const parser = new Args(parserOpts)
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: Err(CoercionError { unexpected argument '--c' })]`)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '--c']`)
   })
 
   it('skips if there is additional arguments', async () => {
