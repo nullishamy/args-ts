@@ -6,10 +6,9 @@ import { a } from '../src/builder'
 describe('Primitive parsing', () => {
   it('can parse a long-flag flag', async () => {
     const parser = new Args(parserOpts)
-      .add(['--boolean'], a.bool())
+      .add(['--boolean'], a.bool().optional().required())
 
     const result = await runArgsExecution(parser, '--boolean')
-
     expect(result.boolean).toBe(true)
   })
 

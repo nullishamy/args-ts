@@ -1,20 +1,22 @@
-interface ParseResultOk<T> {
+import { CoercionError } from '../error'
+
+interface CoercionResultOk<T> {
   ok: true
   passedValue: string
   returnedValue: T
 }
-interface ParseResultErr {
+interface CoercionResultErr {
   ok: false
   passedValue: string
-  error: Error
+  error: CoercionError
 }
 
-export type ParseResult<T> = ParseResultOk<T> | ParseResultErr
+export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 
 export type ArgumentType = 'boolean' | 'string' | 'number' | 'array' | 'custom'
 
-export abstract class Argument<TArgType> {
-  public _default: TArgType | undefined = undefined
+export abstract class Argument<T> {
+  public _default: T | undefined = undefined
   public _optional: boolean = false
   public _isMultiType: boolean = false
   public _dependencies: string[] = []
@@ -23,15 +25,7 @@ export abstract class Argument<TArgType> {
     this._isMultiType = isMultiType
   }
 
-  protected ok <T> (passedValue: string, returnedValue: T): ParseResultOk<T> {
-    return {
-      ok: true,
-      passedValue,
-      returnedValue
-    }
-  }
-
-  protected err (passedValue: string, error: Error): ParseResultErr {
+  protected err (passedValue: string, error: Error): CoercionResultErr {
     return {
       ok: false,
       passedValue,
@@ -39,28 +33,41 @@ export abstract class Argument<TArgType> {
     }
   }
 
-  public abstract parse (value: string): Promise<ParseResult<TArgType>>
+  protected ok (passedValue: string, returnedValue: T): CoercionResultOk<T> {
+    return {
+      ok: true,
+      passedValue,
+      returnedValue
+    }
+  }
 
-  public optional (): Argument<TArgType | undefined> {
+  public abstract coerce (value: string): Promise<CoercionResult<T>>
+
+  public optional (): Argument<T | undefined> {
     this._optional = true
     return this
   }
 
-  public default (arg: TArgType): Argument<TArgType> {
+  public required (): Argument<NonNullable<T>> {
+    this._optional = false
+    return this as Argument<NonNullable<T>>
+  }
+
+  public default (arg: T): Argument<T> {
     this._default = arg
     return this
   }
 
-  public dependsOn (arg: `--${string}`): Argument<TArgType> {
+  public dependsOn (arg: `--${string}`): Argument<T> {
     this._dependencies.push(arg.substring(2))
     return this
   }
 
-  public array (): Argument<TArgType[]> {
+  public array (): Argument<T[]> {
     this._isMultiType = true
     // Unfortunate type hackery here. We simply tell the parser to treat this as an array (arrays cannot have mixed elements)
     // and it will output that into the result. This is still *safe* because this function call is intrinsicly tied to the type
     // but it is still type hackery
-    return this as Argument<TArgType[]>
+    return this as Argument<T[]>
   }
 }

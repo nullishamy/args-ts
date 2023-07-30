@@ -154,7 +154,7 @@ function performInitialValidation (extractedPairs: ParsedPair[], argument: Inter
 }
 
 async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<MultiParsedValue, CoercionError>> {
-  const results = await Promise.all(inputValues.map(async raw => await argument.inner.parse(raw)))
+  const results = await Promise.all(inputValues.map(async raw => await argument.inner.coerce(raw)))
   const coerced = []
   const errors: Array<{ index: number, error: Error, value: string }> = []
 
@@ -188,7 +188,7 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
 }
 
 async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<SingleParsedValue, CoercionError>> {
-  const result = await argument.inner.parse(inputValues[0])
+  const result = await argument.inner.coerce(inputValues[0])
   if (!result.ok) {
     return Err(new CoercionError(`encountered error: \`${result.error.message}\` when coercing "--${argument.longFlag} ${inputValues[0]}"`))
   }

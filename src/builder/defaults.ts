@@ -1,4 +1,4 @@
-import { Argument, ParseResult } from '.'
+import { Argument, CoercionResult } from '.'
 import { CoercionError } from '../error'
 
 function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TConst): (...args: ConstructorParameters<TConst>) => T {
@@ -10,7 +10,7 @@ class StringArgument extends Argument<string> {
     super('string')
   }
 
-  async parse (value: string): Promise<ParseResult<string>> {
+  async coerce (value: string): Promise<CoercionResult<string>> {
     return this.ok(value, value)
   }
 }
@@ -23,7 +23,7 @@ class NumberArgument extends Argument<number> {
     super('number')
   }
 
-  async parse (value: string): Promise<ParseResult<number>> {
+  async coerce (value: string): Promise<CoercionResult<number>> {
     const num = parseInt(value, 10)
     if (isNaN(num)) {
       return this.err(value, new CoercionError(`'${value}' is not a number`))
@@ -64,7 +64,7 @@ class BooleanArgument extends Argument<boolean> {
     super._default = true
   }
 
-  async parse (value: string): Promise<ParseResult<boolean>> {
+  async coerce (value: string): Promise<CoercionResult<boolean>> {
     if (!(value === 'true' || value === 'false')) {
       return this.err(value, new CoercionError(`'${value}' is not a boolean`))
     }
@@ -73,17 +73,17 @@ class BooleanArgument extends Argument<boolean> {
   }
 }
 
-// Explicitly typed generices because the inference would not cooperate
+// Explicitly typed generics because the inference would not cooperate
 export const string = makeExport<StringArgument, typeof StringArgument>(StringArgument)
 export const number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
 export const bool = makeExport<BooleanArgument, typeof BooleanArgument>(BooleanArgument)
 
 class CustomArgument<T> extends Argument<T> {
-  constructor (private readonly cb: (value: string) => ParseResult<T> | Promise<ParseResult<T>>) {
+  constructor (private readonly cb: (value: string) => CoercionResult<T> | Promise<CoercionResult<T>>) {
     super('custom')
   }
 
-  public async parse (value: string): Promise<ParseResult<T>> {
+  public async coerce (value: string): Promise<CoercionResult<T>> {
     // User passed no callback
     if (!this.cb) {
       return this.err(value, new CoercionError('callback was not provided'))

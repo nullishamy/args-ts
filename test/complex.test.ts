@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { parserOpts, runArgsExecution } from '.'
 import { Args } from '../src'
-import { a, Argument, ParseResult } from '../src/builder'
+import { a, Argument, CoercionResult } from '../src/builder'
 
 class CustomParseClass extends Argument<{ theValue: string }> {
   constructor () {
     super('custom')
   }
 
-  public async parse (value: string): Promise<ParseResult<{ theValue: string }>> {
+  public async coerce (value: string): Promise<CoercionResult<{ theValue: string }>> {
     return {
       ok: true,
       passedValue: value,
