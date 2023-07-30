@@ -1,5 +1,6 @@
 import { Command, MinimalArgument } from './builder'
 import { ArgError, CoercionError, CommandError, ParseError, SchemaError } from './error'
+import { generateHelp } from './help'
 import { tokenise } from './internal/parse/lexer'
 import { MultiParsedValue, parseAndCoerce, SingleParsedValue } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
@@ -31,6 +32,9 @@ export interface DefaultArgTypes {
 export class Args<TArgTypes = DefaultArgTypes> {
   public arguments: Record<string, InternalArgument> = {}
   public commands: Record<string, InternalCommand> = {}
+  public footerLines: string[] = []
+  public headerLines: string[] = []
+
   private positionalIndex = 0
 
   constructor (public readonly opts: ParserOpts) {}
@@ -118,6 +122,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     this.arguments[longFlag.substring(2)] = {
       type: 'flag',
+      isPrimary: true,
       inner: declaration,
       longFlag: longFlag.substring(2),
       shortFlag: shortFlag?.substring(1)
@@ -135,6 +140,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       this.arguments[shortFlag.substring(1)] = {
         type: 'flag',
         inner: declaration,
+        isPrimary: false,
         longFlag: longFlag.substring(2),
         shortFlag: shortFlag.substring(1)
       }
@@ -170,6 +176,30 @@ export class Args<TArgTypes = DefaultArgTypes> {
       return Err(new SchemaError('multiple multi-type positionals found'))
     }
     return Ok(this)
+  }
+
+  public help (): string {
+    return generateHelp(this)
+  }
+
+  public footer (line: string, append = true): Args<TArgTypes> {
+    if (append) {
+      this.footerLines.push(line)
+    } else {
+      this.footerLines = [line]
+    }
+
+    return this
+  }
+
+  public header (line: string, append = true): Args<TArgTypes> {
+    if (append) {
+      this.headerLines.push(line)
+    } else {
+      this.headerLines = [line]
+    }
+
+    return this
   }
 
   public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError | Error>> {

@@ -99,6 +99,7 @@ class BooleanArgument extends Argument<boolean> {
     super('boolean')
     super._specifiedDefault = true
     super._unspecifiedDefault = false
+    super._optional = true
   }
 
   async coerce (value: string): Promise<CoercionResult<boolean>> {

@@ -15,11 +15,12 @@ export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 
 export type ArgumentType = 'boolean' | 'string' | 'number' | 'array' | 'custom'
 
-export type MinimalArgument<T> = Pick<Argument<T>, '_unspecifiedDefault' | '_specifiedDefault' | '_isMultiType' | '_optional' | '_dependencies' | 'coerce'>
+export type MinimalArgument<T> = Pick<Argument<T>, '_unspecifiedDefault' | '_specifiedDefault' | '_isMultiType' | '_optional' | '_dependencies' | 'coerce' | 'type'>
 
 export abstract class Argument<T> {
   public _specifiedDefault: T | undefined = undefined
   public _unspecifiedDefault: T | undefined = undefined
+  public _description: string | undefined
   public _optional: boolean = false
   public _isMultiType: boolean = false
   public _dependencies: string[] = []
@@ -64,6 +65,11 @@ export abstract class Argument<T> {
 
   public dependsOn (arg: `--${string}`): Argument<T> {
     this._dependencies.push(arg.substring(2))
+    return this
+  }
+
+  public describe (description: string): Argument<T> {
+    this._description = description
     return this
   }
 

@@ -8,6 +8,7 @@ interface ArgumentBase {
 
 export interface InternalFlagArgument extends ArgumentBase {
   type: 'flag'
+  isPrimary: boolean
   longFlag: string
   shortFlag: string | undefined
 }
