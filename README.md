@@ -63,6 +63,7 @@ class CustomParseClass extends Argument<number> {
     }
 
     return this.err(value, new Error('error whilst coercing'))
+  }
 }
 // Then, use the custom parser
 parser.arg(['--custom'], new CustomParseClass())
