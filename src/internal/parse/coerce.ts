@@ -34,18 +34,18 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
   const unspecifiedDefault = argument.inner._unspecifiedDefault
 
   if (!foundFlag && !argument.inner._optional && unspecifiedDefault === undefined) {
-    return Err(new CoercionError(`argument '--${argument.longFlag}' is missing`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing`))
   }
 
   if (!argument.inner._optional && specifiedDefault === undefined && !foundFlag?.values.length) {
-    return Err(new CoercionError(`argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
   const dependencies = argument.inner._dependencies ?? []
   for (const dependency of dependencies) {
     const dependencyValue = flags.get(dependency)
     if (!dependencyValue) {
-      return Err(new CoercionError(`unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
+      return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
     }
   }
 
@@ -57,17 +57,17 @@ function validatePositionalSchematically (positionals: Map<number, ParsedPositio
   const defaultValue = argument.inner._specifiedDefault
 
   if (!foundFlag && !argument.inner._optional) {
-    return Err(new CoercionError(`positional argument '<${argument.key}>' is missing`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '<${argument.key}>' is missing`))
   }
 
   if (!argument.inner._optional && defaultValue === undefined && !foundFlag?.values) {
-    return Err(new CoercionError(`positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
   return Ok(foundFlag)
 }
 
-async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedMultiValue, CoercionError>> {
+async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedMultiValue, CoercionError | CoercionError[]>> {
   const results = await Promise.all(inputValues.map(async raw => await argument.inner.coerce(raw)))
   const coerced = []
   const errors: Array<{ index: number, error: Error, value: string }> = []
@@ -86,13 +86,14 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
   }
 
   if (errors.length) {
-    return Err(new CoercionError(`encountered ${errors.length} error(s) during coercion:
-    ${errors.map(e => `error: \`${e.error.message}\` whilst parsing "${getArgDenotion(argument)} ${e.value}" (argument number ${e.index + 1})`).join('\n\n')}`))
+    return Err(errors.map(e => {
+      return new CoercionError(argument.inner.type, e.value, e.error.message)
+    }))
   }
 
   // Will pass if nothing failed to parse, just sanity checking the error catching process above
   if (coerced.length !== inputValues.length) {
-    return Err(new InternalError(`coerced values be the same length as the user provided values (input: ${inputValues.length}, coerced: ${coerced.length})`))
+    throw new InternalError(`coerced values be the same length as the user provided values (input: ${inputValues.length}, coerced: ${coerced.length})`)
   }
 
   return Ok({
@@ -104,8 +105,9 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
 
 async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError>> {
   const result = await argument.inner.coerce(inputValues[0])
+
   if (!result.ok) {
-    return Err(new CoercionError(`encountered error: \`${result.error.message}\` when coercing "${getArgDenotion(argument)} ${inputValues[0]}"`))
+    return Err(new CoercionError(argument.inner.type, inputValues[0], result.error.message))
   }
 
   return Ok({
@@ -119,7 +121,7 @@ export async function coerce (
   args: ParsedArguments,
   opts: ParserOpts,
   internalArgs: Record<string, InternalArgument>
-): Promise<Result<CoercedArguments, CoercionError>> {
+): Promise<Result<CoercedArguments, CoercionError[]>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
   const { command, flags, positionals } = args
 
@@ -134,9 +136,9 @@ export async function coerce (
       findResult = validatePositionalSchematically(positionals, argument)
     }
 
-    if (!findResult.ok) { return findResult }
+    if (!findResult.ok) { return Err([findResult.err]) }
 
-    let coercionResult: Result<CoercedSingleValue | CoercedMultiValue, CoercionError>
+    let coercionResult: Result<CoercedSingleValue | CoercedMultiValue, CoercionError | CoercionError[]>
     let userArgument = findResult.val
 
     // If the user provided argument is undefined, or there was no value was passed, we will fallback to the default value
@@ -149,7 +151,7 @@ export async function coerce (
       })
     } else if (userArgument.type !== 'positional' && !userArgument.values.length) {
       if (argument.type !== 'flag') {
-        return Err(new InternalError(`argument.type !== flag, got ${argument.type}`))
+        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
       }
 
       coercionResult = Ok({
@@ -179,14 +181,14 @@ export async function coerce (
         // Throw if appropriate, slice off the other arguments if not (acts as a skip)
         const { excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
-          return Err(new CoercionError(`excess argument(s) to ${getArgDenotion(argument)} '${inputValues.slice(1).join(' ')}'`))
+          return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)} '${inputValues.slice(1).join(' ')}'`)])
         }
 
         inputValues = inputValues.slice(0, 1)
       }
 
       if (!inputValues.length) {
-        return Err(new InternalError('no input values set, initial validation failed to reject empty arg values'))
+        throw new InternalError('no input values set, initial validation failed to reject empty arg values')
       }
 
       if (argument.inner._isMultiType) {
@@ -197,7 +199,11 @@ export async function coerce (
     }
 
     if (!coercionResult.ok) {
-      return coercionResult
+      if (Array.isArray(coercionResult.err)) {
+        return Err(coercionResult.err)
+      } else {
+        return Err([coercionResult.err])
+      }
     }
 
     out.set(argument, coercionResult.val)
@@ -211,7 +217,7 @@ export async function coerce (
     if (!argument) {
       const { unknownArgBehaviour } = opts
       if (unknownArgBehaviour === 'throw') {
-        return Err(new CoercionError(`unexpected argument '${value.rawInput}'`))
+        return Err([new CoercionError('<nothing>', value.rawInput, `unexpected argument '${value.rawInput}'`)])
       }
 
       // Otherwise, skip it

@@ -118,19 +118,19 @@ describe('Simple integrations (no commands)', () => {
     const parser = new Args(parserOpts)
       .arg(['--custom', '-c'], a.custom(customCallback))
 
-    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot('[Error: argument \'--custom\' is missing]')
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, expected 'custom' received '<nothing>']`)
   })
 
   it('throws if there is a missing custom parser', async () => {
     const parser = new Args(parserOpts)
       .arg(['--custom', '-c'], a.custom(undefined as any))
 
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot('[Error: encountered error: `callback was not provided` when coercing "--custom this"]')
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: callback was not provided, expected 'custom' received 'this']`)
   })
 
   it('throws if there is additional arguments', async () => {
     const parser = new Args(parserOpts)
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '-c this']`)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '-c this', expected '<nothing>' received '-c this']`)
   })
 
   it('skips if there is additional arguments', async () => {

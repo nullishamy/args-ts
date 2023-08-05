@@ -6,7 +6,7 @@ class MockCommand extends Command {
   constructor (
     opts: ParserOpts,
     public readonly id: string,
-    public readonly parserFn: (parser: Args<unknown>) => Args<unknown> = jest.fn(),
+    public readonly parserFn: (parser: Args<unknown>) => Args<unknown> = jest.fn(p => p),
     public readonly executionFn: (args: object) => unknown = jest.fn()
   ) {
     super({

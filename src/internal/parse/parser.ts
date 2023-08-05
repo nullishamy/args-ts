@@ -60,14 +60,14 @@ function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<stri
   }
   const current = tokens.current()
   if (!current) {
-    return Err(new ParseError('no more tokens when trying to parse unquoted value'))
+    return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
   }
 
   let out = ''
   if (current?.type === 'char') {
     out = current.value
   } else {
-    return Err(new ParseError(`expected 'char' got ${JSON.stringify(current)}`))
+    return Err(ParseError.expected('char', JSON.stringify(current), tokens.intoString(), tokens.index()))
   }
 
   for (let token = tokens.next(); token !== undefined; token = tokens.next()) {
@@ -96,7 +96,7 @@ function parseString (tokens: TokenIterator, whitespace: boolean): Result<string
     consumeWhitespace(tokens)
   }
   if (tokens.current() === undefined) {
-    return Err(new ParseError('no more tokens when trying to parse string value'))
+    return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
   }
 
   // Figure out what our ending delimiter will be. If we do not match on a quote, it will be the next space (unquoted strings)
@@ -128,7 +128,7 @@ function parseString (tokens: TokenIterator, whitespace: boolean): Result<string
   }
 
   if (out === '') {
-    return Err(new ParseError('no string value present'))
+    return Err(new ParseError('no string value present', tokens.intoString(), tokens.index()))
   }
 
   return Ok(out)
@@ -233,7 +233,7 @@ function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseE
   const peek = tokens.peek()
 
   if (!token) {
-    return Err(new ParseError('out of tokens'))
+    return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
   }
 
   if (token.type === 'flag-denotion' && peek?.type !== 'flag-denotion') {
@@ -249,7 +249,7 @@ function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseE
     return parseLongFlag(tokens)
   }
 
-  return Err(new ParseError(`expected flag denotion, got ${JSON.stringify(token)}`))
+  return Err(ParseError.expected('flag', JSON.stringify(token), tokens.intoString(), tokens.index()))
 }
 
 export function parse (

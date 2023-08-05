@@ -25,16 +25,25 @@ export function Ok<T> (val: T): ResultOk<T> {
   return object
 }
 
-export function Err<E extends Error> (err: E): ResultErr<E> {
+export function Err<E extends Error | Error[]> (err: E): ResultErr<E> {
   const object = {
     ok: false,
     err
   } as const
 
-  const stringify = (): string => `Err(${err.constructor.name} { ${err.message} })`
+  const stringify = (error: Error): string => `Err(${error.constructor.name} { ${error.message} })`
+
+  let chosenFunc
+  if (Array.isArray(err)) {
+    chosenFunc = () => {
+      return err.map(stringify)
+    }
+  } else {
+    chosenFunc = () => stringify(err)
+  }
 
   Object.defineProperty(object, 'toString', {
-    value: stringify
+    value: chosenFunc
   })
 
   return object

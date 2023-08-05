@@ -1,5 +1,4 @@
 import { Argument, CoercionResult } from '.'
-import { CoercionError } from '../error'
 
 function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TConst): (...args: ConstructorParameters<TConst>) => T {
   return (...args: any[]) => new ArgClass(...args)
@@ -37,16 +36,16 @@ class StringArgument extends Argument<string> {
     if (this._regex) {
       const match = value.match(this._regex)
       if (!match) {
-        return this.err(value, new CoercionError(`'${value}' does not match '${this._regex}'`))
+        return this.err(value, new Error(`'${value}' does not match '${this._regex}'`))
       }
     }
 
     if (this._minLength && value.length < this._minLength) {
-      return this.err(value, new CoercionError(`value must be at least length ${this._minLength}, got '${value}'`))
+      return this.err(value, new Error(`value must be at least length ${this._minLength}, got '${value}'`))
     }
 
     if (this._maxLength && value.length > this._maxLength) {
-      return this.err(value, new CoercionError(`value must be at most length ${this._maxLength}, got '${value}'`))
+      return this.err(value, new Error(`value must be at most length ${this._maxLength}, got '${value}'`))
     }
     return this.ok(value, value)
   }
@@ -63,15 +62,15 @@ class NumberArgument extends Argument<number> {
   async coerce (value: string): Promise<CoercionResult<number>> {
     const num = parseInt(value, 10)
     if (isNaN(num)) {
-      return this.err(value, new CoercionError(`'${value}' is not a number`))
+      return this.err(value, new Error(`'${value}' is not a number`))
     }
 
     if (this._lowerBound && num < this._lowerBound) {
-      return this.err(value, new CoercionError(`${value} is less than lower bound ${this._lowerBound}`))
+      return this.err(value, new Error(`${value} is less than lower bound ${this._lowerBound}`))
     }
 
     if (this._upperBound && num > this._upperBound) {
-      return this.err(value, new CoercionError(`${value} is greater than upper bound ${this._upperBound}`))
+      return this.err(value, new Error(`${value} is greater than upper bound ${this._upperBound}`))
     }
 
     return this.ok(value, num)
@@ -104,7 +103,7 @@ class BooleanArgument extends Argument<boolean> {
 
   async coerce (value: string): Promise<CoercionResult<boolean>> {
     if (!(value === 'true' || value === 'false')) {
-      return this.err(value, new CoercionError(`'${value}' is not a boolean`))
+      return this.err(value, new Error(`'${value}' is not a boolean`))
     }
 
     return this.ok(value, value === 'true')
@@ -124,7 +123,7 @@ class CustomArgument<T> extends Argument<T> {
   public async coerce (value: string): Promise<CoercionResult<T>> {
     // User passed no callback
     if (!this.cb) {
-      return this.err(value, new CoercionError('callback was not provided'))
+      return this.err(value, new Error('callback was not provided'))
     }
 
     return await this.cb(value)

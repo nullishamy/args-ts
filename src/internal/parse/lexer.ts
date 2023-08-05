@@ -65,6 +65,20 @@ export class TokenIterator {
   hasMoreTokens (): boolean {
     return this.idx + 1 < this.tokens.length
   }
+
+  intoString (): string {
+    return this.tokens.map(t => {
+      if (t.type === 'char') {
+        return t.value
+      } else if (t.type === 'flag-denotion') {
+        return '-'
+      } else if (t.type === 'quote') {
+        return t.value
+      } else {
+        return ' '
+      }
+    }).join('')
+  }
 }
 
 export function tokenise (argString: string): Result<TokenIterator, Error> {

@@ -1,5 +1,3 @@
-import { CoercionError } from '../error'
-
 interface CoercionResultOk<T> {
   ok: true
   passedValue: string
@@ -8,7 +6,7 @@ interface CoercionResultOk<T> {
 interface CoercionResultErr {
   ok: false
   passedValue: string
-  error: CoercionError
+  error: Error
 }
 
 export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr

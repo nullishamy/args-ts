@@ -49,7 +49,7 @@ export function generateHelp (parser: Args<unknown>): string {
   }).join('\n')
 
   return `
-${opts.programName} - ${opts.programDescription} ${parser.headerLines.length ? '\n' + parser.headerLines.join('\n') : ''}
+${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${parser.headerLines.length ? '\n' + parser.headerLines.join('\n') : ''}
 
 Usage: ${opts.programName} ${usageString}
 
