@@ -30,7 +30,15 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     foundFlag = flags.get(argument.shortFlag)
   }
 
-  const { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive } = argument.inner._meta
+  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
+
+  // Must be at the top, we modify `optional` behaviour
+  for (const presentKey of requiredUnlessPresent) {
+    const presence = flags.get(presentKey)
+    if (presence !== undefined) {
+      optional = true
+    }
+  }
 
   if (!foundFlag && !optional && unspecifiedDefault === undefined) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing`))

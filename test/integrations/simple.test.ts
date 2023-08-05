@@ -249,6 +249,23 @@ describe('Logical argument testing', () => {
 
     await expect(async () => await runArgsExecution(parser, '--number 3')).rejects.toMatchInlineSnapshot(`[Error: 3 is less than lower bound 10, expected 'number' received '3']`)
   })
+
+  it('allows empty values when marked argument is provided', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--base'], a.string().optional())
+      .arg(['--optional'], a.string().requireUnlessPresent('--base'))
+
+    const result = await runArgsExecution(parser, '--base hello')
+    expect(result.base).toEqual('hello')
+  })
+
+  it('fails when marked argument is not provided', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--base'], a.string().optional())
+      .arg(['--optional'], a.string().requireUnlessPresent('--base'))
+
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, expected 'string' received '<nothing>']`)
+  })
 })
 
 describe('Array testing', () => {

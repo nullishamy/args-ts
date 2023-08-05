@@ -16,6 +16,7 @@ export type ArgumentType = 'boolean' | 'string' | 'number' | 'array' | string
 interface ArgumentMeta<T> {
   specifiedDefault: T | undefined
   dependencies: string[]
+  requiredUnlessPresent: string[]
   conflicts: string[]
   unspecifiedDefault: T | undefined
   description: string | undefined
@@ -30,6 +31,7 @@ export abstract class Argument<T> {
   protected _specifiedDefault: T | undefined = undefined
   protected _dependencies: string[] = []
   protected _conflicts: string[] = []
+  protected _requiredUnlessPresent: string[] = []
   protected _unspecifiedDefault: T | undefined = undefined
   protected _description: string | undefined
   protected _optional: boolean = false
@@ -41,6 +43,7 @@ export abstract class Argument<T> {
       specifiedDefault: this._specifiedDefault,
       dependencies: this._dependencies,
       unspecifiedDefault: this._unspecifiedDefault,
+      requiredUnlessPresent: this._requiredUnlessPresent,
       description: this._description,
       conflicts: this._conflicts,
       optional: this._optional,
@@ -77,6 +80,16 @@ export abstract class Argument<T> {
    * @param value - the value to coerce
    */
   public abstract coerce (value: string): Promise<CoercionResult<T>>
+
+  /**
+   * Mark this argument as required unless the specified argument is passed
+   * @param arg - the argument which will be checked against
+   * @returns this
+   */
+  public requireUnlessPresent (arg: `--${string}`): Argument<T> {
+    this._requiredUnlessPresent.push(arg.substring(2))
+    return this
+  }
 
   /**
    * Marks this argument as optional, meaning it does not need a value, and does not need to be specified in the arguments.
