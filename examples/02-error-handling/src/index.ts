@@ -13,7 +13,8 @@ async function main (): Promise<void> {
     .arg(['--number'], a.number())
 
   // args.ts provides helpers for various mundane tasks, such as exiting the program if the parse fails
-  const args = util.exitOnFailure(await parser.parse('--boolean --number test'))
+  // The second arg provides additional information to print, in this case we will print the help page
+  const args = util.exitOnFailure(await parser.parse('--boolean --number test'), parser.help())
   console.log(args) // <unreached>
 }
 

@@ -4,9 +4,11 @@ export function exitOnFailure <T, E> (result: Result<T, E>, message?: string, co
   if (!result.ok) {
     if (message) {
       console.error(message)
-    } else {
-      console.error(result.err)
     }
+
+    console.error()
+
+    console.error(result.err)
     process.exit(code)
   }
 

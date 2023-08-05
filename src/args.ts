@@ -212,11 +212,22 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     const tokens = tokenResult.val
 
-    const newParserResult = parse(tokens, this.commands, this.opts)
-    if (!newParserResult.ok) {
-      return newParserResult
+    const parseResult = parse(tokens, this.commands, this.opts)
+    if (!parseResult.ok) {
+      return parseResult
     }
-    const coercionResult = await coerce(newParserResult.val, this.opts, this.arguments)
+
+    const { command } = parseResult.val
+
+    // If we located a command, tell coerce to use its parser instead of our own
+    let coercionResult
+    if (!command.isDefault) {
+      const commandParser = command.internal.parser
+      coercionResult = await coerce(parseResult.val, commandParser.opts, commandParser.arguments)
+    } else {
+      coercionResult = await coerce(parseResult.val, this.opts, this.arguments)
+    }
+
     if (!coercionResult.ok) {
       return coercionResult
     }

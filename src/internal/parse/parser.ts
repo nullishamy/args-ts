@@ -70,8 +70,16 @@ function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<stri
     return Err(new ParseError(`expected 'char' got ${JSON.stringify(current)}`))
   }
 
-  for (let token = tokens.next(); token !== undefined && token.type === 'char'; token = tokens.next()) {
-    out += token.value
+  for (let token = tokens.next(); token !== undefined; token = tokens.next()) {
+    if (token.type === 'char') {
+      out += token.value
+    } else if (token.type === 'flag-denotion') {
+      // Flag denotions are valid inside unquoted strings, as we can disambiguate them
+      // relatively easily, unlike quotes or whitespace
+      out += '-'
+    } else {
+      break
+    }
   }
 
   return Ok(out)
@@ -101,13 +109,19 @@ function parseString (tokens: TokenIterator, whitespace: boolean): Result<string
   }
 
   let out = ''
-  for (let token = tokens.current(); token && (token.type === 'char' || token.type === 'whitespace'); token = tokens.next()) {
+  for (let token = tokens.current(); token && (token.type !== 'quote'); token = tokens.next()) {
+    // Special casing "recognised characters" (whitespace, delimiters) inside quotes so that they can be still be used in strings
     if (token.type === 'whitespace' && endDelimiter === ' ') {
       break
     } else if (token.type === 'char' && token.value === endDelimiter) {
       break
+    } else if (token.type === 'flag-denotion' && maybeQuote?.type !== 'quote') {
+      // Break out if we encounter a flag but are not in a quote context
+      break
     } else if (token.type === 'whitespace') {
       out += ' '
+    } else if (token.type === 'flag-denotion') {
+      out += '-'
     } else {
       out += token.value
     }
@@ -137,7 +151,7 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Recor
   let subcommand = command
   let subcommandKey: Result<string>
   const keyParts = [rootKey]
-  for (subcommandKey = parseUnquoted(tokens, true); subcommandKey.ok; subcommandKey = parseUnquoted(tokens, true)) {
+  for (subcommandKey = parseString(tokens, true); subcommandKey.ok; subcommandKey = parseString(tokens, true)) {
     if (!subcommand.inner._subcommands[subcommandKey.val]) {
       lastKnownKey = subcommandKey.val
       break
@@ -247,7 +261,7 @@ export function parse (
   const flags: Map<string, AnyParsedFlagArgument> = new Map()
 
   // 1) Determine if we have a command (and maybe) a subcommand passed in the arguments
-  const rootKey = parseUnquoted(tokens, true)
+  const rootKey = parseString(tokens, true)
   let commandObject: DefaultCommand | UserCommand
 
   if (rootKey.ok) {

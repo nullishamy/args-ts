@@ -54,6 +54,6 @@ ${opts.programName} - ${opts.programDescription} ${parser.headerLines.length ? '
 Usage: ${opts.programName} ${usageString}
 
 Commands:
-${commandString}
+${commandString || 'None'}
 ${parser.footerLines.join('\n')}`.trim()
 }

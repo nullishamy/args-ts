@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { parserOpts, runArgsExecution } from '.'
+import { parserOpts, runArgsExecution } from './utils'
 import { Args } from '../../src'
 import { a } from '../../src/builder'
 describe('Simple integrations (no commands)', () => {
@@ -141,5 +141,13 @@ describe('Simple integrations (no commands)', () => {
 
     const result = await runArgsExecution(parser, '-c this')
     expect(result).toMatchInlineSnapshot('{}')
+  })
+
+  it('can parse long flags with dashes in them', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--dashing-arg'], a.string())
+
+    const result = await runArgsExecution(parser, '--dashing-arg test')
+    expect(result['dashing-arg']).toBe('test')
   })
 })
