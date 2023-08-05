@@ -87,7 +87,7 @@ function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<stri
 
 function consumeWhitespace (tokens: TokenIterator): void {
   while (tokens.peek()?.type === 'whitespace' || tokens.current()?.type === 'whitespace') {
-    tokens.nextOrThrow()
+    tokens.next()
   }
 }
 
