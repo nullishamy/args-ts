@@ -1,17 +1,24 @@
 import { Args } from '../args'
 import { InternalArgument } from '../internal/parse/types'
 
+/**
+ * Generate a help string from a parser schema.
+ * @see Args#help
+ * @param parser - the parser schema to generate from
+ * @returns the generated help string
+ */
 export function generateHelp (parser: Args<unknown>): string {
   const { commands, arguments: parserArguments, opts } = parser
 
   const renderArgument = (value: InternalArgument): string => {
-    if (value.inner._optional) {
+    const { optional, isMultiType } = value.inner._meta
+    if (optional) {
       if (value.type === 'positional') {
         return `[<${value.key.toUpperCase()}>]`
       }
 
       if (value.shortFlag) {
-        if (value.inner._isMultiType) {
+        if (isMultiType) {
           return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>]`
         }
         return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}>]`
@@ -19,14 +26,14 @@ export function generateHelp (parser: Args<unknown>): string {
       return `[--${value.longFlag} <${value.inner.type}>]`
     } else {
       if (value.type === 'positional') {
-        if (value.inner._isMultiType) {
+        if (isMultiType) {
           return `<${value.key.toUpperCase()}...>`
         }
         return `<${value.key.toUpperCase()}>`
       }
 
       if (value.shortFlag) {
-        if (value.inner._isMultiType) {
+        if (isMultiType) {
           return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>]`
         }
         return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type})`

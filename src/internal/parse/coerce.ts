@@ -30,18 +30,16 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     foundFlag = flags.get(argument.shortFlag)
   }
 
-  const specifiedDefault = argument.inner._specifiedDefault
-  const unspecifiedDefault = argument.inner._unspecifiedDefault
+  const { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive } = argument.inner._meta
 
-  if (!foundFlag && !argument.inner._optional && unspecifiedDefault === undefined) {
+  if (!foundFlag && !optional && unspecifiedDefault === undefined) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing`))
   }
 
-  if (!argument.inner._optional && specifiedDefault === undefined && !foundFlag?.values.length) {
+  if (!optional && specifiedDefault === undefined && !foundFlag?.values.length) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
-  const dependencies = argument.inner._dependencies ?? []
   for (const dependency of dependencies) {
     const dependencyValue = flags.get(dependency)
     if (!dependencyValue) {
@@ -49,18 +47,30 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     }
   }
 
+  for (const conflict of conflicts) {
+    const conflictValue = flags.get(conflict)
+    // Require both the argument we're checking against (the base) and the conflict to exist
+    if (conflictValue !== undefined && foundFlag !== undefined) {
+      return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.rawInput, `argument '--${conflict}' conflicts with '--${argument.longFlag}'`))
+    }
+  }
+
+  if (exclusive && flags.size > 1) {
+    return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`))
+  }
+
   return Ok(foundFlag)
 }
 
 function validatePositionalSchematically (positionals: Map<number, ParsedPositionalArgument>, argument: InternalPositionalArgument): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
-  const defaultValue = argument.inner._specifiedDefault
+  const { specifiedDefault, optional } = argument.inner._meta
 
-  if (!foundFlag && !argument.inner._optional) {
+  if (!foundFlag && !optional) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '<${argument.key}>' is missing`))
   }
 
-  if (!argument.inner._optional && defaultValue === undefined && !foundFlag?.values) {
+  if (!optional && specifiedDefault === undefined && !foundFlag?.values) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
@@ -147,7 +157,7 @@ export async function coerce (
       coercionResult = Ok({
         isMulti: false,
         raw: `<default value for ${getArgDenotion(argument)}`,
-        coerced: argument.inner._unspecifiedDefault
+        coerced: argument.inner._meta.unspecifiedDefault
       })
     } else if (userArgument.type !== 'positional' && !userArgument.values.length) {
       if (argument.type !== 'flag') {
@@ -157,12 +167,12 @@ export async function coerce (
       coercionResult = Ok({
         isMulti: false,
         raw: `<default value for ${getArgDenotion(argument)}`,
-        coerced: argument.inner._specifiedDefault
+        coerced: argument.inner._meta.specifiedDefault
       })
     } else {
       // Weird branching logic because we need to assign `coercionResult` in every branch
       // but we dont want to duplicate the logic for user value parsing, so we will include this collation here
-      if (userArgument.type === 'positional' && argument.inner._isMultiType) {
+      if (userArgument.type === 'positional' && argument.inner._meta.isMultiType) {
       // Collate all positionals together into this one
         const positionalValues = [...positionals.values()].flatMap(p => p.values)
         userArgument = {
@@ -177,7 +187,7 @@ export async function coerce (
       let inputValues = userArgument.values
 
       // User passed more than one argument, and this is not a multi type
-      if (!argument.inner._isMultiType && inputValues.length > 1) {
+      if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
         // Throw if appropriate, slice off the other arguments if not (acts as a skip)
         const { excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
@@ -191,7 +201,7 @@ export async function coerce (
         throw new InternalError('no input values set, initial validation failed to reject empty arg values')
       }
 
-      if (argument.inner._isMultiType) {
+      if (argument.inner._meta.isMultiType) {
         coercionResult = await parseMulti(inputValues, argument)
       } else {
         coercionResult = await parseSingle(inputValues, argument)

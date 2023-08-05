@@ -4,6 +4,7 @@ import { tokenise } from '../../src/internal/parse/lexer'
 import { parse, ParsedArguments } from '../../src/internal/parse/parser'
 import { coerce, CoercedArguments } from '../../src/internal/parse/coerce'
 import { CoercedValue, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
+import assert from 'assert'
 
 export function makeInternalCommand (
   { name, opts, aliases, description, subcommands }: {
@@ -97,7 +98,8 @@ export async function parseAndCoerce (argStr: string, opts: ParserOpts, args: In
 
   const coerced = await coerce(parsed, opts, argMap)
   if (!coerced.ok) {
-    throw coerced.err
+    assert(Array.isArray(coerced.err))
+    throw new Error(coerced.err.map(e => e.message).join('\n'))
   }
 
   return coerced.val

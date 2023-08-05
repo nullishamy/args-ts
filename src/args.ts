@@ -173,7 +173,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       }
     }
 
-    if (positionals.filter(p => p.inner._isMultiType).length > 1) {
+    if (positionals.filter(p => p.inner._meta.isMultiType).length > 1) {
       return Err(new SchemaError('multiple multi-type positionals found'))
     }
     return Ok(this)

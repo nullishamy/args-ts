@@ -28,6 +28,25 @@ describe('Coercion tests', () => {
     })
   })
 
+  it('can coerce a boolean argument', async () => {
+    const flag = makeInternalFlag({
+      isPrimary: true,
+      long: 'bool',
+      inner: a.bool()
+    })
+
+    const coerced = await parseAndCoerce('--bool true', opts, [flag])
+
+    expect(coerced.command).toEqual({
+      isDefault: true
+    })
+    expect(coerced.args.get(flag)).toEqual({
+      isMulti: false,
+      coerced: true,
+      raw: 'true'
+    })
+  })
+
   it('can coerce an unquoted string argument', async () => {
     const flag = makeInternalFlag({
       isPrimary: true,
