@@ -1,4 +1,4 @@
-import { ParserOpts } from '../../src/opts'
+import { ParserOpts } from '../src'
 
 export const parserOpts: ParserOpts = {
   programName: 'program-name',

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/quotes */
 import assert from 'assert'
-import { parserOpts } from '.'
+import { parserOpts } from '../shared'
 import { a, Args } from '../../src'
 
 describe('Schema validation', () => {
