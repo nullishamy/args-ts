@@ -87,7 +87,7 @@ function parseString (tokens: TokenIterator, whitespace: boolean): Result<string
   if (whitespace) {
     consumeWhitespace(tokens)
   }
-  if (!tokens.hasMoreTokens()) {
+  if (tokens.current() === undefined) {
     return Err(new ParseError('no more tokens when trying to parse string value'))
   }
 
