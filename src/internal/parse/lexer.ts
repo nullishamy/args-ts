@@ -1,26 +1,32 @@
 import { Err, Ok, Result } from '../result'
 
-export type TokenType = 'flag' | 'ident' | 'value'
-
 export interface FlagToken {
   type: 'flag-denotion'
 }
 
-export interface IdentToken {
-  type: 'ident'
-  lexeme: string
+export interface QuoteToken {
+  type: 'quote'
+  value: string
 }
 
-export interface ValueToken {
-  type: 'value'
-  userValue: string
+export interface CharToken {
+  type: 'char'
+  value: string
 }
 
-export type Token = FlagToken | IdentToken | ValueToken
+export interface WhitespaceToken {
+  type: 'whitespace'
+}
+
+export type Token = FlagToken | QuoteToken | CharToken | WhitespaceToken
 
 export class TokenIterator {
   private idx = 0
   constructor (private readonly tokens: Token[]) {
+  }
+
+  toArray (): Token[] {
+    return [...this.tokens]
   }
 
   index (): number {
@@ -34,6 +40,15 @@ export class TokenIterator {
   next (): Token | undefined {
     this.idx++
     return this.tokens[this.idx]
+  }
+
+  nextOrThrow (message = 'no more tokens'): Token {
+    const token = this.next()
+    if (!token) {
+      throw new TypeError(message)
+    }
+
+    return token
   }
 
   current (): Token | undefined {
@@ -58,56 +73,34 @@ export function tokenise (argString: string): Result<TokenIterator, Error> {
   }
 
   const tokens: Token[] = []
-  const chars = [...argString]
-  let index = 0
 
-  while (index < chars.length) {
-    if (chars[index] === '-') {
+  for (const char of argString) {
+    if (char === '-') {
       tokens.push({
         type: 'flag-denotion'
       })
-      index++
-
-      // End of flag denotion, start of ident
-      if (chars[index] !== '-') {
-        let ident = ''
-
-        while (index < chars.length && chars[index] !== ' ') {
-          ident += chars[index++]
-        }
-
-        tokens.push({
-          type: 'ident',
-          lexeme: ident
-        })
-      }
-    } else if (chars[index] === ' ') {
-      index++
-    } else if (chars[index] === '"' || chars[index] === "'") {
-      const quoteType = chars[index++]
-      let stringValue = ''
-
-      while (index < chars.length && chars[index] !== quoteType) {
-        stringValue += chars[index++]
-      }
-
-      index++ // Skip the end quote
-
-      tokens.push({
-        type: 'value',
-        userValue: stringValue
-      })
-    } else {
-      // Assume anything else before a space is a value (unquoted strings, numbers)
-      let stringValue = ''
-      while (chars[index] !== ' ' && index < chars.length) {
-        stringValue += chars[index++]
-      }
-      tokens.push({
-        type: 'value',
-        userValue: stringValue
-      })
+      continue
     }
+
+    if (char === '"' || char === "'") {
+      tokens.push({
+        type: 'quote',
+        value: char
+      })
+      continue
+    }
+
+    if (char === ' ') {
+      tokens.push({
+        type: 'whitespace'
+      })
+      continue
+    }
+
+    tokens.push({
+      type: 'char',
+      value: char
+    })
   }
 
   return Ok(new TokenIterator(tokens))

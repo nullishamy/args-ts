@@ -3,7 +3,7 @@
 import { a, Args, Command, ParserOpts } from '../src'
 
 describe('Integrations', () => {
-  it('can parse a vsc application', async () => {
+  it('can parse a vcs application', async () => {
     // Emulates basic `git` features
     class Clone extends Command {
       constructor (opts: ParserOpts) {
@@ -110,8 +110,6 @@ specific parts of the project.
         console.log('Default runner', result.val.args)
       }
     }
-
-    console.log(parser.help())
 
     expect(await runCase('add path1 path2 path3')).toMatchInlineSnapshot(`"Adding "path1, path2, path3" to the index (patch: false) (chmod: undefined)"`)
     expect(await runCase('add path1 path2 path3 -p')).toMatchInlineSnapshot(`"Adding "path1, path2, path3" to the index (patch: true) (chmod: undefined)"`)

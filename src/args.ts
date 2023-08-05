@@ -1,8 +1,9 @@
 import { Command, MinimalArgument } from './builder'
 import { ArgError, CoercionError, CommandError, ParseError, SchemaError } from './error'
-import { generateHelp } from './help'
+import { generateHelp } from './util/help'
+import { coerce, CoercedMultiValue, CoercedSingleValue } from './internal/parse/coerce'
 import { tokenise } from './internal/parse/lexer'
-import { MultiParsedValue, parseAndCoerce, SingleParsedValue } from './internal/parse/parser'
+import { parse } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
 import { Err, Ok, Result } from './internal/result'
 import { ParserOpts } from './opts'
@@ -150,7 +151,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     return this
   }
 
-  private intoObject (coerced: Map<InternalArgument, MultiParsedValue | SingleParsedValue>): TArgTypes {
+  private intoObject (coerced: Map<InternalArgument, CoercedMultiValue | CoercedSingleValue>): TArgTypes {
     return Object.fromEntries([...coerced.entries()].map(([key, value]) => {
       if (key.type === 'flag') {
         return [key.longFlag, value.coerced]
@@ -211,24 +212,22 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     const tokens = tokenResult.val
 
-    const commandResult = await parseAndCoerce(
-      tokens,
-      this.opts,
-      this.commands,
-      this.arguments
-    )
-
-    if (!commandResult.ok) {
-      return commandResult
+    const newParserResult = parse(tokens, this.commands, this.opts)
+    if (!newParserResult.ok) {
+      return newParserResult
+    }
+    const coercionResult = await coerce(newParserResult.val, this.opts, this.arguments)
+    if (!coercionResult.ok) {
+      return coercionResult
     }
 
-    const commandObject = commandResult.val
+    const coercion = coercionResult.val
 
     // No command was found, just return the args
-    if (commandObject.isDefault) {
+    if (coercion.command.isDefault) {
       return Ok({
         mode: 'args',
-        args: this.intoObject(commandObject.arguments)
+        args: this.intoObject(coercion.args)
       })
     }
 
@@ -237,7 +236,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       let executionResult
 
       try {
-        await commandObject.command.run(this.intoObject(commandObject.arguments))
+        await coercion.command.internal.inner.run(this.intoObject(coercion.args))
       } catch (err) {
         executionResult = err
       }
@@ -251,8 +250,8 @@ export class Args<TArgTypes = DefaultArgTypes> {
     // Command was found, return it
     return Ok({
       mode: 'command',
-      parsedArgs: this.intoObject(commandObject.arguments),
-      command: commandObject.command
+      parsedArgs: this.intoObject(coercion.args),
+      command: coercion.command.internal.inner
     })
   }
 

@@ -22,10 +22,6 @@ export function Ok<T> (val: T): ResultOk<T> {
     value: stringify
   })
 
-  Object.defineProperty(object, 'toJSON', {
-    value: stringify
-  })
-
   return object
 }
 
@@ -38,10 +34,6 @@ export function Err<E extends Error> (err: E): ResultErr<E> {
   const stringify = (): string => `Err(${err.constructor.name} { ${err.message} })`
 
   Object.defineProperty(object, 'toString', {
-    value: stringify
-  })
-
-  Object.defineProperty(object, 'toJSON', {
     value: stringify
   })
 

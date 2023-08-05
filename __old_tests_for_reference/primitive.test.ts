@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { parserOpts, runArgsExecution } from '.'
-import { Args } from '../src'
-import { a } from '../src/builder'
+import { Args } from '../../src'
+import { a } from '../../src/builder'
 
 describe('Primitive parsing', () => {
   it('can parse a long-flag flag', async () => {
@@ -131,7 +131,7 @@ describe('Primitive parsing', () => {
 
   it('throws if there is additional arguments', async () => {
     const parser = new Args(parserOpts)
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '--c']`)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '-c this']`)
   })
 
   it('skips if there is additional arguments', async () => {

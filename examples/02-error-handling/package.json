@@ -1,0 +1,17 @@
+{
+  "name": "02-error-handling",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node lib/index.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "args.ts": "file:../..",
+    "typescript": "^5.1.6"
+  }
+}

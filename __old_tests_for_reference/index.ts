@@ -1,6 +1,7 @@
+/* eslint-disable */
 import assert from 'assert'
-import { Args } from '../src'
-import { ParserOpts } from '../src/opts'
+import { Args } from '../../src'
+import { ParserOpts } from '../../src/opts'
 
 export const parserOpts: ParserOpts = {
   programName: 'program-name',

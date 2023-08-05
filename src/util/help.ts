@@ -1,5 +1,5 @@
-import { Args } from './args'
-import { InternalArgument } from './internal/parse/types'
+import { Args } from '../args'
+import { InternalArgument } from '../internal/parse/types'
 
 export function generateHelp (parser: Args<unknown>): string {
   const { commands, arguments: parserArguments, opts } = parser

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { parserOpts, runCommandExecution } from '.'
-import { a, Args, Command, ParserOpts } from '../src'
+import { a, Args, Command, ParserOpts } from '../../src'
 
 class BaseCommand extends Command {
   constructor (opts: ParserOpts) {

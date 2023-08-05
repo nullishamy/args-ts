@@ -1,6 +1,5 @@
 import { Args } from '../../args'
 import { Command, MinimalArgument } from '../../builder'
-import { IdentToken, ValueToken } from './lexer'
 
 interface ArgumentBase {
   inner: MinimalArgument<CoercedValue>
@@ -22,15 +21,15 @@ export interface InternalPositionalArgument extends ArgumentBase {
 export type InternalArgument = InternalFlagArgument | InternalPositionalArgument
 
 export interface InternalCommand {
-  inner: Command
   name: string
-  parser: Args<unknown>
   aliases: string[]
+  inner: Command
+  parser: Args<unknown>
 }
 
 export interface ParsedPair {
-  ident: IdentToken
-  values: ValueToken[]
+  ident: string
+  values: string[]
 }
 
 export interface RuntimeValue {
