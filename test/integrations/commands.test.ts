@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { a, Args, Command, ParserOpts } from '../../src'
-import { parserOpts, runCommandExecution } from './utils'
+import { parserOpts } from '../shared'
+import { runCommandExecution } from './utils'
 
 class MockCommand extends Command {
   constructor (

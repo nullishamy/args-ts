@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { parserOpts, runArgsExecution } from './utils'
+import { runArgsExecution } from './utils'
 import { Args } from '../../src'
 import { a } from '../../src/builder'
+import { parserOpts } from '../shared'
+
 describe('Simple integrations (no commands)', () => {
   it('can parse a long-flag flag', async () => {
     const parser = new Args(parserOpts)
