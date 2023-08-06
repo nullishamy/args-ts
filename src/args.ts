@@ -1,5 +1,5 @@
 import { Command, MinimalArgument } from './builder'
-import { ArgError, CoercionError, CommandError, ParseError, SchemaError } from './error'
+import { CoercionError, CommandError, ParseError, SchemaError } from './error'
 import { generateHelp } from './util/help'
 import { coerce, CoercedMultiValue, CoercedSingleValue } from './internal/parse/coerce'
 import { tokenise } from './internal/parse/lexer'
@@ -7,6 +7,8 @@ import { parse } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
 import { Err, Ok, Result } from './internal/result'
 import { ParserOpts } from './opts'
+
+const flagValidationRegex = /-+(?:[a-z]+)/
 
 // What happened when we parsed
 interface FoundCommand {
@@ -90,7 +92,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       [key in TKey]: TArg
     }> {
     if (!key.startsWith('<') && !key.endsWith('>')) {
-      throw new ArgError(`keys must start with < and end with >, got ${key}`)
+      throw new SchemaError(`keys must start with < and end with >, got ${key}`)
     }
 
     const slicedKey = key.slice(1, key.length - 1)
@@ -102,7 +104,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       index: this.positionalIndex++
     }
 
-    // @ts-expect-error
+    // @ts-expect-error same inference problem as arg()
     return this
   }
 
@@ -114,11 +116,15 @@ export class Args<TArgTypes = DefaultArgTypes> {
       [key in TLong]: TArg
     }> {
     if (!longFlag.startsWith('--')) {
-      throw new ArgError(`long flags must start with '--', got '${longFlag}'`)
+      throw new SchemaError(`long flags must start with '--', got '${longFlag}'`)
     }
 
     if (this.arguments[longFlag.substring(2)]) {
-      throw new ArgError(`duplicate long flag '${longFlag}'`)
+      throw new SchemaError(`duplicate long flag '${longFlag}'`)
+    }
+
+    if (!flagValidationRegex.test(longFlag)) {
+      throw new SchemaError(`long flags must match '--abcdef...' got '${longFlag}'`)
     }
 
     this.arguments[longFlag.substring(2)] = {
@@ -131,11 +137,15 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     if (shortFlag) {
       if (!shortFlag.startsWith('-')) {
-        throw new ArgError(`short flags must start with '-', got '${shortFlag}'`)
+        throw new SchemaError(`short flags must start with '-', got '${shortFlag}'`)
       }
 
       if (this.arguments[shortFlag.substring(1)]) {
-        throw new ArgError(`duplicate short flag '${shortFlag}'`)
+        throw new SchemaError(`duplicate short flag '${shortFlag}'`)
+      }
+
+      if (!flagValidationRegex.test(shortFlag)) {
+        throw new SchemaError(`short flags must match '-abcdef...' got '${shortFlag}'`)
       }
 
       this.arguments[shortFlag.substring(1)] = {

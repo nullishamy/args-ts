@@ -266,6 +266,21 @@ describe('Logical argument testing', () => {
 
     await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, expected 'string' received '<nothing>']`)
   })
+
+  it('fails when an invalid enum value is provided', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
+
+    await expect(async () => await runArgsExecution(parser, '--enum a')).rejects.toMatchInlineSnapshot(`[Error: value must be one of 'x, y, z' got 'a', expected 'enum' received 'a']`)
+  })
+
+  it('passes when a valid enum value is provided', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
+
+    const result = await runArgsExecution(parser, '--enum x')
+    expect(result.enum).toEqual('x')
+  })
 })
 
 describe('Array testing', () => {

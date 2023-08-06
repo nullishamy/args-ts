@@ -23,4 +23,56 @@ describe('Schema validation', () => {
 
     assert(result.ok, 'schema validation failed')
   })
+
+  it('rejects long flags without preceding --', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
+      parser.arg(['-1'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"long flags must start with '--', got '-1'"`)
+  })
+
+  it('rejects short flags without preceding -', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
+      parser.arg(['--flag', '1'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"short flags must start with '-', got '1'"`)
+  })
+
+  it('rejects long flags that do not have a valid ID', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      parser.arg(['--1'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"long flags must match '--abcdef...' got '--1'"`)
+  })
+
+  it('rejects short flags that do not have a valid ID', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      parser.arg(['--flag', '-1'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"short flags must match '-abcdef...' got '-1'"`)
+  })
+
+  it('rejects duplicate long flags', () => {
+    const parser = new Args(parserOpts)
+      .arg(['--flag'], a.string())
+
+    expect(() => {
+      parser.arg(['--flag'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"duplicate long flag '--flag'"`)
+  })
+
+  it('rejects duplicate short flags', () => {
+    const parser = new Args(parserOpts)
+      .arg(['--flag', '-f'], a.string())
+
+    expect(() => {
+      parser.arg(['--flag2', '-f'], a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"duplicate short flag '-f'"`)
+  })
 })

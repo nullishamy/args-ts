@@ -110,6 +110,20 @@ class BooleanArgument extends Argument<boolean> {
   }
 }
 
+class EnumArgument<T extends readonly string[]> extends Argument<T[number]> {
+  constructor (private readonly validValues: T) {
+    super('enum')
+  }
+
+  async coerce (value: string): Promise<CoercionResult<T[number]>> {
+    if (!this.validValues.includes(value)) {
+      return this.err(value, new Error(`value must be one of '${this.validValues.join(', ')}' got '${value}'`))
+    }
+
+    return this.ok(value, value)
+  }
+}
+
 // Explicitly typed generics because the inference would not cooperate
 export const string = makeExport<StringArgument, typeof StringArgument>(StringArgument)
 export const number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
@@ -129,7 +143,12 @@ class CustomArgument<T> extends Argument<T> {
     return await this.cb(value)
   }
 }
+
 // Needs special treatment to handle the generic
 export const custom = <T> (...args: ConstructorParameters<typeof CustomArgument<T>>): CustomArgument<T> => {
   return new CustomArgument<T>(...args)
+}
+
+export const oneOf = <T extends readonly string[]> (...args: ConstructorParameters<typeof EnumArgument<T>>): EnumArgument<T> => {
+  return new EnumArgument<T>(...args)
 }
