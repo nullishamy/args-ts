@@ -2,7 +2,7 @@ export class ArgError extends Error {}
 
 export class ParseError extends ArgError {
   static expected (expected: string, received: string, argString: string, index: number): ParseError {
-    return new ParseError(`expected: ${expected}\nreceived: ${received}`, argString, index)
+    return new ParseError(`expected: ${expected} -- received: ${received}`, argString, index)
   }
 
   constructor (
