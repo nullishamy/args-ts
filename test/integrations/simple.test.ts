@@ -135,6 +135,12 @@ describe('Simple integrations (no commands)', () => {
     await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '-c this', expected '<nothing>' received '-c this']`)
   })
 
+  it('throws if there is excess arguments', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--excess'], a.string())
+    await expect(async () => await runArgsExecution(parser, '--excess this this2')).rejects.toMatchInlineSnapshot(`[Error: excess argument(s) to --excess: 'this2', expected 'string' received 'this this2']`)
+  })
+
   it('skips if there is additional arguments', async () => {
     const parser = new Args({
       ...parserOpts,
@@ -151,6 +157,14 @@ describe('Simple integrations (no commands)', () => {
 
     const result = await runArgsExecution(parser, '--dashing-arg test')
     expect(result['dashing-arg']).toBe('test')
+  })
+
+  it('supports flag=value syntax', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--equality'], a.string())
+
+    const result = await runArgsExecution(parser, '--equality=test')
+    expect(result.equality).toBe('test')
   })
 })
 

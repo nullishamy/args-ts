@@ -213,8 +213,8 @@ export class Args<TArgTypes = DefaultArgTypes> {
     return this
   }
 
-  public async parse (argString: string, executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | Error>> {
-    const tokenResult = tokenise(argString)
+  public async parse (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | Error>> {
+    const tokenResult = tokenise(Array.isArray(argString) ? argString.join(' ') : argString)
 
     if (!tokenResult.ok) {
       return tokenResult

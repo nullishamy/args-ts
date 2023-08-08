@@ -2,6 +2,7 @@ import { Err, Ok, Result } from '../result'
 
 export interface FlagToken {
   type: 'flag-denotion'
+  value: '-'
 }
 
 export interface QuoteToken {
@@ -16,9 +17,16 @@ export interface CharToken {
 
 export interface WhitespaceToken {
   type: 'whitespace'
+  value: ' '
 }
 
-export type Token = FlagToken | QuoteToken | CharToken | WhitespaceToken
+export interface EqualsToken {
+  type: 'equals'
+  value: '='
+}
+
+export type Token = FlagToken | QuoteToken | CharToken | WhitespaceToken | EqualsToken
+export type TokenType = Token['type']
 
 export class TokenIterator {
   private idx = 0
@@ -91,7 +99,8 @@ export function tokenise (argString: string): Result<TokenIterator, Error> {
   for (const char of argString) {
     if (char === '-') {
       tokens.push({
-        type: 'flag-denotion'
+        type: 'flag-denotion',
+        value: char
       })
       continue
     }
@@ -106,7 +115,16 @@ export function tokenise (argString: string): Result<TokenIterator, Error> {
 
     if (char === ' ') {
       tokens.push({
-        type: 'whitespace'
+        type: 'whitespace',
+        value: char
+      })
+      continue
+    }
+
+    if (char === '=') {
+      tokens.push({
+        type: 'equals',
+        value: char
       })
       continue
     }

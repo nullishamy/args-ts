@@ -6,6 +6,7 @@ describe('Edge cases', () => {
   const parser = new Args(parserOpts)
     .arg(['--non-latin'], a.string())
 
+  // https://github.com/minimaxir/big-list-of-naughty-strings/blob/master/blns.json
   it('can parse the naughty strings', async () => {
     const strings: string[] = JSON.parse(
       await readFile(
@@ -20,6 +21,7 @@ describe('Edge cases', () => {
 
       try {
         // Try various string formations to induce errors
+        await parser.parse(`--non-latin ${naughty}`)
         await parser.parse(`--non-latin '${naughty}'`)
         result = await parser.parse(`--non-latin "${naughty}"`)
       } catch (err) {

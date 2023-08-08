@@ -36,3 +36,5 @@ export function exitOnFailure <T, E extends ArgError | ArgError[]> (result: Resu
 
   return result.val
 }
+
+export * from './argv'

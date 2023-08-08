@@ -105,7 +105,7 @@ async function main (): Promise<void> {
     .command(['query'], new Query(parserOpts))
     .command(['sync'], new Sync(parserOpts))
 
-  const result = util.exitOnFailure(await parser.parse(process.argv.slice(2).join(' '), true))
+  const result = util.exitOnFailure(await parser.parse(util.makeArgs(), true))
 
   if (result.mode === 'args') {
     if (result.args.help) {

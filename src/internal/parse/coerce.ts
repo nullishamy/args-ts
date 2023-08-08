@@ -199,7 +199,8 @@ export async function coerce (
         // Throw if appropriate, slice off the other arguments if not (acts as a skip)
         const { excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
-          return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)} '${inputValues.slice(1).join(' ')}'`)])
+          const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
+          return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
         }
 
         inputValues = inputValues.slice(0, 1)

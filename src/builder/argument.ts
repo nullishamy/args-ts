@@ -11,7 +11,7 @@ interface CoercionResultErr {
 
 export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 
-export type ArgumentType = 'boolean' | 'string' | 'number' | 'array' | string
+export type ArgumentType = string
 
 interface ArgumentMeta<T> {
   specifiedDefault: T | undefined

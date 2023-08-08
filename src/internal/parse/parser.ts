@@ -1,7 +1,7 @@
 import { ParseError } from '../../error'
 import { ParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
-import { TokenIterator } from './lexer'
+import { Token, TokenIterator, TokenType } from './lexer'
 import { InternalCommand } from './types'
 
 interface ParsedArgumentBase {
@@ -54,10 +54,21 @@ export interface ParsedArguments {
   positionals: Map<number, ParsedPositionalArgument>
 }
 
-function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<string, ParseError> {
-  if (whitespace) {
-    consumeWhitespace(tokens)
+function skipWhile (tokens: TokenIterator, predicate: (tok: Token) => boolean): Result<void, ParseError> {
+  let token = tokens.current()
+  while (token && predicate(token)) {
+    tokens.next()
+    token = tokens.peek()
   }
+
+  return Ok(undefined)
+}
+
+function parseUnquoted (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]): Result<string, ParseError> {
+  if (skipPrecedingTokens.length) {
+    skipWhile(tokens, token => skipPrecedingTokens.includes(token.type))
+  }
+
   const current = tokens.current()
   if (!current) {
     return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
@@ -71,12 +82,10 @@ function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<stri
   }
 
   for (let token = tokens.next(); token !== undefined; token = tokens.next()) {
-    if (token.type === 'char') {
-      out += token.value
-    } else if (token.type === 'flag-denotion') {
+    if (token.type === 'char' || token.type === 'flag-denotion') {
       // Flag denotions are valid inside unquoted strings, as we can disambiguate them
       // relatively easily, unlike quotes or whitespace
-      out += '-'
+      out += token.value
     } else {
       break
     }
@@ -85,16 +94,11 @@ function parseUnquoted (tokens: TokenIterator, whitespace: boolean): Result<stri
   return Ok(out)
 }
 
-function consumeWhitespace (tokens: TokenIterator): void {
-  while (tokens.peek()?.type === 'whitespace' || tokens.current()?.type === 'whitespace') {
-    tokens.next()
+function parseString (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]): Result<string, ParseError> {
+  if (skipPrecedingTokens.length) {
+    skipWhile(tokens, token => skipPrecedingTokens.includes(token.type))
   }
-}
 
-function parseString (tokens: TokenIterator, whitespace: boolean): Result<string, ParseError> {
-  if (whitespace) {
-    consumeWhitespace(tokens)
-  }
   if (tokens.current() === undefined) {
     return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
   }
@@ -118,10 +122,6 @@ function parseString (tokens: TokenIterator, whitespace: boolean): Result<string
     } else if (token.type === 'flag-denotion' && maybeQuote?.type !== 'quote') {
       // Break out if we encounter a flag but are not in a quote context
       break
-    } else if (token.type === 'whitespace') {
-      out += ' '
-    } else if (token.type === 'flag-denotion') {
-      out += '-'
     } else {
       out += token.value
     }
@@ -151,7 +151,7 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Recor
   let subcommand = command
   let subcommandKey: Result<string>
   const keyParts = [rootKey]
-  for (subcommandKey = parseString(tokens, true); subcommandKey.ok; subcommandKey = parseString(tokens, true)) {
+  for (subcommandKey = parseString(tokens, 'whitespace'); subcommandKey.ok; subcommandKey = parseString(tokens, 'whitespace')) {
     if (!subcommand.inner._subcommands[subcommandKey.val]) {
       lastKnownKey = subcommandKey.val
       break
@@ -171,13 +171,13 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Recor
 }
 
 function parseLongFlag (tokens: TokenIterator): Result<ParsedLongArgument, ParseError> {
-  const flagName = parseUnquoted(tokens, false)
+  const flagName = parseUnquoted(tokens, 'whitespace')
   if (!flagName.ok) {
     return flagName
   }
 
   const values = []
-  for (let value = parseString(tokens, true); value.ok; value = parseString(tokens, true)) {
+  for (let value = parseString(tokens, 'whitespace', 'equals'); value.ok; value = parseString(tokens, 'whitespace', 'equals')) {
     values.push(value.val)
   }
 
@@ -199,13 +199,13 @@ function parseLongFlag (tokens: TokenIterator): Result<ParsedLongArgument, Parse
 }
 
 function parseShortFlag (tokens: TokenIterator): Result<ParsedShortArugmentSingle, ParseError> {
-  const flagName = parseUnquoted(tokens, false)
+  const flagName = parseUnquoted(tokens, 'whitespace')
   if (!flagName.ok) {
     return flagName
   }
 
   const values = []
-  for (let value = parseString(tokens, true); value.ok; value = parseString(tokens, true)) {
+  for (let value = parseString(tokens, 'whitespace', 'equals'); value.ok; value = parseString(tokens, 'whitespace', 'equals')) {
     values.push(value.val)
   }
 
@@ -227,7 +227,7 @@ function parseShortFlag (tokens: TokenIterator): Result<ParsedShortArugmentSingl
 }
 
 function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseError> {
-  consumeWhitespace(tokens)
+  skipWhile(tokens, token => token.type === 'whitespace')
 
   const token = tokens.current()
   const peek = tokens.peek()
@@ -261,7 +261,7 @@ export function parse (
   const flags: Map<string, AnyParsedFlagArgument> = new Map()
 
   // 1) Determine if we have a command (and maybe) a subcommand passed in the arguments
-  const rootKey = parseString(tokens, true)
+  const rootKey = parseString(tokens, 'whitespace')
   let commandObject: DefaultCommand | UserCommand
 
   if (rootKey.ok) {
@@ -283,7 +283,7 @@ export function parse (
 
   // 2) Parse any positionals
   let index = 0
-  for (let positional = parseUnquoted(tokens, true); positional.ok; positional = parseUnquoted(tokens, true)) {
+  for (let positional = parseUnquoted(tokens, 'whitespace'); positional.ok; positional = parseUnquoted(tokens, 'whitespace')) {
     index++
     positionals.set(index, {
       type: 'positional',
