@@ -57,8 +57,7 @@ export interface ParsedArguments {
 function skipWhile (tokens: TokenIterator, predicate: (tok: Token) => boolean): Result<void, ParseError> {
   let token = tokens.current()
   while (token && predicate(token)) {
-    tokens.next()
-    token = tokens.peek()
+    token = tokens.next()
   }
 
   return Ok(undefined)
@@ -113,11 +112,13 @@ function parseString (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]
   }
 
   let out = ''
-  for (let token = tokens.current(); token && (token.type !== 'quote'); token = tokens.next()) {
+  for (let token = tokens.current(); token !== undefined; token = tokens.next()) {
     // Special casing "recognised characters" (whitespace, delimiters) inside quotes so that they can be still be used in strings
-    if (token.type === 'whitespace' && endDelimiter === ' ') {
+    if (token.type === 'whitespace' && endDelimiter === ' ' && maybeQuote?.type !== 'quote') {
       break
-    } else if (token.type === 'char' && token.value === endDelimiter) {
+    } else if (token.type === 'quote' && token.value === endDelimiter) {
+      // Hit the other end of a quote, exit here and skip the quote token
+      tokens.next()
       break
     } else if (token.type === 'flag-denotion' && maybeQuote?.type !== 'quote') {
       // Break out if we encounter a flag but are not in a quote context
@@ -127,8 +128,10 @@ function parseString (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]
     }
   }
 
+  // Error in cases where we could not complete the parse.
+  // These should be handled by callers. In most cases, they are ignored and treated as "end of input"
   if (out === '') {
-    return Err(new ParseError('no string value present', tokens.intoString(), tokens.index()))
+    return Err(new ParseError('no value found', tokens.intoString(), tokens.index()))
   }
 
   return Ok(out)

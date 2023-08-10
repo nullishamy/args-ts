@@ -28,14 +28,15 @@ class StringArgument extends Argument<string> {
     return this
   }
 
-  nonEmpty (): StringArgument {
-    return this.min(1)
+  notBlank (): StringArgument {
+    this.type = 'non-blank string'
+    return this.matches(/(.|\s)*\S(.|\s)*/)
   }
 
   async coerce (value: string): Promise<CoercionResult<string>> {
     if (this._regex) {
       const match = value.match(this._regex)
-      if (!match) {
+      if (!match?.length) {
         return this.err(value, new Error(`'${value}' does not match '${this._regex}'`))
       }
     }

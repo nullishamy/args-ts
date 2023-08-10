@@ -54,7 +54,7 @@ export abstract class Argument<T> {
     }
   }
 
-  protected constructor (public readonly type: ArgumentType, isMultiType: boolean = false) {
+  protected constructor (public type: ArgumentType, isMultiType: boolean = false) {
     this._isMultiType = isMultiType
   }
 

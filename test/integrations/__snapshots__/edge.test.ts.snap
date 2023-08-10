@@ -2,242 +2,217 @@
 
 exports[`Edge cases can parse the naughty strings 1`] = `
 "coercion: argument 'non-latin' is not declared as optional, does not have a default, and was not provided a value
-coercion: excess argument(s) to --non-latin: '000.00'
-coercion: excess argument(s) to --non-latin: '000', '000.00'
-coercion: excess argument(s) to --non-latin: '000,00'
-coercion: excess argument(s) to --non-latin: '000', '000,00'
-coercion: excess argument(s) to --non-latin: '[]\\-='
-coercion: excess argument(s) to --non-latin: '{}|_+'
+coercion: excess argument(s) to --non-latin: '{}|_+"'
+coercion: argument 'non-latin' is not declared as optional, does not have a default, and was not provided a value
+parse: expected: flag -- received: {"type":"quote","value":"\\""}
+coercion: excess argument(s) to --non-latin: '"'
 parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
 parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: ' />'
-coercion: excess argument(s) to --non-latin: 'ʇᴉlǝ ƃuᴉɔsᴉdᴉpɐ ɹnʇǝʇɔǝsuoɔ ', 'ʇǝɯɐ ʇᴉs ɹolop ɯnsdᴉ ɯǝɹo˥'
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
+parse: expected: flag -- received: {"type":"char","value":">"}
 parse: expected: flag -- received: {"type":"char","value":"o"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-coercion: excess argument(s) to --non-latin: 'text/javascript', '>javascript:alert(1);</script>'
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-coercion: excess argument(s) to --non-latin: 'x\\x3Aexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:expression\\x5C(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:expression\\x00(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:exp\\x00ression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:exp\\x5Cression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x0Aexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x09expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE3\\x80\\x80expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x84expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xC2\\xA0expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x80expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x8Aexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x0Dexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x0Cexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x87expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xEF\\xBB\\xBFexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x20expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x88expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x00expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x8Bexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x86expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x85expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x82expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\x0Bexpression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x81expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x83expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x89expression(javascript:alert(1)', '>DEF'
-coercion: excess argument(s) to --non-latin: '\\x0Bjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x0Fjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xC2\\xA0javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x05javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE1\\xA0\\x8Ejavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x18javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x11javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x88javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x89javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x80javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x17javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x03javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x0Ejavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Ajavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x00javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x10javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x82javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x20javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x13javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x09javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x8Ajavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x14javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x19javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xAFjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Fjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x81javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Djavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x87javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x07javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE1\\x9A\\x80javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x83javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x04javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x01javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x08javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x84javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x86javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE3\\x80\\x80javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x12javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x0Djavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x0Ajavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x0Cjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x15javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xA8javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x16javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x02javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Bjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x06javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xA9javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x85javascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Ejavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\xE2\\x81\\x9Fjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: '\\x1Cjavascript:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: 'javascript\\x00:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: 'javascript\\x3A:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: 'javascript\\x09:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: 'javascript\\x0D:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-coercion: excess argument(s) to --non-latin: 'javascript\\x0A:javascript:alert(1)', ' id=', 'fuzzelement1', '>test</a>'
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: 'alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(1)', '>'
-coercion: excess argument(s) to --non-latin: 'x\` \`<script>javascript:alert(1)</script>', '\` \`>'
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: '\`><img src=x:x onerror=javascript:alert(1)></a>', '>'
-coercion: excess argument(s) to --non-latin: '/\\%(jscript)s', '></script>'
-coercion: excess argument(s) to --non-latin: '\\\\%(jscript)s', '></script>'
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: 'alert(', 'xxs', ')', '>'
-coercion: excess argument(s) to --non-latin: 'alert(', 'xxs', ')', '>'
-coercion: excess argument(s) to --non-latin: 'alert(', 'xxs', ')', '>'
-coercion: excess argument(s) to --non-latin: 'jav   ascript:alert(', 'XSS', ');', '>'
-coercion: excess argument(s) to --non-latin: 'jav&#x09;ascript:alert(', 'XSS', ');', '>'
-coercion: excess argument(s) to --non-latin: 'jav&#x0A;ascript:alert(', 'XSS', ');', '>'
-coercion: excess argument(s) to --non-latin: 'jav&#x0D;ascript:alert(', 'XSS', ');', '>'
-coercion: excess argument(s) to --non-latin: 'print ', '<IMG SRC=java\\0script:alert(\\', 'XSS\\', ')>', ';', ' > out'
-coercion: excess argument(s) to --non-latin: ' &#14;  javascript:alert(', 'XSS', ');', '>'
-coercion: excess argument(s) to --non-latin: 'http://ha.ckers.org/xss.js', '></SCRIPT>'
-coercion: excess argument(s) to --non-latin: 'XSS', ')>'
-coercion: excess argument(s) to --non-latin: 'http://ha.ckers.org/xss.js', '></SCRIPT>'
-coercion: excess argument(s) to --non-latin: 'XSS', ');//<</SCRIPT>'
-coercion: excess argument(s) to --non-latin: 'javascript:alert(', 'XSS', ')'
-coercion: excess argument(s) to --non-latin: ';alert(', 'XSS', ');//'
-coercion: excess argument(s) to --non-latin: '; DROP TABLE users-- 1'
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"'"}
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: 'touch /tmp/blns.fail', ']}'
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
-coercion: excess argument(s) to --non-latin: 'ls -al /', ')'
-coercion: excess argument(s) to --non-latin: 'ls -al /', ')'
-coercion: excess argument(s) to --non-latin: 'ls -al /', ')'
-coercion: excess argument(s) to --non-latin: '1.0', ' encoding=', 'ISO-8859-1', '?><!DOCTYPE foo [ <!ELEMENT foo ANY ><!ENTITY xxe SYSTEM ', 'file:///etc/passwd', ' >]><foo>&xxe;</foo>'
-coercion: excess argument(s) to --non-latin: 'HOME', '}'
-coercion: excess argument(s) to --non-latin: '%s', ') = %u'
-coercion: excess argument(s) to --non-latin: 're reading this, you', 've been in a coma for almost 20 years now. We', 're trying a new technique. We don', 't know where this message will end up in your dream, but we hope it works. Please wake up, we miss you.'
-coercion: excess argument(s) to --non-latin: 'x', ' * 64 * 1024**3 %}'
-parse: expected: flag -- received: {"type":"quote","value":"\\""}
+parse: expected: flag -- received: {"type":"char","value":";"}
+parse: expected: flag -- received: {"type":"char","value":">"}
+parse: expected: flag -- received: {"type":"char","value":"a"}
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: 'text/javascript">javascript:alert(1);</script>"'
+coercion: excess argument(s) to --non-latin: '><\\x3Cscript>javascript:alert(1)</script>"'
+coercion: excess argument(s) to --non-latin: '><\\x00script>javascript:alert(1)</script>"'
+coercion: excess argument(s) to --non-latin: 'x\\x3Aexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:expression\\x5C(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:expression\\x00(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:exp\\x00ression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:exp\\x5Cression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x0Aexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x09expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE3\\x80\\x80expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x84expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xC2\\xA0expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x80expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x8Aexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x0Dexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x0Cexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x87expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xEF\\xBB\\xBFexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x20expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x88expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x00expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x8Bexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x86expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x85expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x82expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\x0Bexpression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x81expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x83expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: 'x:\\xE2\\x80\\x89expression(javascript:alert(1)">DEF"'
+coercion: excess argument(s) to --non-latin: '\\x0Bjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x0Fjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xC2\\xA0javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x05javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE1\\xA0\\x8Ejavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x18javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x11javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x88javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x89javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x80javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x17javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x03javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x0Ejavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Ajavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x00javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x10javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x82javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x20javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x13javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x09javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x8Ajavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x14javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x19javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xAFjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Fjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x81javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Djavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x87javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x07javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE1\\x9A\\x80javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x83javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x04javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x01javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x08javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x84javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x86javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE3\\x80\\x80javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x12javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x0Djavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x0Ajavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x0Cjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x15javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xA8javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x16javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x02javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Bjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x06javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\xA9javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x80\\x85javascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Ejavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\xE2\\x81\\x9Fjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '\\x1Cjavascript:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: 'javascript\\x00:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: 'javascript\\x3A:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: 'javascript\\x09:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: 'javascript\\x0D:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: 'javascript\\x0A:javascript:alert(1)"', 'id="fuzzelement1">test</a>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x0Aonerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x22onerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x0Bonerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x0Donerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x2Fonerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x09onerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x0Conerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x00onerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x27onerror=javascript:alert(1)>"'
+coercion: excess argument(s) to --non-latin: '><img src=xxx:x \\x20onerror=javascript:alert(1)>"'
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+parse: expected: flag -- received: {"type":"char","value":"\`"}
+coercion: excess argument(s) to --non-latin: 'alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert(1)">"'
+coercion: excess argument(s) to --non-latin: 'x\`', '\`<script>javascript:alert(1)</script>"\`', '\`>"'
+coercion: excess argument(s) to --non-latin: '"= alt=javascript:alert(1)//">"'
+coercion: excess argument(s) to --non-latin: '\`><img', 'src=x:x', 'onerror=javascript:alert(1)></a>">"'
+coercion: excess argument(s) to --non-latin: '/\\%(jscript)s"></script>"'
+coercion: excess argument(s) to --non-latin: '\\\\%(jscript)s"></script>"'
+parse: expected: flag -- received: {"type":"char","value":">"}
+coercion: excess argument(s) to --non-latin: 'alert('xxs')">"'
+coercion: excess argument(s) to --non-latin: 'alert('xxs')">"'
+coercion: excess argument(s) to --non-latin: 'alert('xxs')">"'
+coercion: excess argument(s) to --non-latin: 'jav', 'ascript:alert('XSS');">"'
+coercion: excess argument(s) to --non-latin: 'jav&#x09;ascript:alert('XSS');">"'
+coercion: excess argument(s) to --non-latin: 'jav&#x0A;ascript:alert('XSS');">"'
+coercion: excess argument(s) to --non-latin: 'jav&#x0D;ascript:alert('XSS');">"'
+coercion: excess argument(s) to --non-latin: '<IMG', 'SRC=java\\0script:alert(\\"XSS\\")>";'', '>', 'out"'
+coercion: excess argument(s) to --non-latin: '&#14;', 'javascript:alert('XSS');">"'
+coercion: excess argument(s) to --non-latin: 'http://ha.ckers.org/xss.js"></SCRIPT>"'
+coercion: excess argument(s) to --non-latin: 'XSS")>"'
+coercion: excess argument(s) to --non-latin: 'http://ha.ckers.org/xss.js"></SCRIPT>"'
+coercion: excess argument(s) to --non-latin: 'XSS");//<</SCRIPT>"'
+coercion: excess argument(s) to --non-latin: 'javascript:alert('XSS')""'
+coercion: excess argument(s) to --non-latin: ';alert('XSS');//"'
+coercion: excess argument(s) to --non-latin: 'touch', '/tmp/blns.fail"]}"'
+coercion: excess argument(s) to --non-latin: 'puts', 'hello world', ')'
+coercion: excess argument(s) to --non-latin: 'ls'
+coercion: excess argument(s) to --non-latin: 'ls'
+coercion: excess argument(s) to --non-latin: '1.0"', 'encoding="ISO'
+coercion: excess argument(s) to --non-latin: '.__class__.__mro__[2].__subclasses__()[40](', '/etc/passwd").read()', '}}"'
 "
 `;

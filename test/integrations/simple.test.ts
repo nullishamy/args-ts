@@ -4,13 +4,22 @@ import { Args } from '../../src'
 import { a } from '../../src/builder'
 import { parserOpts } from '../shared'
 
-describe('Simple integrations (no commands)', () => {
+describe('Flag integrations', () => {
   it('can parse a long-flag flag', async () => {
     const parser = new Args(parserOpts)
       .arg(['--boolean'], a.bool())
 
     const result = await runArgsExecution(parser, '--boolean')
     expect(result.boolean).toBe(true)
+  })
+
+  it('can parse long-flag quoted strings', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--string', '-s'], a.string())
+
+    const result = await runArgsExecution(parser, "--string 'string'")
+
+    expect(result.string).toBe('string')
   })
 
   it('can correcty assign defaults for unspecified flags', async () => {
@@ -79,16 +88,6 @@ describe('Simple integrations (no commands)', () => {
       .arg(['--string', '-s'], a.string())
 
     const result = await runArgsExecution(parser, "-s 'string'")
-
-    expect(result.string).toBe('string')
-  })
-
-  it('can parse long-flag quoted strings', async () => {
-    const parser = new Args(parserOpts)
-      .arg(['--string', '-s'], a.string())
-
-    const result = await runArgsExecution(parser, "--string 'string'")
-
     expect(result.string).toBe('string')
   })
 
@@ -130,27 +129,6 @@ describe('Simple integrations (no commands)', () => {
     await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: callback was not provided, expected 'custom' received 'this']`)
   })
 
-  it('throws if there is additional arguments', async () => {
-    const parser = new Args(parserOpts)
-    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unexpected argument '-c this', expected '<nothing>' received '-c this']`)
-  })
-
-  it('throws if there is excess arguments', async () => {
-    const parser = new Args(parserOpts)
-      .arg(['--excess'], a.string())
-    await expect(async () => await runArgsExecution(parser, '--excess this this2')).rejects.toMatchInlineSnapshot(`[Error: excess argument(s) to --excess: 'this2', expected 'string' received 'this this2']`)
-  })
-
-  it('skips if there is additional arguments', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      unrecognisedArgument: 'skip'
-    })
-
-    const result = await runArgsExecution(parser, '-c this')
-    expect(result).toEqual({})
-  })
-
   it('can parse long flags with dashes in them', async () => {
     const parser = new Args(parserOpts)
       .arg(['--dashing-arg'], a.string())
@@ -184,8 +162,105 @@ describe('Simple integrations (no commands)', () => {
 
     await expect(async () => await runArgsExecution(parser, '--equality=test')).rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '--equality', but k=v syntax is disabled @ 15 : --equality test]`)
   })
+})
 
-  it('can fallback to the environment', async () => {
+describe('Positional integrations', () => {
+  it('can collate positionals', async () => {
+    const parser = new Args(parserOpts)
+      .positional('<boolean>', a.bool().array())
+
+    const result = await runArgsExecution(parser, 'true true false true')
+    expect(result.boolean).toEqual([true, true, false, true])
+  })
+
+  it('can parse single positionals', async () => {
+    const parser = new Args(parserOpts)
+      .positional('<boolean>', a.bool())
+
+    const result = await runArgsExecution(parser, 'true')
+    expect(result.boolean).toBe(true)
+  })
+
+  it('fails if a positional is missing', async () => {
+    const parser = new Args(parserOpts)
+      .positional('<str>', a.string())
+
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: positional argument 'str' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>']`)
+  })
+})
+
+describe('Other integrations (no commands)', () => {
+  it('falls back to present default when not given a value', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--string', '-s'], a.string().presentDefault('present'))
+
+    const result = await runArgsExecution(parser, '-s')
+    expect(result.string).toBe('present')
+  })
+
+  it('rejects with all coerecion errors', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--bool'], a.bool().array())
+
+    await expect(async () => await runArgsExecution(parser, '--bool fff xyz')).rejects.toMatchInlineSnapshot(`
+[Error: 'fff' is not a boolean, expected 'boolean' received 'fff'
+'xyz' is not a boolean, expected 'boolean' received 'xyz']
+`)
+  })
+
+  it('rejects when excess values are passed to an argument', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--string', '-s'], a.string())
+
+    await expect(async () => await runArgsExecution(parser, '-s one two')).rejects.toMatchInlineSnapshot(`[Error: excess argument(s) to --string: 'two', expected 'string' received 'one two']`)
+  })
+
+  it('skips when excess values are passed to an argument', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      tooManyArgs: 'drop'
+    })
+      .arg(['--string', '-s'], a.string())
+
+    const result = await runArgsExecution(parser, '-s one two')
+    expect(result.string).toBe('one')
+  })
+
+  it('rejects for incomplete strings', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--string', '-s'], a.string())
+
+    await expect(async () => await runArgsExecution(parser, '-s "')).rejects.toMatchInlineSnapshot(`[Error: argument 'string' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>']`)
+  })
+
+  it('throws if there is additional arguments', async () => {
+    const parser = new Args(parserOpts)
+    await expect(async () => await runArgsExecution(parser, '-c this')).rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '-c this', expected '<nothing>' received '-c this']`)
+  })
+
+  it('skips if there is unrecognised arguments', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      unrecognisedArgument: 'skip'
+    })
+
+    const result = await runArgsExecution(parser, '-c this')
+    expect(result).toEqual({})
+  })
+
+  it('rejects if the environment fallback cannot be parsed', async () => {
+    process.env.APP_ENV = 'test'
+
+    const parser = new Args({
+      ...parserOpts,
+      environmentPrefix: 'APP'
+    })
+      .arg(['--env'], a.bool())
+
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: 'test' is not a boolean, expected 'boolean' received 'test']`)
+  })
+
+  it('can fallback to the environment for a flag', async () => {
     process.env.APP_ENV = 'test'
 
     const parser = new Args({
@@ -193,6 +268,19 @@ describe('Simple integrations (no commands)', () => {
       environmentPrefix: 'APP'
     })
       .arg(['--env'], a.string())
+
+    const result = await runArgsExecution(parser, '')
+    expect(result.env).toBe('test')
+  })
+
+  it('can fallback to the environment for a positional', async () => {
+    process.env.APP_ENV = 'test'
+
+    const parser = new Args({
+      ...parserOpts,
+      environmentPrefix: 'APP'
+    })
+      .positional('<env>', a.string())
 
     const result = await runArgsExecution(parser, '')
     expect(result.env).toBe('test')
@@ -217,6 +305,14 @@ describe('Simple integrations (no commands)', () => {
       .arg(['--missing'], a.string())
 
     await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--missing' is missing, with no unspecified default, expected 'string' received '<nothing>']`)
+  })
+
+  it('fails if an unknown flag in a group is found', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--a-bool', '-a'], a.bool())
+      .arg(['--b-bool', '-b'], a.bool())
+
+    await expect(async () => await runArgsExecution(parser, '-abc')).rejects.toMatchInlineSnapshot(`[Error: unrecognised flag 'c' in group 'abc', expected '<nothing>' received '-abc']`)
   })
 
   it('can parse short flag groups', async () => {
@@ -310,6 +406,13 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().min(5))
 
     await expect(async () => await runArgsExecution(parser, '--string 1')).rejects.toMatchInlineSnapshot(`[Error: value must be at least length 5, got '1', expected 'string' received '1']`)
+  })
+
+  it('fails when strings are blank', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--string'], a.string().notBlank())
+
+    await expect(async () => await runArgsExecution(parser, '--string " "')).rejects.toMatchInlineSnapshot(`[Error: ' ' does not match '/(.|\\s)*\\S(.|\\s)*/', expected 'non-blank string' received ' ']`)
   })
 
   it('fails when strings are too long', async () => {

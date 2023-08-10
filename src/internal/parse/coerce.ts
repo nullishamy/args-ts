@@ -49,13 +49,8 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     }
   }
 
+  // Groups will be checked for unrecognised flags later
   if (foundFlag && foundFlag.type === 'short-group') {
-    for (const flag of foundFlag.flags) {
-      if (!flags.get(flag)) {
-        return Err(new CoercionError(argument.inner.type, '<nothing>', `flag '${flag}' from group '-${foundFlag.flags.join()}' is unknown`))
-      }
-    }
-
     return Ok(foundFlag)
   }
 
@@ -89,15 +84,21 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
   return Ok(foundFlag)
 }
 
-function validatePositionalSchematically (positionals: Map<number, ParsedPositionalArgument>, argument: InternalPositionalArgument): Result<ParsedPositionalArgument | undefined, CoercionError> {
+function validatePositionalSchematically (positionals: Map<number, ParsedPositionalArgument>, argument: InternalPositionalArgument, opts: StoredParserOpts): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
-  const { specifiedDefault, optional } = argument.inner._meta
+  const { unspecifiedDefault, optional } = argument.inner._meta
 
-  if (!foundFlag && !optional) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '<${argument.key}>' is missing`))
+  const { environmentPrefix } = opts
+
+  // We need to do env lookup here to determine if some sort of value exists, so that we can correctly compute optional behaviour for the arg
+  let envHasValue: boolean
+  if (environmentPrefix) {
+    envHasValue = !!process.env[envKey(argument, environmentPrefix)]
+  } else {
+    envHasValue = false
   }
 
-  if (!optional && specifiedDefault === undefined && !foundFlag?.values) {
+  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !envHasValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
@@ -293,7 +294,7 @@ export async function coerce (
     if (argument.type === 'flag') {
       findResult = validateFlagSchematically(flags, argument, opts)
     } else {
-      findResult = validatePositionalSchematically(positionals, argument)
+      findResult = validatePositionalSchematically(positionals, argument, opts)
     }
 
     if (!findResult.ok) { return Err([findResult.err]) }
@@ -327,8 +328,8 @@ export async function coerce (
     // User passed more than one argument, and this is not a multi type
     if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
       // Throw if appropriate, slice off the other arguments if not (acts as a skip)
-      const { tooManyArgs: excessArgBehaviour } = opts
-      if (excessArgBehaviour === 'throw') {
+      const { tooManyArgs } = opts
+      if (tooManyArgs === 'throw') {
         const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
         return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
       }
@@ -366,9 +367,9 @@ export async function coerce (
 
         // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
         if (!argument) {
-          const { unrecognisedArgument: unknownArgBehaviour } = opts
-          if (unknownArgBehaviour === 'throw') {
-            return Err([new CoercionError('<nothing>', value.rawInput, `unexpected argument '${value.rawInput}'`)])
+          const { unrecognisedArgument } = opts
+          if (unrecognisedArgument === 'throw') {
+            return Err([new CoercionError('<nothing>', value.rawInput, `unrecognised flag '${flag}' in group '${value.flags.join('')}'`)])
           }
 
           // Otherwise, skip it
@@ -383,9 +384,9 @@ export async function coerce (
 
     // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
     if (!argument) {
-      const { unrecognisedArgument: unknownArgBehaviour } = opts
-      if (unknownArgBehaviour === 'throw') {
-        return Err([new CoercionError('<nothing>', value.rawInput, `unexpected argument '${value.rawInput}'`)])
+      const { unrecognisedArgument } = opts
+      if (unrecognisedArgument === 'throw') {
+        return Err([new CoercionError('<nothing>', value.rawInput, `unrecognised argument '${value.rawInput}'`)])
       }
 
       // Otherwise, skip it
