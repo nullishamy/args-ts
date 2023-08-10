@@ -50,7 +50,8 @@ describe('Command testing', () => {
     const parser = new Args(parserOpts)
       .command(['root'], cmd)
 
-    await expect(async () => await runCommandExecution(parser, 'root')).rejects.toMatchInlineSnapshot(`[Error: Mock deprecation message]`)
+    const result = expect(async () => await runCommandExecution(parser, 'root'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: Mock deprecation message]`)
 
     expect(cmd.parserFn).toBeCalledTimes(1)
     expect(cmd.executionFn).toBeCalledTimes(0)
@@ -68,7 +69,8 @@ describe('Command testing', () => {
     const parser = new Args(parserOpts)
       .command(['root'], cmd)
 
-    await expect(async () => await runCommandExecution(parser, 'root')).rejects.toMatchInlineSnapshot(`[Error: unknown command 'root']`)
+    const result = expect(async () => await runCommandExecution(parser, 'root'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: unknown command 'root']`)
 
     expect(cmd.parserFn).toBeCalledTimes(1)
     expect(cmd.executionFn).toBeCalledTimes(0)
