@@ -2,7 +2,7 @@ import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
-import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedPositionalArgument, UserCommand } from './parser'
+import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedShortArgumentSingle, UserCommand } from './parser'
 import { CoercedValue, InternalArgument, InternalFlagArgument, InternalPositionalArgument } from './types'
 
 export interface CoercedArguments {
@@ -24,13 +24,22 @@ export interface CoercedSingleValue {
   coerced: CoercedValue
 }
 
-function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, argument: InternalFlagArgument): Result<AnyParsedFlagArgument | undefined, CoercionError> {
+function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, argument: InternalFlagArgument, opts: StoredParserOpts): Result<AnyParsedFlagArgument | undefined, CoercionError> {
   let foundFlag = flags.get(argument.longFlag)
   if (argument.shortFlag && !foundFlag) {
     foundFlag = flags.get(argument.shortFlag)
   }
 
   let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
+  const { environmentPrefix } = opts
+
+  // We need to do env lookup here to determine if some sort of value exists, so that we can correctly compute optional behaviour for the arg
+  let envHasValue: boolean
+  if (environmentPrefix) {
+    envHasValue = !!process.env[envKey(argument, environmentPrefix)]
+  } else {
+    envHasValue = false
+  }
 
   // Must be at the top, we modify `optional` behaviour
   for (const presentKey of requiredUnlessPresent) {
@@ -50,11 +59,11 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     return Ok(foundFlag)
   }
 
-  if (!foundFlag && !optional && unspecifiedDefault === undefined) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing`))
+  if (!foundFlag && !optional && unspecifiedDefault === undefined && !envHasValue) {
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`))
   }
 
-  if (!optional && specifiedDefault === undefined && !foundFlag?.values.length) {
+  if (!optional && specifiedDefault === undefined && !foundFlag?.values.length && !envHasValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
@@ -158,6 +167,108 @@ function validateCommand (command: UserCommand, opts: StoredParserOpts): Result<
   return Ok(undefined)
 }
 
+function envKey (argument: InternalArgument, prefix: string): string {
+  const key = (argument.type === 'flag' ? argument.longFlag : argument.key).toUpperCase()
+  return `${prefix}_${key}`
+}
+
+interface ResolvedDefault {
+  isDefault: true
+  value: CoercedSingleValue | CoercedMultiValue
+}
+
+interface ResolvedUser {
+  isDefault: false
+  value: ParsedPositionalArgument | ParsedLongArgument | ParsedShortArgumentSingle
+}
+
+async function resolveArgumentDefault (
+  userArgument: ParsedPositionalArgument | AnyParsedFlagArgument | undefined,
+  argument: InternalArgument,
+  opts: StoredParserOpts
+): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError>> {
+  /**
+   * Resolution priority
+   * 1) User args (returned at the bottom, if the conditions for defaults are not met)
+   * 2) Environment
+   * 3) Config file (TODO)
+   * 4) Argument defaults
+   */
+  const { environmentPrefix } = opts
+  // Try environment
+  if (environmentPrefix && !userArgument) {
+    const envValue = process.env[envKey(argument, environmentPrefix)]
+    if (envValue) {
+      const coercionResult = await parseSingle([envValue], argument)
+      if (!coercionResult.ok) {
+        return coercionResult
+      }
+
+      return Ok({
+        isDefault: true,
+        value: {
+          isMulti: false,
+          raw: `<default value (env) for ${getArgDenotion(argument)}>`,
+          coerced: coercionResult.val.coerced
+        }
+      })
+    }
+  }
+
+  // Try config files
+  // TODO
+
+  // No user arg, must fallback to default
+  if (!userArgument) {
+    return Ok({
+      isDefault: true,
+      value: {
+        isMulti: false,
+        raw: `<default value for ${getArgDenotion(argument)}>`,
+        coerced: argument.inner._meta.unspecifiedDefault
+      }
+    })
+  }
+
+  // Now fallback to argument defaults
+  // Groups cant have values, use the defaults
+  if (userArgument.type === 'short-group') {
+    if (argument.type !== 'flag') {
+      throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+    }
+
+    return Ok({
+      isDefault: true,
+      value: {
+        isMulti: false,
+        raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
+        coerced: argument.inner._meta.specifiedDefault
+      }
+    })
+  }
+
+  // No user specified args, fallback
+  if (userArgument.type !== 'positional' && !userArgument.values.length) {
+    if (argument.type !== 'flag') {
+      throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+    }
+
+    return Ok({
+      isDefault: true,
+      value: {
+        isMulti: false,
+        raw: `<default value for ${getArgDenotion(argument)}`,
+        coerced: argument.inner._meta.specifiedDefault
+      }
+    })
+  }
+
+  return Ok({
+    isDefault: false,
+    value: userArgument
+  })
+}
+
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
@@ -180,82 +291,60 @@ export async function coerce (
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult
     if (argument.type === 'flag') {
-      findResult = validateFlagSchematically(flags, argument)
+      findResult = validateFlagSchematically(flags, argument, opts)
     } else {
       findResult = validatePositionalSchematically(positionals, argument)
     }
 
     if (!findResult.ok) { return Err([findResult.err]) }
 
-    let coercionResult: Result<CoercedSingleValue | CoercedMultiValue, CoercionError | CoercionError[]>
-    let userArgument = findResult.val
+    const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts)
 
-    // If the user provided argument is undefined, or there was no value was passed, we will fallback to the default value
-    // the schematic validation will verify this is an acceptable path (ie. the arg has a default, is not required, etc)
-    if (!userArgument) {
-      coercionResult = Ok({
-        isMulti: false,
-        raw: `<default value for ${getArgDenotion(argument)}`,
-        coerced: argument.inner._meta.unspecifiedDefault
-      })
-    } else if (userArgument.type === 'short-group') {
-      if (argument.type !== 'flag') {
-        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+    if (!resolutionResult.ok) { return resolutionResult }
+
+    const defaultOrValue = resolutionResult.val
+    if (defaultOrValue.isDefault) {
+      out.set(argument, defaultOrValue.value)
+      continue
+    }
+
+    let userArgument = defaultOrValue.value
+
+    // Collate all positionals together into this one, if the positional is a multi-type
+    if (userArgument.type === 'positional' && argument.inner._meta.isMultiType) {
+      const positionalValues = [...positionals.values()].flatMap(p => p.values)
+      userArgument = {
+        type: 'positional',
+        index: userArgument.index,
+        values: positionalValues,
+        rawInput: `<${positionalValues.join(' ')}>`
+      }
+    }
+
+    // If the user did end up passing values (we didn't fall back to a default), run the coercion on them
+    let inputValues = userArgument.values
+
+    // User passed more than one argument, and this is not a multi type
+    if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
+      // Throw if appropriate, slice off the other arguments if not (acts as a skip)
+      const { tooManyArgs: excessArgBehaviour } = opts
+      if (excessArgBehaviour === 'throw') {
+        const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
+        return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
       }
 
-      coercionResult = Ok({
-        isMulti: false,
-        raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
-        coerced: argument.inner._meta.specifiedDefault
-      })
-    } else if (userArgument.type !== 'positional' && !userArgument.values.length) {
-      if (argument.type !== 'flag') {
-        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
-      }
+      inputValues = inputValues.slice(0, 1)
+    }
 
-      coercionResult = Ok({
-        isMulti: false,
-        raw: `<default value for ${getArgDenotion(argument)}`,
-        coerced: argument.inner._meta.specifiedDefault
-      })
+    if (!inputValues.length) {
+      throw new InternalError('no input values set, initial validation failed to reject empty arg values')
+    }
+
+    let coercionResult
+    if (argument.inner._meta.isMultiType) {
+      coercionResult = await parseMulti(inputValues, argument)
     } else {
-      // Weird branching logic because we need to assign `coercionResult` in every branch
-      // but we dont want to duplicate the logic for user value parsing, so we will include this collation here
-      if (userArgument.type === 'positional' && argument.inner._meta.isMultiType) {
-      // Collate all positionals together into this one
-        const positionalValues = [...positionals.values()].flatMap(p => p.values)
-        userArgument = {
-          type: 'positional',
-          index: userArgument.index,
-          values: positionalValues,
-          rawInput: `<${positionalValues.join(' ')}>`
-        }
-      }
-
-      // If the user did end up passing values (we didn't fall back to a default), run the coercion on them
-      let inputValues = userArgument.values
-
-      // User passed more than one argument, and this is not a multi type
-      if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
-        // Throw if appropriate, slice off the other arguments if not (acts as a skip)
-        const { tooManyArgs: excessArgBehaviour } = opts
-        if (excessArgBehaviour === 'throw') {
-          const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
-          return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
-        }
-
-        inputValues = inputValues.slice(0, 1)
-      }
-
-      if (!inputValues.length) {
-        throw new InternalError('no input values set, initial validation failed to reject empty arg values')
-      }
-
-      if (argument.inner._meta.isMultiType) {
-        coercionResult = await parseMulti(inputValues, argument)
-      } else {
-        coercionResult = await parseSingle(inputValues, argument)
-      }
+      coercionResult = await parseSingle(inputValues, argument)
     }
 
     if (!coercionResult.ok) {

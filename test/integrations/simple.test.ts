@@ -120,7 +120,7 @@ describe('Simple integrations (no commands)', () => {
     const parser = new Args(parserOpts)
       .arg(['--custom', '-c'], a.custom(customCallback))
 
-    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, expected 'custom' received '<nothing>']`)
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, with no unspecified default, expected 'custom' received '<nothing>']`)
   })
 
   it('throws if there is a missing custom parser', async () => {
@@ -183,6 +183,40 @@ describe('Simple integrations (no commands)', () => {
       .arg(['--equality'], a.string())
 
     await expect(async () => await runArgsExecution(parser, '--equality=test')).rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '--equality', but k=v syntax is disabled @ 15 : --equality test]`)
+  })
+
+  it('can fallback to the environment', async () => {
+    process.env.APP_ENV = 'test'
+
+    const parser = new Args({
+      ...parserOpts,
+      environmentPrefix: 'APP'
+    })
+      .arg(['--env'], a.string())
+
+    const result = await runArgsExecution(parser, '')
+    expect(result.env).toBe('test')
+  })
+
+  it('passes if the arg is optional, and no env value is present', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      environmentPrefix: 'APP'
+    })
+      .arg(['--pass'], a.string().optional())
+
+    const result = await runArgsExecution(parser, '')
+    expect(result.pass).toBe(undefined)
+  })
+
+  it('fails if an env prefix is set but no value is in the env', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      environmentPrefix: 'APP'
+    })
+      .arg(['--missing'], a.string())
+
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--missing' is missing, with no unspecified default, expected 'string' received '<nothing>']`)
   })
 
   it('can parse short flag groups', async () => {
@@ -320,7 +354,7 @@ describe('Logical argument testing', () => {
       .arg(['--base'], a.string().optional())
       .arg(['--optional'], a.string().requireUnlessPresent('--base'))
 
-    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, expected 'string' received '<nothing>']`)
+    await expect(async () => await runArgsExecution(parser, '')).rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, with no unspecified default, expected 'string' received '<nothing>']`)
   })
 
   it('fails when an invalid enum value is provided', async () => {

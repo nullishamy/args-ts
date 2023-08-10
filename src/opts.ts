@@ -12,6 +12,7 @@ export interface StoredParserOpts {
   deprecatedCommands: 'error' | 'unknown-command'
   keyEqualsValueSyntax: boolean
   shortFlagGroups: boolean
+  environmentPrefix: string | undefined
 }
 
 // Default to the loudest possible error modes, to alert us of programming errors
@@ -21,7 +22,8 @@ export const defaultParserOpts = {
   tooManyValues: 'throw',
   deprecatedCommands: 'error',
   shortFlagGroups: true,
-  keyEqualsValueSyntax: true
+  keyEqualsValueSyntax: true,
+  environmentPrefix: undefined
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>

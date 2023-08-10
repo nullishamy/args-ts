@@ -8,5 +8,6 @@ export const parserOpts: StoredParserOpts = {
   tooManyValues: 'throw',
   deprecatedCommands: 'error',
   shortFlagGroups: true,
-  keyEqualsValueSyntax: true
+  keyEqualsValueSyntax: true,
+  environmentPrefix: undefined
 } as const
