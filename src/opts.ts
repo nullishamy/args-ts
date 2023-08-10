@@ -10,6 +10,7 @@ export interface StoredParserOpts {
   tooManyArgs: 'drop' | 'throw'
   tooManyValues: 'drop' | 'throw'
   deprecatedCommands: 'error' | 'unknown-command'
+  keyEqualsValueSyntax: boolean
   shortFlagGroups: boolean
 }
 
@@ -19,7 +20,8 @@ export const defaultParserOpts = {
   tooManyArgs: 'throw',
   tooManyValues: 'throw',
   deprecatedCommands: 'error',
-  shortFlagGroups: true
+  shortFlagGroups: true,
+  keyEqualsValueSyntax: true
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>

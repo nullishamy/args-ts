@@ -159,12 +159,30 @@ describe('Simple integrations (no commands)', () => {
     expect(result['dashing-arg']).toBe('test')
   })
 
-  it('supports flag=value syntax', async () => {
+  it('supports flag=value syntax for long flags', async () => {
     const parser = new Args(parserOpts)
       .arg(['--equality'], a.string())
 
     const result = await runArgsExecution(parser, '--equality=test')
     expect(result.equality).toBe('test')
+  })
+
+  it('supports flag=value syntax for short flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--equality', '-e'], a.string())
+
+    const result = await runArgsExecution(parser, '-e=test')
+    expect(result.equality).toBe('test')
+  })
+
+  it('fails if flag=value syntax is disabled', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      keyEqualsValueSyntax: false
+    })
+      .arg(['--equality'], a.string())
+
+    await expect(async () => await runArgsExecution(parser, '--equality=test')).rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '--equality', but k=v syntax is disabled @ 15 : --equality test]`)
   })
 
   it('can parse short flag groups', async () => {

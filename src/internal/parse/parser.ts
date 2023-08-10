@@ -170,14 +170,22 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Recor
   return [commandResult, lastKnownKey]
 }
 
-function parseLongFlag (tokens: TokenIterator): Result<ParsedLongArgument, ParseError> {
+function parseLongFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<ParsedLongArgument, ParseError> {
   const flagName = parseUnquoted(tokens, 'whitespace')
   if (!flagName.ok) {
     return flagName
   }
 
   const values = []
-  for (let value = parseString(tokens, 'whitespace', 'equals'); value.ok; value = parseString(tokens, 'whitespace', 'equals')) {
+  const tokensToSkip: TokenType[] = ['whitespace']
+  if (opts.keyEqualsValueSyntax) {
+    tokensToSkip.push('equals')
+  }
+
+  for (let value = parseString(tokens, ...tokensToSkip); value.ok; value = parseString(tokens, ...tokensToSkip)) {
+    if (value.val.includes('=') && !opts.keyEqualsValueSyntax) {
+      return Err(new ParseError(`encountered k=v syntax when parsing '--${flagName.val}', but k=v syntax is disabled`, tokens.intoString(), tokens.index()))
+    }
     values.push(value.val)
   }
 
@@ -204,8 +212,16 @@ function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<
     return flagName
   }
 
+  const tokensToSkip: TokenType[] = ['whitespace']
+  if (opts.keyEqualsValueSyntax) {
+    tokensToSkip.push('equals')
+  }
+
   const values = []
-  for (let value = parseString(tokens, 'whitespace', 'equals'); value.ok; value = parseString(tokens, 'whitespace', 'equals')) {
+  for (let value = parseString(tokens, ...tokensToSkip); value.ok; value = parseString(tokens, ...tokensToSkip)) {
+    if (value.val.includes('=') && !opts.keyEqualsValueSyntax) {
+      return Err(new ParseError(`encountered k=v syntax when parsing '-${flagName.val}', but k=v syntax is disabled`, tokens.intoString(), tokens.index()))
+    }
     values.push(value.val)
   }
 
@@ -261,7 +277,7 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
     // Try for a long flag
     tokens.next()
     tokens.next()
-    return parseLongFlag(tokens)
+    return parseLongFlag(tokens, opts)
   }
 
   return Err(ParseError.expected('flag', JSON.stringify(token), tokens.intoString(), tokens.index()))
