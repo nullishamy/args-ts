@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { a, Args, Command, ParserOpts } from '../../src'
+/* eslint-disable @typescript-eslint/quotes */
+import { a, Args, Command, CommandOpts, ParserOpts } from '../../src'
 import { parserOpts } from '../shared'
 import { runCommandExecution } from './utils'
 
 class MockCommand extends Command {
   constructor (
-    opts: ParserOpts,
+    parserOpts: ParserOpts,
+    commandOpts: Partial<CommandOpts>,
     public readonly id: string,
     public readonly parserFn: (parser: Args<unknown>) => Args<unknown> = jest.fn(p => p),
     public readonly executionFn: (args: object) => unknown = jest.fn()
   ) {
     super({
+      ...commandOpts,
       description: 'mock command',
-      parserOpts: opts
+      parserOpts
     })
   }
 
@@ -27,7 +30,7 @@ class MockCommand extends Command {
 
 describe('Command testing', () => {
   it('can run root commands', async () => {
-    const cmd = new MockCommand(parserOpts, 'root')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
     const parser = new Args(parserOpts)
       .command(['root'], cmd)
 
@@ -38,9 +41,41 @@ describe('Command testing', () => {
     expect(cmd.parserFn).toBeCalledTimes(1)
   })
 
+  it('reports the deprecation message for deprecated commands', async () => {
+    const cmd = new MockCommand(parserOpts, {
+      deprecated: true,
+      deprecationMessage: 'Mock deprecation message'
+    }, 'root')
+
+    const parser = new Args(parserOpts)
+      .command(['root'], cmd)
+
+    await expect(async () => await runCommandExecution(parser, 'root')).rejects.toMatchInlineSnapshot(`[Error: Mock deprecation message]`)
+
+    expect(cmd.parserFn).toBeCalledTimes(1)
+    expect(cmd.executionFn).toBeCalledTimes(0)
+  })
+
+  it('does reports unknown for deprecated commands', async () => {
+    const cmd = new MockCommand({
+      ...parserOpts,
+      deprecatedCommands: 'unknown-command'
+    }, {
+      deprecated: true,
+      deprecationMessage: 'Mock deprecation message'
+    }, 'root')
+
+    const parser = new Args(parserOpts)
+      .command(['root'], cmd)
+
+    await expect(async () => await runCommandExecution(parser, 'root')).rejects.toMatchInlineSnapshot(`[Error: unknown command 'root']`)
+
+    expect(cmd.parserFn).toBeCalledTimes(1)
+    expect(cmd.executionFn).toBeCalledTimes(0)
+  })
   it('can run subcommands', async () => {
-    const sub = new MockCommand(parserOpts, 'sub')
-    const cmd = new MockCommand(parserOpts, 'root')
+    const sub = new MockCommand(parserOpts, {}, 'sub')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
       .withSubcommand(['sub'], sub)
 
     const parser = new Args(parserOpts)
@@ -57,11 +92,11 @@ describe('Command testing', () => {
   })
 
   it('can run third layer subcommands', async () => {
-    const subsub = new MockCommand(parserOpts, 'subsub')
-    const sub = new MockCommand(parserOpts, 'sub')
+    const subsub = new MockCommand(parserOpts, {}, 'subsub')
+    const sub = new MockCommand(parserOpts, {}, 'sub')
       .withSubcommand(['subsub'], subsub)
 
-    const cmd = new MockCommand(parserOpts, 'root')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
       .withSubcommand(['sub'], sub)
 
     const parser = new Args(parserOpts)
@@ -81,7 +116,7 @@ describe('Command testing', () => {
   })
 
   it('allows quoted command keys', async () => {
-    const cmd = new MockCommand(parserOpts, 'root')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
 
     const parser = new Args(parserOpts)
       .command(['root'], cmd)
@@ -94,8 +129,8 @@ describe('Command testing', () => {
   })
 
   it('allows quoted subcommand keys', async () => {
-    const sub = new MockCommand(parserOpts, 'sub')
-    const cmd = new MockCommand(parserOpts, 'root')
+    const sub = new MockCommand(parserOpts, {}, 'sub')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
       .withSubcommand(['sub', 'sub-alias'], sub)
 
     const parser = new Args(parserOpts)
@@ -112,8 +147,8 @@ describe('Command testing', () => {
   })
 
   it('can run subcommand through an alias', async () => {
-    const sub = new MockCommand(parserOpts, 'sub')
-    const cmd = new MockCommand(parserOpts, 'root')
+    const sub = new MockCommand(parserOpts, {}, 'sub')
+    const cmd = new MockCommand(parserOpts, {}, 'root')
       .withSubcommand(['sub', 'alias'], sub)
 
     const parser = new Args(parserOpts)
@@ -135,8 +170,8 @@ describe('Command testing', () => {
         .arg(['--sub-arg'], a.string())
     })
 
-    const sub = new MockCommand(parserOpts, 'sub', parserFn)
-    const cmd = new MockCommand(parserOpts, 'root')
+    const sub = new MockCommand(parserOpts, {}, 'sub', parserFn)
+    const cmd = new MockCommand(parserOpts, {}, 'root')
       .withSubcommand(['sub'], sub)
 
     const parser = new Args(parserOpts)

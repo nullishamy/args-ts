@@ -1,4 +1,4 @@
-import { CoercionError, InternalError } from '../../error'
+import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
@@ -135,13 +135,34 @@ async function parseSingle (inputValues: string[], argument: InternalArgument): 
   })
 }
 
+function validateCommand (command: UserCommand, opts: StoredParserOpts): Result<void, CommandError> {
+  const { deprecated, deprecationMessage } = command.internal.inner.opts
+
+  // Do not run deprecated commands
+  if (deprecated && opts.deprecatedCommands === 'error') {
+    return Err(new CommandError(deprecationMessage))
+  } else if (deprecated && opts.deprecatedCommands === 'unknown-command') {
+    return Err(new CommandError(`unknown command '${command.internal.name}'`))
+  }
+
+  return Ok(undefined)
+}
+
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
   internalArgs: Record<string, InternalArgument>
-): Promise<Result<CoercedArguments, CoercionError[]>> {
+): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
   const { command, flags, positionals } = args
+
+  // Validate the command to make sure we can run it
+  if (!command.isDefault) {
+    const result = validateCommand(command, opts)
+    if (!result.ok) {
+      return result
+    }
+  }
 
   // Iterate the declarations, to weed out any missing arguments
   for (const argument of Object.values(internalArgs)) {
