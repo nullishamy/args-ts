@@ -144,11 +144,11 @@ describe('Simple integrations (no commands)', () => {
   it('skips if there is additional arguments', async () => {
     const parser = new Args({
       ...parserOpts,
-      unknownArgBehaviour: 'skip'
+      unrecognisedArgument: 'skip'
     })
 
     const result = await runArgsExecution(parser, '-c this')
-    expect(result).toMatchInlineSnapshot('{}')
+    expect(result).toEqual({})
   })
 
   it('can parse long flags with dashes in them', async () => {

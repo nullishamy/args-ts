@@ -1,5 +1,5 @@
 import { CoercionError, InternalError } from '../../error'
-import { ParserOpts } from '../../opts'
+import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
 import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedPositionalArgument, UserCommand } from './parser'
@@ -137,7 +137,7 @@ async function parseSingle (inputValues: string[], argument: InternalArgument): 
 
 export async function coerce (
   args: ParsedArguments,
-  opts: ParserOpts,
+  opts: StoredParserOpts,
   internalArgs: Record<string, InternalArgument>
 ): Promise<Result<CoercedArguments, CoercionError[]>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
@@ -197,7 +197,7 @@ export async function coerce (
       // User passed more than one argument, and this is not a multi type
       if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
         // Throw if appropriate, slice off the other arguments if not (acts as a skip)
-        const { excessArgBehaviour } = opts
+        const { tooManyArgs: excessArgBehaviour } = opts
         if (excessArgBehaviour === 'throw') {
           const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
           return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
@@ -234,7 +234,7 @@ export async function coerce (
 
     // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
     if (!argument) {
-      const { unknownArgBehaviour } = opts
+      const { unrecognisedArgument: unknownArgBehaviour } = opts
       if (unknownArgBehaviour === 'throw') {
         return Err([new CoercionError('<nothing>', value.rawInput, `unexpected argument '${value.rawInput}'`)])
       }

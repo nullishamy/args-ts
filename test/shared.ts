@@ -1,8 +1,10 @@
-import { ParserOpts } from '../src'
+import { StoredParserOpts } from '../src'
 
-export const parserOpts: ParserOpts = {
+export const parserOpts: StoredParserOpts = {
   programName: 'program-name',
   programDescription: 'program description',
-  unknownArgBehaviour: 'throw',
-  excessArgBehaviour: 'throw'
+  unrecognisedArgument: 'throw',
+  tooManyArgs: 'throw',
+  tooManyValues: 'throw',
+  deprecatedCommands: 'error'
 } as const

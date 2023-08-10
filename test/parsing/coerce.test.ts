@@ -1,14 +1,8 @@
 import { a } from '../../src'
+import { parserOpts } from '../shared'
 import { makeInternalFlag, parseAndCoerce } from './utils'
 
 describe('Coercion tests', () => {
-  const opts = {
-    excessArgBehaviour: 'throw',
-    unknownArgBehaviour: 'throw',
-    programDescription: '',
-    programName: ''
-  } as const
-
   it('can coerce a number argument', async () => {
     const flag = makeInternalFlag({
       isPrimary: true,
@@ -16,7 +10,7 @@ describe('Coercion tests', () => {
       inner: a.number()
     })
 
-    const coerced = await parseAndCoerce('--number 1', opts, [flag])
+    const coerced = await parseAndCoerce('--number 1', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
       isDefault: true
@@ -35,7 +29,7 @@ describe('Coercion tests', () => {
       inner: a.bool()
     })
 
-    const coerced = await parseAndCoerce('--bool true', opts, [flag])
+    const coerced = await parseAndCoerce('--bool true', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
       isDefault: true
@@ -54,7 +48,7 @@ describe('Coercion tests', () => {
       inner: a.string()
     })
 
-    const coerced = await parseAndCoerce('--string helloworld', opts, [flag])
+    const coerced = await parseAndCoerce('--string helloworld', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
       isDefault: true
@@ -73,7 +67,7 @@ describe('Coercion tests', () => {
       inner: a.string()
     })
 
-    const coerced = await parseAndCoerce('--string "hello world"', opts, [flag])
+    const coerced = await parseAndCoerce('--string "hello world"', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
       isDefault: true

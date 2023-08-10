@@ -1,5 +1,5 @@
 import { ParseError } from '../../error'
-import { ParserOpts } from '../../opts'
+import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
 import { Token, TokenIterator, TokenType } from './lexer'
 import { InternalCommand } from './types'
@@ -255,7 +255,7 @@ function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseE
 export function parse (
   tokens: TokenIterator,
   commands: Record<string, InternalCommand>,
-  opts: ParserOpts
+  opts: StoredParserOpts
 ): Result<ParsedArguments, ParseError> {
   const positionals: Map<number, ParsedPositionalArgument> = new Map()
   const flags: Map<string, AnyParsedFlagArgument> = new Map()

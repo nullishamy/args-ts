@@ -1,15 +1,15 @@
 
-import { MinimalArgument, ParserOpts } from '../../src'
-import { tokenise } from '../../src/internal/parse/lexer'
-import { parse, ParsedArguments } from '../../src/internal/parse/parser'
-import { coerce, CoercedArguments } from '../../src/internal/parse/coerce'
-import { CoercedValue, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
 import assert from 'assert'
+import { MinimalArgument, StoredParserOpts, defaultCommandOpts } from '../../src'
+import { CoercedArguments, coerce } from '../../src/internal/parse/coerce'
+import { tokenise } from '../../src/internal/parse/lexer'
+import { ParsedArguments, parse } from '../../src/internal/parse/parser'
+import { CoercedValue, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
 
 export function makeInternalCommand (
   { name, opts, aliases, description, subcommands }: {
     name: string
-    opts: ParserOpts
+    opts: StoredParserOpts
     description?: string
     aliases?: string[]
     subcommands?: Record<string, InternalCommand>
@@ -22,7 +22,8 @@ export function makeInternalCommand (
       args: p => p,
       opts: {
         description: description ?? `${name} command description`,
-        parserOpts: opts
+        parserOpts: opts,
+        ...defaultCommandOpts
       },
       run: p => p,
       runner: p => p,
@@ -62,7 +63,7 @@ export function makeInternalPositional (
   }
 }
 
-export function lexAndParse (argStr: string, opts: ParserOpts, commands: InternalCommand[]): ParsedArguments {
+export function lexAndParse (argStr: string, opts: StoredParserOpts, commands: InternalCommand[]): ParsedArguments {
   const tokens = tokenise(argStr)
   if (!tokens.ok) {
     throw tokens.err
@@ -81,7 +82,7 @@ export function lexAndParse (argStr: string, opts: ParserOpts, commands: Interna
   return parsed.val
 }
 
-export async function parseAndCoerce (argStr: string, opts: ParserOpts, args: InternalArgument[]): Promise<CoercedArguments> {
+export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, args: InternalArgument[]): Promise<CoercedArguments> {
   const parsed = lexAndParse(argStr, opts, [])
   const argMap = args.reduce<Record<string, InternalArgument>>((acc, val) => {
     if (val.type === 'flag') {

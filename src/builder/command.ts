@@ -2,14 +2,25 @@ import { Args, DefaultArgTypes } from '../args'
 import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
 import { ExtractArgType } from '../internal/types'
-import { CommandOpts } from '../opts'
+import { CommandOpts, StoredCommandOpts, defaultCommandOpts, defaultParserOpts } from '../opts'
 /**
  * Base class for all commands, including subcommands. Any user implemented command must extend from this class.
  */
 export abstract class Command {
+  public readonly opts: StoredCommandOpts
+
   constructor (
-    public readonly opts: CommandOpts
-  ) { }
+    opts: CommandOpts
+  ) {
+    this.opts = {
+      ...defaultCommandOpts,
+      ...opts,
+      parserOpts: {
+        ...defaultParserOpts,
+        ...opts.parserOpts
+      }
+    }
+  }
 
   public _subcommands: Record<string, InternalCommand> = {}
 

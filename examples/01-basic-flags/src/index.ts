@@ -2,9 +2,7 @@ import { Args, ParserOpts, a } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '01-basic-flags',
-  programDescription: 'program description',
-  unknownArgBehaviour: 'throw',
-  excessArgBehaviour: 'throw'
+  programDescription: 'program description'
 }
 
 async function main (): Promise<void> {

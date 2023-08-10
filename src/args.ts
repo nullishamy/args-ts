@@ -6,7 +6,7 @@ import { tokenise } from './internal/parse/lexer'
 import { parse } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
 import { Err, Ok, Result } from './internal/result'
-import { ParserOpts } from './opts'
+import { ParserOpts, StoredParserOpts, defaultParserOpts } from './opts'
 
 const flagValidationRegex = /-+(?:[a-z]+)/
 
@@ -38,9 +38,16 @@ export class Args<TArgTypes = DefaultArgTypes> {
   public footerLines: string[] = []
   public headerLines: string[] = []
 
+  public readonly opts: StoredParserOpts
+
   private positionalIndex = 0
 
-  constructor (public readonly opts: ParserOpts) {}
+  constructor (opts: ParserOpts) {
+    this.opts = {
+      ...defaultParserOpts,
+      ...opts
+    }
+  }
 
   public command<TName extends string, TCommand extends Command> (
     [name, ...aliases]: [`${TName}`, ...string[]],

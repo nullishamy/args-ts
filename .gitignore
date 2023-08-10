@@ -110,3 +110,5 @@ lib
 docs
 
 .direnv/
+
+.vscode/
