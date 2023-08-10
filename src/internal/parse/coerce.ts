@@ -40,6 +40,16 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     }
   }
 
+  if (foundFlag && foundFlag.type === 'short-group') {
+    for (const flag of foundFlag.flags) {
+      if (!flags.get(flag)) {
+        return Err(new CoercionError(argument.inner.type, '<nothing>', `flag '${flag}' from group '-${foundFlag.flags.join()}' is unknown`))
+      }
+    }
+
+    return Ok(foundFlag)
+  }
+
   if (!foundFlag && !optional && unspecifiedDefault === undefined) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing`))
   }
@@ -188,6 +198,16 @@ export async function coerce (
         raw: `<default value for ${getArgDenotion(argument)}`,
         coerced: argument.inner._meta.unspecifiedDefault
       })
+    } else if (userArgument.type === 'short-group') {
+      if (argument.type !== 'flag') {
+        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+      }
+
+      coercionResult = Ok({
+        isMulti: false,
+        raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
+        coerced: argument.inner._meta.specifiedDefault
+      })
     } else if (userArgument.type !== 'positional' && !userArgument.values.length) {
       if (argument.type !== 'flag') {
         throw new InternalError(`argument.type !== flag, got ${argument.type}`)
@@ -251,6 +271,25 @@ export async function coerce (
 
   // Then, iterate the parsed values, to weed out excess arguments
   for (const value of flags.values()) {
+    if (value.type === 'short-group') {
+      for (const flag of value.flags) {
+        const argument = internalArgs[flag]
+
+        // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
+        if (!argument) {
+          const { unrecognisedArgument: unknownArgBehaviour } = opts
+          if (unknownArgBehaviour === 'throw') {
+            return Err([new CoercionError('<nothing>', value.rawInput, `unexpected argument '${value.rawInput}'`)])
+          }
+
+          // Otherwise, skip it
+          continue
+        }
+      }
+
+      break
+    }
+
     const argument = internalArgs[value.key]
 
     // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments

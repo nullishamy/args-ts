@@ -22,7 +22,7 @@ export interface ParsedShortArgumentGroup extends ParsedArgumentBase {
 }
 
 // -f test
-export interface ParsedShortArugmentSingle extends ParsedArgumentBase {
+export interface ParsedShortArgumentSingle extends ParsedArgumentBase {
   type: 'short-single'
   key: string
   values: string[]
@@ -35,8 +35,8 @@ export interface ParsedPositionalArgument extends ParsedArgumentBase {
   values: string[]
 }
 
-export type AnyParsedArgument = ParsedLongArgument | ParsedShortArgumentGroup | ParsedShortArugmentSingle | ParsedPositionalArgument
-export type AnyParsedFlagArgument = ParsedLongArgument | ParsedShortArugmentSingle
+export type AnyParsedArgument = ParsedLongArgument | ParsedShortArgumentGroup | ParsedShortArgumentSingle | ParsedPositionalArgument
+export type AnyParsedFlagArgument = ParsedLongArgument | ParsedShortArgumentSingle | ParsedShortArgumentGroup
 
 export interface UserCommand {
   isDefault: false
@@ -198,7 +198,7 @@ function parseLongFlag (tokens: TokenIterator): Result<ParsedLongArgument, Parse
   })
 }
 
-function parseShortFlag (tokens: TokenIterator): Result<ParsedShortArugmentSingle, ParseError> {
+function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<ParsedShortArgumentSingle | ParsedShortArgumentGroup, ParseError> {
   const flagName = parseUnquoted(tokens, 'whitespace')
   if (!flagName.ok) {
     return flagName
@@ -209,12 +209,27 @@ function parseShortFlag (tokens: TokenIterator): Result<ParsedShortArugmentSingl
     values.push(value.val)
   }
 
-  if (!values.length) {
+  // We to assume all short flags of length 1 that do not have any values, `-f` are singles
+  if (!values.length && flagName.val.length === 1) {
     return Ok({
       rawInput: `-${flagName.val}`,
       key: flagName.val,
       type: 'short-single',
       values: []
+    })
+  }
+
+  // .. and that short flags with length > 1 that do not have any values, `-fyz` are grouped
+  if (!values.length && flagName.val.length > 1) {
+    if (!opts.shortFlagGroups) {
+      return Err(new ParseError(`encountered short flag group '-${flagName.val}', but short flag grouping is disabled.`, tokens.intoString(), tokens.index()))
+    }
+
+    return Ok({
+      rawInput: `-${flagName.val}`,
+      key: flagName.val,
+      type: 'short-group',
+      flags: flagName.val.split('')
     })
   }
 
@@ -226,7 +241,7 @@ function parseShortFlag (tokens: TokenIterator): Result<ParsedShortArugmentSingl
   })
 }
 
-function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseError> {
+function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyParsedFlagArgument, ParseError> {
   skipWhile(tokens, token => token.type === 'whitespace')
 
   const token = tokens.current()
@@ -239,7 +254,7 @@ function parseFlag (tokens: TokenIterator): Result<AnyParsedFlagArgument, ParseE
   if (token.type === 'flag-denotion' && peek?.type !== 'flag-denotion') {
     // Try for a short flag / group
     tokens.next()
-    return parseShortFlag(tokens)
+    return parseShortFlag(tokens, opts)
   }
 
   if (tokens.peek()?.type === 'flag-denotion' && peek?.type === 'flag-denotion') {
@@ -297,7 +312,7 @@ export function parse (
 
   // 3) Parse any flags
   while (tokens.hasMoreTokens()) {
-    const flagResult = parseFlag(tokens)
+    const flagResult = parseFlag(tokens, opts)
     if (!flagResult.ok) {
       return flagResult
     }
@@ -308,6 +323,12 @@ export function parse (
     // Flags with assignable names
     if (type === 'long' || type === 'short-single') {
       flags.set(flag.key, flag)
+    }
+
+    if (type === 'short-group') {
+      for (const key of flag.flags) {
+        flags.set(key, flag)
+      }
     }
   }
 

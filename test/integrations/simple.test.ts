@@ -166,6 +166,30 @@ describe('Simple integrations (no commands)', () => {
     const result = await runArgsExecution(parser, '--equality=test')
     expect(result.equality).toBe('test')
   })
+
+  it('can parse short flag groups', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--a-bool', '-a'], a.bool())
+      .arg(['--b-bool', '-b'], a.bool())
+      .arg(['--c-bool', '-c'], a.bool())
+
+    const result = await runArgsExecution(parser, '-abc')
+    expect(result['a-bool']).toBe(true)
+    expect(result['b-bool']).toBe(true)
+    expect(result['c-bool']).toBe(true)
+  })
+})
+
+it('fails if short flag grouping is not enabled', async () => {
+  const parser = new Args({
+    ...parserOpts,
+    shortFlagGroups: false
+  })
+    .arg(['--a-bool', '-a'], a.bool())
+    .arg(['--b-bool', '-b'], a.bool())
+    .arg(['--c-bool', '-c'], a.bool())
+
+  await expect(async () => await runArgsExecution(parser, '-abc')).rejects.toMatchInlineSnapshot(`[Error: encountered short flag group '-abc', but short flag grouping is disabled. @ 4 : -abc]`)
 })
 
 describe('Logical argument testing', () => {

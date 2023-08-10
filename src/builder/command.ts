@@ -3,6 +3,7 @@ import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
 import { ExtractArgType } from '../internal/types'
 import { CommandOpts, StoredCommandOpts, defaultCommandOpts, defaultParserOpts } from '../opts'
+
 /**
  * Base class for all commands, including subcommands. Any user implemented command must extend from this class.
  */

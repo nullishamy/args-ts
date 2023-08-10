@@ -10,6 +10,7 @@ export interface StoredParserOpts {
   tooManyArgs: 'drop' | 'throw'
   tooManyValues: 'drop' | 'throw'
   deprecatedCommands: 'error' | 'unknown-command'
+  shortFlagGroups: boolean
 }
 
 // Default to the loudest possible error modes, to alert us of programming errors
@@ -17,7 +18,8 @@ export const defaultParserOpts = {
   unrecognisedArgument: 'throw',
   tooManyArgs: 'throw',
   tooManyValues: 'throw',
-  deprecatedCommands: 'error'
+  deprecatedCommands: 'error',
+  shortFlagGroups: true
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>
