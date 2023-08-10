@@ -47,13 +47,15 @@ export function generateHelp (parser: Args<unknown>): string {
   const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isPrimary) || arg.type === 'positional'
   const usageString = Object.values(parserArguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
 
-  const commandString = Object.entries(commands).map(([key, value]) => {
-    let nameString = value.name
-    if (value.aliases.length) {
-      nameString = `[${value.name}, ${value.aliases.join(', ')}]`
-    }
-    return `${opts.programName} ${nameString} ${Object.values(value.parser.arguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
-  }).join('\n')
+  const commandString = Object.entries(commands)
+    .filter(([,v]) => !v.inner.opts.hidden)
+    .map(([,cmd]) => {
+      let nameString = cmd.name
+      if (cmd.aliases.length) {
+        nameString = `[${cmd.name}, ${cmd.aliases.join(', ')}]`
+      }
+      return `${opts.programName} ${nameString} ${Object.values(cmd.parser.arguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
+    }).join('\n')
 
   return `
 ${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${parser.headerLines.length ? '\n' + parser.headerLines.join('\n') : ''}
