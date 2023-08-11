@@ -61,19 +61,21 @@ export abstract class Command {
       inner: subcommand,
       name,
       aliases,
-      parser
+      parser,
+      isBase: true
     }
 
     for (const alias of aliases) {
       if (this._subcommands[alias]) {
-        throw new CommandError(`subcommand alias ${name}/${name} already registered`)
+        throw new CommandError(`subcommand alias ${alias} already registered`)
       }
 
       this._subcommands[alias] = {
         inner: subcommand,
         name,
         aliases,
-        parser
+        parser,
+        isBase: false
       }
     }
 

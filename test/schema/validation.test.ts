@@ -33,6 +33,24 @@ describe('Schema validation', () => {
     }).toThrowErrorMatchingInlineSnapshot(`"long flags must start with '--', got '-1'"`)
   })
 
+  it('rejects positionals not prefixed by <', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
+      parser.positional('1test>', a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"keys must start with < and end with >, got 1test>"`)
+  })
+
+  it('rejects positionals not suffixed by >', () => {
+    const parser = new Args(parserOpts)
+
+    expect(() => {
+      // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
+      parser.positional('<test1', a.string())
+    }).toThrowErrorMatchingInlineSnapshot(`"keys must start with < and end with >, got <test1"`)
+  })
+
   it('rejects short flags without preceding -', () => {
     const parser = new Args(parserOpts)
 

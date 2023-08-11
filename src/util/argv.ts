@@ -36,7 +36,7 @@ export function makeArgs (argv: string[] = process.argv): string[] {
   return argv.slice(getProcessArgvBinIndex() + 1)
 }
 
-export function binFile (argv: string[] = process.argv): string {
+export function fileName (argv: string[] = process.argv): string {
   return argv[getProcessArgvBinIndex()]
 }
 

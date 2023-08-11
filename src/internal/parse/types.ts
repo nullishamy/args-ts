@@ -7,7 +7,7 @@ interface ArgumentBase {
 
 export interface InternalFlagArgument extends ArgumentBase {
   type: 'flag'
-  isPrimary: boolean
+  isLongFlag: boolean
   longFlag: string
   shortFlag: string | undefined
 }
@@ -22,6 +22,7 @@ export type InternalArgument = InternalFlagArgument | InternalPositionalArgument
 
 export interface InternalCommand {
   name: string
+  isBase: boolean
   aliases: string[]
   inner: Command
   parser: Args<unknown>

@@ -1,6 +1,6 @@
 import { a } from '../../src'
 import { parserOpts } from '../shared'
-import { makeInternalFlag, parseAndCoerce } from './utils'
+import { makeInternalFlag, makeInternalPositional, parseAndCoerce } from './utils'
 
 describe('Coercion tests', () => {
   it('can coerce a number argument', async () => {
@@ -38,6 +38,25 @@ describe('Coercion tests', () => {
       isMulti: false,
       coerced: true,
       raw: 'true'
+    })
+  })
+
+  it('can coerce positional strings', async () => {
+    const flag = makeInternalPositional({
+      index: 0,
+      key: 'string',
+      inner: a.string()
+    })
+
+    const coerced = await parseAndCoerce('helloworld', parserOpts, [flag])
+
+    expect(coerced.command).toEqual({
+      isDefault: true
+    })
+    expect(coerced.args.get(flag)).toEqual({
+      isMulti: false,
+      coerced: 'helloworld',
+      raw: 'helloworld'
     })
   })
 

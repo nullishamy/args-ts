@@ -34,21 +34,21 @@ export function generateHelp (parser: Args<unknown>): string {
 
       if (value.shortFlag) {
         if (isMultiType) {
-          return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>]`
+          return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>)`
         }
-        return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type})`
+        return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type}>)`
       }
 
-      return `--${value.longFlag} <${value.inner.type}>`
+      return `(--${value.longFlag} <${value.inner.type}>)`
     }
   }
 
   // Filter out non primary flag args, but keep all positionals
-  const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isPrimary) || arg.type === 'positional'
+  const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isLongFlag) || arg.type === 'positional'
   const usageString = Object.values(parserArguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
 
   const commandString = Object.entries(commands)
-    .filter(([,v]) => !v.inner.opts.hidden)
+    .filter(([,v]) => !v.inner.opts.hidden && v.isBase)
     .map(([,cmd]) => {
       let nameString = cmd.name
       if (cmd.aliases.length) {

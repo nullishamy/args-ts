@@ -75,17 +75,7 @@ export class TokenIterator {
   }
 
   intoString (): string {
-    return this.tokens.map(t => {
-      if (t.type === 'char') {
-        return t.value
-      } else if (t.type === 'flag-denotion') {
-        return '-'
-      } else if (t.type === 'quote') {
-        return t.value
-      } else {
-        return ' '
-      }
-    }).join('')
+    return this.tokens.map(t => t.value).join('')
   }
 }
 

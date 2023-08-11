@@ -1,4 +1,4 @@
-import { ParseError } from '../../error'
+import { InternalError, ParseError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
 import { Token, TokenIterator, TokenType } from './lexer'
@@ -267,7 +267,7 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
   const peek = tokens.peek()
 
   if (!token) {
-    return Err(ParseError.expected('<more tokens>', 'EOF', tokens.intoString(), tokens.index()))
+    throw new InternalError('no tokens left when trying to parse out the flag')
   }
 
   if (token.type === 'flag-denotion' && peek?.type !== 'flag-denotion') {

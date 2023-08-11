@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { Args } from '../../src'
 
-export async function runArgsExecution <T> (parser: Args<T>, argString: string): Promise<T> {
+export async function runArgsExecution <T> (parser: Args<T>, argString: string | string[]): Promise<T> {
   const result = await parser.parse(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
@@ -13,7 +13,7 @@ export async function runArgsExecution <T> (parser: Args<T>, argString: string):
   return result.val.args
 }
 
-export async function runCommandExecution (parser: Args<unknown>, argString: string): Promise<unknown> {
+export async function runCommandExecution (parser: Args<unknown>, argString: string | string[]): Promise<unknown> {
   const result = await parser.parse(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {

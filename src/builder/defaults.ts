@@ -113,7 +113,7 @@ class BooleanArgument extends Argument<boolean> {
 
 class EnumArgument<T extends readonly string[]> extends Argument<T[number]> {
   constructor (private readonly validValues: T) {
-    super('enum')
+    super(validValues.join(' | '))
   }
 
   async coerce (value: string): Promise<CoercionResult<T[number]>> {

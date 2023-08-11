@@ -17,6 +17,7 @@ export function makeInternalCommand (
   return {
     name,
     aliases: aliases ?? [],
+    isBase: true,
     inner: {
       _subcommands: subcommands ?? {},
       args: p => p,
@@ -42,7 +43,7 @@ export function makeInternalFlag (
   }): InternalArgument {
   return {
     type: 'flag',
-    isPrimary,
+    isLongFlag: isPrimary,
     longFlag: long,
     shortFlag: short,
     inner

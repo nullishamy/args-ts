@@ -55,7 +55,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     inherit = false
   ): Args<TArgTypes> {
     if (this.commands[name]) {
-      throw new CommandError(`command ${name} already declared`)
+      throw new CommandError(`command '${name}' already declared`)
     }
 
     let parser = new Args<unknown>({
@@ -73,19 +73,21 @@ export class Args<TArgTypes = DefaultArgTypes> {
       inner: command,
       name,
       aliases,
-      parser
+      parser,
+      isBase: true
     }
 
     for (const alias of aliases) {
       if (this.commands[alias]) {
-        throw new CommandError(`command alias ${alias} already declared`)
+        throw new CommandError(`command alias '${alias}' already declared`)
       }
 
       this.commands[alias] = {
         inner: command,
         name,
         aliases,
-        parser
+        parser,
+        isBase: false
       }
     }
 
@@ -98,7 +100,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
   ): Args<TArgTypes & {
       [key in TKey]: TArg
     }> {
-    if (!key.startsWith('<') && !key.endsWith('>')) {
+    if (!key.startsWith('<') || !key.endsWith('>')) {
       throw new SchemaError(`keys must start with < and end with >, got ${key}`)
     }
 
@@ -136,7 +138,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     this.arguments[longFlag.substring(2)] = {
       type: 'flag',
-      isPrimary: true,
+      isLongFlag: true,
       inner: declaration,
       longFlag: longFlag.substring(2),
       shortFlag: shortFlag?.substring(1)
@@ -158,7 +160,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       this.arguments[shortFlag.substring(1)] = {
         type: 'flag',
         inner: declaration,
-        isPrimary: false,
+        isLongFlag: false,
         longFlag: longFlag.substring(2),
         shortFlag: shortFlag.substring(1)
       }

@@ -13,6 +13,14 @@ describe('Flag integrations', () => {
     expect(result.boolean).toBe(true)
   })
 
+  it('can parse from an array', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--boolean'], a.bool())
+
+    const result = await runArgsExecution(parser, ['--boolean', 'false'])
+    expect(result.boolean).toBe(false)
+  })
+
   it('can parse long-flag quoted strings', async () => {
     const parser = new Args(parserOpts)
       .arg(['--string', '-s'], a.string())
@@ -122,6 +130,13 @@ describe('Flag integrations', () => {
     const result = expect(async () => await runArgsExecution(parser, ''))
     await result.rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, with no unspecified default, expected 'custom' received '<nothing>']`)
   })
+  it('throws if there is no tokens after the flag denotion', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--flag'], a.bool())
+
+    const result = expect(async () => await runArgsExecution(parser, '--'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: expected: <more tokens> -- received: EOF @ 2 : --]`)
+  })
 
   it('throws if there is a missing custom parser', async () => {
     const parser = new Args(parserOpts)
@@ -155,7 +170,7 @@ describe('Flag integrations', () => {
     expect(result.equality).toBe('test')
   })
 
-  it('fails if flag=value syntax is disabled', async () => {
+  it('fails if flag=value syntax is disabled for long flags', async () => {
     const parser = new Args({
       ...parserOpts,
       keyEqualsValueSyntax: false
@@ -163,7 +178,18 @@ describe('Flag integrations', () => {
       .arg(['--equality'], a.string())
 
     const result = expect(async () => await runArgsExecution(parser, '--equality=test'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '--equality', but k=v syntax is disabled @ 15 : --equality test]`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '--equality', but k=v syntax is disabled @ 15 : --equality=test]`)
+  })
+
+  it('fails if flag=value syntax is disabled for short flags', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      keyEqualsValueSyntax: false
+    })
+      .arg(['--equality', '-e'], a.string())
+
+    const result = expect(async () => await runArgsExecution(parser, '-e=test'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: encountered k=v syntax when parsing '-e', but k=v syntax is disabled @ 7 : -e=test]`)
   })
 })
 
@@ -487,7 +513,7 @@ describe('Logical argument testing', () => {
       .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
 
     const result = expect(async () => await runArgsExecution(parser, '--enum a'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: value must be one of 'x, y, z' got 'a', expected 'enum' received 'a']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a']`)
   })
 
   it('passes when a valid enum value is provided', async () => {
