@@ -1,3 +1,4 @@
+import { CoercionResult, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
@@ -110,51 +111,124 @@ function validatePositionalSchematically (positionals: Map<number, ParsedPositio
 }
 
 async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedMultiValue, CoercionError | CoercionError[]>> {
-  const results = await Promise.all(inputValues.map(async raw => await argument.inner.coerce(raw)))
-  const coerced = []
-  const errors: Array<{ index: number, error: Error, value: string }> = []
+  const eachParserResults: Map<MinimalArgument<CoercedValue>, Array<CoercionResult<CoercedValue>>> = new Map()
 
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i]
+  for (const value of inputValues) {
+    for (const parser of [argument.inner, ...argument.inner._meta.otherParsers]) {
+      const parsed = await parser.coerce(value)
+      const alreadyParsed = eachParserResults.get(parser) ?? []
+
+      alreadyParsed.push(parsed)
+      eachParserResults.set(parser, alreadyParsed)
+    }
+  }
+
+  interface SingleError {
+    value: string
+    error: Error
+  }
+  interface GroupedError {
+    parser: MinimalArgument<unknown>
+    errors: SingleError[]
+  }
+
+  interface CoercedGroup {
+    parser: MinimalArgument<unknown>
+    values: CoercedValue[]
+  }
+
+  const coercedGroups: CoercedGroup[] = []
+  const groupedErrors: GroupedError[] = []
+
+  for (const [parser, results] of eachParserResults.entries()) {
+    const errors: SingleError[] = []
+    const coerced = []
+
+    for (const result of results) {
+      if (result.ok) {
+        coerced.push(result.returnedValue)
+      } else {
+        errors.push({
+          value: result.passedValue,
+          error: result.error
+        })
+      }
+    }
+
+    if (errors.length) {
+      groupedErrors.push({
+        parser,
+        errors
+      })
+    } else {
+      coercedGroups.push({
+        parser,
+        values: coerced
+      })
+    }
+  }
+
+  // If no parsers could resolve the values (no succesful groups)
+  if (groupedErrors.length && !coercedGroups.length) {
+    const errors = groupedErrors.flatMap(group => {
+      return group.errors.map(error => {
+        return new CoercionError(argument.inner.type, error.value, `parser '${group.parser.type}' failed: ${error.error.message}`)
+      })
+    })
+
+    return Err(errors)
+  }
+
+  // Take the first group that managed to coerce all of the values
+  const selectedGroup = coercedGroups.slice(0, 1)[0]
+  if (!selectedGroup) {
+    throw new InternalError(`no selected group, but errors were not caught either? coerced: ${JSON.stringify(coercedGroups)}, errors: ${JSON.stringify(groupedErrors)}`)
+  }
+
+  return Ok({
+    isMulti: true,
+    coerced: selectedGroup.values,
+    raw: inputValues
+  })
+}
+
+async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError[]>> {
+  const parsers = [argument.inner, ...argument.inner._meta.otherParsers]
+  const results = await Promise.all(parsers.map(async parser => [parser, await parser.coerce(inputValues[0])] as const))
+
+  const errors: Array<{
+    error: Error
+    parser: MinimalArgument<CoercedValue>
+  }> = []
+  let coerced: CoercedValue | null = null
+
+  for (const [parser, result] of results) {
     if (result.ok) {
-      coerced.push(result.returnedValue)
+      // Only set once, we want to take the earliest value in the chain that passes
+      if (coerced === null) {
+        coerced = result.returnedValue
+      }
     } else {
       errors.push({
-        index: i,
-        value: result.passedValue,
+        parser,
         error: result.error
       })
     }
   }
 
-  if (errors.length) {
-    return Err(errors.map(e => {
-      return new CoercionError(argument.inner.type, e.value, e.error.message)
+  if (errors.length && coerced === null) {
+    return Err(errors.map(error => {
+      return new CoercionError(argument.inner.type, inputValues[0], `parser '${error.parser.type}' failed: ${error.error.message}`)
     }))
   }
 
-  // Will pass if nothing failed to parse, just sanity checking the error catching process above
-  if (coerced.length !== inputValues.length) {
-    throw new InternalError(`coerced values be the same length as the user provided values (input: ${inputValues.length}, coerced: ${coerced.length})`)
-  }
-
-  return Ok({
-    isMulti: true,
-    coerced,
-    raw: inputValues
-  })
-}
-
-async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError>> {
-  const result = await argument.inner.coerce(inputValues[0])
-
-  if (!result.ok) {
-    return Err(new CoercionError(argument.inner.type, inputValues[0], result.error.message))
+  if (coerced === null) {
+    throw new InternalError(`no coerced values set, but errors were not caught either? coerced: ${JSON.stringify(coerced)}, errors: ${JSON.stringify(errors)}`)
   }
 
   return Ok({
     isMulti: false,
-    coerced: result.returnedValue,
+    coerced,
     raw: inputValues[0]
   })
 }
@@ -191,7 +265,7 @@ async function resolveArgumentDefault (
   userArguments: ParsedPositionalArgument | AnyParsedFlagArgument[] | undefined,
   argument: InternalArgument,
   opts: StoredParserOpts
-): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError>> {
+): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError[]>> {
   /**
    * Resolution priority
    * 1) User args (returned at the bottom, if the conditions for defaults are not met)

@@ -1,3 +1,5 @@
+import { CoercedValue } from '../internal/parse/types'
+
 interface CoercionResultOk<T> {
   ok: true
   passedValue: string
@@ -23,6 +25,7 @@ interface ArgumentMeta<T> {
   optional: boolean
   isMultiType: boolean
   exclusive: boolean
+  otherParsers: Array<MinimalArgument<CoercedValue>>
 }
 
 export type MinimalArgument<T> = Pick<Argument<T>, '_meta' | 'coerce' | 'type'>
@@ -37,6 +40,7 @@ export abstract class Argument<T> {
   protected _optional: boolean = false
   protected _isMultiType: boolean = false
   protected _exclusive: boolean = false
+  protected _otherParsers: Array<MinimalArgument<CoercedValue>> = []
 
   // Internal getter to avoid cluttering completion with ^ our private fields that need to be accessed by other internal APIs
   // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by outside people (assuming they do not break type safety)
@@ -50,7 +54,8 @@ export abstract class Argument<T> {
       conflicts: this._conflicts,
       optional: this._optional,
       isMultiType: this._isMultiType,
-      exclusive: this._exclusive
+      exclusive: this._exclusive,
+      otherParsers: this._otherParsers
     }
   }
 
@@ -182,5 +187,15 @@ export abstract class Argument<T> {
     // and it will output that into the result. This is still *safe* because this function call is intrinsicly tied to the type
     // but it is still type hackery
     return this as Argument<T[]>
+  }
+
+  /**
+   * Add another parser to this argument, enabling either argument to be used to coerce the value
+   * @param other - the other parser to use
+   * @returns this
+   */
+  public or <U extends CoercedValue> (other: Argument<U>): Omit<Argument<T | U>, 'array'> {
+    this._otherParsers.push(other)
+    return this
   }
 }

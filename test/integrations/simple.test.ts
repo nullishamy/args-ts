@@ -143,7 +143,7 @@ describe('Flag integrations', () => {
       .arg(['--custom', '-c'], a.custom<undefined>(undefined as any))
 
     const result = expect(async () => await runArgsExecution(parser, '-c this'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: callback was not provided, expected 'custom' received 'this']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'custom' failed: callback was not provided, expected 'custom' received 'this']`)
   })
 
   it('can parse long flags with dashes in them', async () => {
@@ -228,13 +228,58 @@ describe('Other integrations (no commands)', () => {
     expect(result.string).toBe('present')
   })
 
+  it('can utilise 2 parsers with long flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union'], a.number().or(a.bool()))
+
+    const result = await runArgsExecution(parser, '--union true')
+    expect(result.union).toBe(true)
+  })
+
+  it('can utilise 2 parsers with short flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union', '-u'], a.number().or(a.bool()))
+
+    const result = await runArgsExecution(parser, '-u true')
+    expect(result.union).toBe(true)
+  })
+
+  it('can utilise 3 parsers with short flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union', '-u'], a.number().or(a.bool()).or(a.string()))
+
+    const result = await runArgsExecution(parser, '-u true')
+    expect(result.union).toBe(true)
+  })
+  it('can utilise 3 parsers with long flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union', '-u'], a.number().or(a.bool()).or(a.string()))
+
+    const result = await runArgsExecution(parser, '--union true')
+    expect(result.union).toBe(true)
+  })
+  it('can select a non edge parser with short flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union', '-u'], a.bool().or(a.number()).or(a.string()))
+
+    const result = await runArgsExecution(parser, '-u 12')
+    expect(result.union).toBe(12)
+  })
+  it('can select a non edge parser with long flags', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--union', '-u'], a.bool().or(a.number()).or(a.string()))
+
+    const result = await runArgsExecution(parser, '--union 12')
+    expect(result.union).toBe(12)
+  })
+
   it('rejects with all coerecion errors', async () => {
     const parser = new Args(parserOpts)
       .arg(['--bool'], a.bool().array())
 
     await expect(async () => await runArgsExecution(parser, '--bool fff xyz')).rejects.toMatchInlineSnapshot(`
-[Error: 'fff' is not a boolean, expected 'boolean' received 'fff'
-'xyz' is not a boolean, expected 'boolean' received 'xyz']
+[Error: parser 'boolean' failed: 'fff' is not a boolean, expected 'boolean' received 'fff'
+parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xyz']
 `)
   })
 
@@ -292,7 +337,7 @@ describe('Other integrations (no commands)', () => {
       .arg(['--env'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 'test' is not a boolean, expected 'boolean' received 'test']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'boolean' failed: 'test' is not a boolean, expected 'boolean' received 'test']`)
   })
 
   it('can fallback to the environment for a flag', async () => {
@@ -479,7 +524,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().min(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--string 1'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: value must be at least length 5, got '1', expected 'string' received '1']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'string' failed: value must be at least length 5, got '1', expected 'string' received '1']`)
   })
 
   it('fails when strings are blank', async () => {
@@ -487,7 +532,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().notBlank())
 
     const result = expect(async () => await runArgsExecution(parser, '--string " "'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: ' ' does not match '/(.|\\s)*\\S(.|\\s)*/', expected 'non-blank string' received ' ']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'non-blank string' failed: ' ' does not match '/(.|\\s)*\\S(.|\\s)*/', expected 'non-blank string' received ' ']`)
   })
 
   it('fails when strings are too long', async () => {
@@ -495,7 +540,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().max(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--string 123456'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: value must be at most length 5, got '123456', expected 'string' received '123456']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'string' failed: value must be at most length 5, got '123456', expected 'string' received '123456']`)
   })
 
   it('fails when numbers are below lower bounds', async () => {
@@ -503,7 +548,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().lowerBound(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 1'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 1 is less than lower bound 5, expected 'number' received '1']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 1 is less than lower bound 5, expected 'number' received '1']`)
   })
 
   it('fails when numbers are above upper bounds', async () => {
@@ -511,7 +556,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().upperBound(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 10'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 10 is greater than upper bound 5, expected 'number' received '10']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 10 is greater than upper bound 5, expected 'number' received '10']`)
   })
 
   it('fails when numbers are not in range', async () => {
@@ -519,7 +564,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().inRange(10, 20))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 3'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 3 is less than lower bound 10, expected 'number' received '3']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 3 is less than lower bound 10, expected 'number' received '3']`)
   })
 
   it('allows empty values when marked argument is provided', async () => {
@@ -545,7 +590,7 @@ describe('Logical argument testing', () => {
       .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
 
     const result = expect(async () => await runArgsExecution(parser, '--enum a'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'x | y | z' failed: value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a']`)
   })
 
   it('passes when a valid enum value is provided', async () => {
@@ -625,7 +670,7 @@ describe('Array testing', () => {
       .arg(['--array'], a.number().array())
 
     const result = expect(async () => await runArgsExecution(parser, '--array 123 783 true 1235'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 'true' is not a number, expected 'number' received 'true']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 'true' is not a number, expected 'number' received 'true']`)
   })
 
   it('parses arrays with of bool', async () => {
@@ -647,6 +692,33 @@ describe('Array testing', () => {
       .arg(['--array'], a.number().inRange(100, 1000).array())
 
     const result = expect(async () => await runArgsExecution(parser, '--array 123 783 1235'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: 1235 is greater than upper bound 1000, expected 'number' received '1235']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 1235 is greater than upper bound 1000, expected 'number' received '1235']`)
+  })
+
+  it('can coerce "T[] | U[]" style unions using left side parser', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.number().array().or(a.bool().array()))
+
+    const result = await runArgsExecution(parser, '--array 12 78 98 66')
+    expect(result.array).toEqual([
+      12,
+      78,
+      98,
+      66
+    ])
+  })
+
+  it('can coerce "T[] | U[]" style unions using right side parser', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.number().array().or(a.bool().array()))
+
+    const result = await runArgsExecution(parser, '--array true true false false true')
+    expect(result.array).toEqual([
+      true,
+      true,
+      false,
+      false,
+      true
+    ])
   })
 })
