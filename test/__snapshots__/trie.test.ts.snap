@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Trie tests can insert a small string 1`] = `
+PrefixTree {
+  "base": {
+    "p": {
+      "children": {
+        "r": {
+          "children": {
+            "e": {
+              "children": {
+                "f": {
+                  "children": {
+                    "i": {
+                      "children": {
+                        "x": {
+                          "children": {},
+                          "isTerminal": true,
+                          "value": "value",
+                        },
+                      },
+                      "isTerminal": false,
+                      "value": undefined,
+                    },
+                  },
+                  "isTerminal": false,
+                  "value": undefined,
+                },
+              },
+              "isTerminal": false,
+              "value": undefined,
+            },
+          },
+          "isTerminal": false,
+          "value": undefined,
+        },
+      },
+      "isTerminal": false,
+      "value": undefined,
+    },
+  },
+}
+`;
