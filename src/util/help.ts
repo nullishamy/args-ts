@@ -45,16 +45,16 @@ export function generateHelp (parser: Args<unknown>): string {
 
   // Filter out non primary flag args, but keep all positionals
   const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isLongFlag) || arg.type === 'positional'
-  const usageString = Object.values(parserArguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
+  const usageString = parserArguments.values().filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
 
-  const commandString = Object.entries(commands)
+  const commandString = commands.entries()
     .filter(([,v]) => !v.inner.opts.hidden && v.isBase)
     .map(([,cmd]) => {
       let nameString = cmd.name
       if (cmd.aliases.length) {
         nameString = `[${cmd.name}, ${cmd.aliases.join(', ')}]`
       }
-      return `${opts.programName} ${nameString} ${Object.values(cmd.parser.arguments).filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
+      return `${opts.programName} ${nameString} ${cmd.parser.arguments.values().filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
     }).join('\n')
 
   return `

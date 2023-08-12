@@ -1,6 +1,7 @@
 import { CoercionResult, Middleware, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
+import { PrefixTree } from '../prefix-tree'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
 import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedShortArgumentSingle, UserCommand } from './parser'
@@ -391,12 +392,12 @@ function handleMultipleDefinitions (argument: InternalArgument, opts: StoredPars
 
 function handleDefinitionChecking (
   definition: AnyParsedFlagArgument,
-  internalArgs: Record<string, InternalArgument>,
+  internalArgs: PrefixTree<InternalArgument>,
   opts: StoredParserOpts
 ): Result<'break' | 'continue', CoercionError[]> {
   if (definition.type === 'short-group') {
     for (const flag of definition.flags) {
-      const argument = internalArgs[flag]
+      const argument = internalArgs.findOrUndefined(flag)
 
       // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
       if (!argument) {
@@ -413,7 +414,7 @@ function handleDefinitionChecking (
     return Ok('break')
   }
 
-  const argument = internalArgs[definition.key]
+  const argument = internalArgs.findOrUndefined(definition.key)
 
   // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
   if (argument === undefined) {
@@ -432,7 +433,7 @@ function handleDefinitionChecking (
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
-  internalArgs: Record<string, InternalArgument>,
+  internalArgs: PrefixTree<InternalArgument>,
   middlewares: Middleware[]
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
@@ -447,7 +448,7 @@ export async function coerce (
   }
 
   // Iterate the declarations, to weed out any missing arguments
-  for (const argument of Object.values(internalArgs)) {
+  for (const argument of internalArgs.values()) {
     // Validate 'schema-level' properties, such as optionality, depedencies, etc
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult

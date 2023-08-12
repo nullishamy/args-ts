@@ -1,5 +1,6 @@
 import { InternalError, ParseError } from '../../error'
 import { StoredParserOpts } from '../../opts'
+import { PrefixTree } from '../prefix-tree'
 import { Err, Ok, Result } from '../result'
 import { Token, TokenIterator, TokenType } from './lexer'
 import { InternalCommand } from './types'
@@ -139,8 +140,8 @@ function parseString (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]
   return Ok(out)
 }
 
-function extractCommand (rootKey: string, tokens: TokenIterator, commands: Record<string, InternalCommand>): [DefaultCommand | UserCommand, string | undefined] {
-  const command = commands[rootKey]
+function extractCommand (rootKey: string, tokens: TokenIterator, commands: PrefixTree<InternalCommand>): [DefaultCommand | UserCommand, string | undefined] {
+  const command = commands.findOrUndefined(rootKey)
   let lastKnownKey
 
   // If we could not locate a command, we must assume the first argument is a positional.
@@ -298,7 +299,7 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
 
 export function parse (
   tokens: TokenIterator,
-  commands: Record<string, InternalCommand>,
+  commands: PrefixTree<InternalCommand>,
   opts: StoredParserOpts
 ): Result<ParsedArguments, ParseError> {
   const positionals: Map<number, ParsedPositionalArgument> = new Map()

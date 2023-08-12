@@ -7,6 +7,7 @@ import { parse } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
 import { Err, Ok, Result } from './internal/result'
 import { ParserOpts, StoredParserOpts, defaultParserOpts } from './opts'
+import { PrefixTree } from './internal/prefix-tree'
 
 const flagValidationRegex = /-+(?:[a-z]+)/
 
@@ -33,8 +34,9 @@ export interface DefaultArgTypes {
 }
 
 export class Args<TArgTypes = DefaultArgTypes> {
-  public arguments: Record<string, InternalArgument> = {}
-  public commands: Record<string, InternalCommand> = {}
+  public arguments: PrefixTree<InternalArgument> = new PrefixTree()
+  public commands: PrefixTree<InternalCommand> = new PrefixTree()
+
   public middlewares: Middleware[] = []
   public footerLines: string[] = []
   public headerLines: string[] = []
@@ -60,7 +62,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     command: TCommand,
     inherit = false
   ): Args<TArgTypes> {
-    if (this.commands[name]) {
+    if (this.commands.has(name)) {
       throw new CommandError(`command '${name}' already declared`)
     }
 
@@ -75,26 +77,26 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     parser = command.args(parser)
 
-    this.commands[name] = {
+    this.commands.insert(name, {
       inner: command,
       name,
       aliases,
       parser,
       isBase: true
-    }
+    })
 
     for (const alias of aliases) {
-      if (this.commands[alias]) {
+      if (this.commands.has(alias)) {
         throw new CommandError(`command alias '${alias}' already declared`)
       }
 
-      this.commands[alias] = {
+      this.commands.insert(alias, {
         inner: command,
         name,
         aliases,
         parser,
         isBase: false
-      }
+      })
     }
 
     return this
@@ -112,12 +114,12 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     const slicedKey = key.slice(1, key.length - 1)
 
-    this.arguments[slicedKey] = {
+    this.arguments.insert(slicedKey, {
       type: 'positional',
       inner: declaration,
       key: slicedKey,
       index: this.positionalIndex++
-    }
+    })
 
     // @ts-expect-error same inference problem as arg()
     return this
@@ -134,7 +136,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       throw new SchemaError(`long flags must start with '--', got '${longFlag}'`)
     }
 
-    if (this.arguments[longFlag.substring(2)]) {
+    if (this.arguments.has(longFlag.substring(2))) {
       throw new SchemaError(`duplicate long flag '${longFlag}'`)
     }
 
@@ -142,20 +144,20 @@ export class Args<TArgTypes = DefaultArgTypes> {
       throw new SchemaError(`long flags must match '--abcdef...' got '${longFlag}'`)
     }
 
-    this.arguments[longFlag.substring(2)] = {
+    this.arguments.insert(longFlag.substring(2), {
       type: 'flag',
       isLongFlag: true,
       inner: declaration,
       longFlag: longFlag.substring(2),
       shortFlag: shortFlag?.substring(1)
-    }
+    })
 
     if (shortFlag) {
       if (!shortFlag.startsWith('-')) {
         throw new SchemaError(`short flags must start with '-', got '${shortFlag}'`)
       }
 
-      if (this.arguments[shortFlag.substring(1)]) {
+      if (this.arguments.has(shortFlag.substring(1))) {
         throw new SchemaError(`duplicate short flag '${shortFlag}'`)
       }
 
@@ -163,13 +165,13 @@ export class Args<TArgTypes = DefaultArgTypes> {
         throw new SchemaError(`short flags must match '-abcdef...' got '${shortFlag}'`)
       }
 
-      this.arguments[shortFlag.substring(1)] = {
+      this.arguments.insert(shortFlag.substring(1), {
         type: 'flag',
         inner: declaration,
         isLongFlag: false,
         longFlag: longFlag.substring(2),
         shortFlag: shortFlag.substring(1)
-      }
+      })
     }
 
     // @ts-expect-error can't infer this because of weird subtyping, not a priority
@@ -190,7 +192,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     const positionals: InternalPositionalArgument[] = []
     const flags: InternalFlagArgument[] = []
 
-    for (const value of Object.values(this.arguments)) {
+    for (const value of this.arguments.values()) {
       if (value.type === 'flag') {
         flags.push(value)
       } else {
@@ -246,7 +248,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     // If we located a command, tell coerce to use its parser instead of our own
     let coercionResult
-    if (command.isDefault && Object.values(this.commands).length > 0 && this.opts.mustProvideCommand) {
+    if (command.isDefault && !this.commands.empty() && this.opts.mustProvideCommand) {
       return Err(new CommandError('no command provided but one was expected'))
     }
 
@@ -301,7 +303,8 @@ export class Args<TArgTypes = DefaultArgTypes> {
   }
 
   public reset (): void {
-    this.arguments = {}
-    this.commands = {}
+    this.arguments = new PrefixTree()
+    this.commands = new PrefixTree()
+    this.middlewares = []
   }
 }

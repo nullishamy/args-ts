@@ -22,6 +22,21 @@ describe('Trie tests', () => {
     })
   })
 
+  it('can find a string when it has a similar neighbour', () => {
+    const tree = new PrefixTree<string>()
+    tree.insert('prefix', 'value')
+    tree.insert('prefax', 'value2')
+
+    const search = tree.find('prefix')
+    assert(search !== undefined)
+    assert(search.didFind)
+    expect(search.found).toStrictEqual({
+      children: {},
+      value: 'value',
+      isTerminal: true
+    })
+  })
+
   it('can provide neighbours for failed searched', () => {
     const tree = new PrefixTree<string>()
     tree.insert('prefix', 'value')

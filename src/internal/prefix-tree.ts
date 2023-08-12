@@ -16,6 +16,7 @@ interface SearchMissed<T> {
 
 export class PrefixTree<V> {
   private readonly base: Record<string, Node<V> | undefined> = {}
+  private readonly mapping: Map<string, V> = new Map()
 
   find (key: string): SearchHit<V> | SearchMissed<V> | undefined {
     let found = this.base[key[0]]
@@ -43,6 +44,22 @@ export class PrefixTree<V> {
     }
   }
 
+  findOrUndefined (key: string): V | undefined {
+    const find = this.find(key)
+    if (find?.didFind && find?.found.isTerminal) {
+      return find.found.value
+    }
+
+    return undefined
+  }
+
+  has (key: string): boolean {
+    const find = this.find(key)
+    // A search returned, and it is terminal (not a partial match)
+    // Or, if no search was found, false
+    return (find?.didFind && find?.found.isTerminal) ?? false
+  }
+
   insert (key: string, value: V): void {
     let found = this.base[key[0]]
     if (!found) {
@@ -56,7 +73,7 @@ export class PrefixTree<V> {
     }
 
     for (const char of key.substring(1)) {
-      if (found.children[key] === undefined) {
+      if (found.children[char] === undefined) {
         found.children[char] = {
           children: {},
           value: undefined,
@@ -72,6 +89,7 @@ export class PrefixTree<V> {
 
     found.value = value
     found.isTerminal = true
+    this.mapping.set(key, value)
   }
 
   delete (key: string): Node<V> | undefined {
@@ -85,6 +103,22 @@ export class PrefixTree<V> {
 
   toString (): string {
     return JSON.stringify(this.base, undefined, 2)
+  }
+
+  values (): V[] {
+    return [...this.mapping.values()]
+  }
+
+  keys (): string[] {
+    return [...this.mapping.keys()]
+  }
+
+  entries (): Array<[string, V]> {
+    return [...this.mapping.entries()]
+  }
+
+  empty (): boolean {
+    return this.mapping.size === 0
   }
 
   private _delete (node: Node<V>, key: string): Node<V> | undefined {

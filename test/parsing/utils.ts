@@ -5,6 +5,7 @@ import { CoercedArguments, coerce } from '../../src/internal/parse/coerce'
 import { tokenise } from '../../src/internal/parse/lexer'
 import { ParsedArguments, parse } from '../../src/internal/parse/parser'
 import { CoercedValue, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
+import { PrefixTree } from '../../src/internal/prefix-tree'
 
 export function makeInternalCommand (
   { name, opts, aliases, description, subcommands }: {
@@ -70,10 +71,10 @@ export function lexAndParse (argStr: string, opts: StoredParserOpts, commands: I
     throw tokens.err
   }
 
-  const commandMap = commands.reduce<Record<string, InternalCommand>>((acc, val) => {
-    acc[val.name] = val
+  const commandMap = commands.reduce<PrefixTree<InternalCommand>>((acc, val) => {
+    acc.insert(val.name, val)
     return acc
-  }, {})
+  }, new PrefixTree())
 
   const parsed = parse(tokens.val, commandMap, opts)
   if (!parsed.ok) {
@@ -85,18 +86,18 @@ export function lexAndParse (argStr: string, opts: StoredParserOpts, commands: I
 
 export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, args: InternalArgument[]): Promise<CoercedArguments> {
   const parsed = lexAndParse(argStr, opts, [])
-  const argMap = args.reduce<Record<string, InternalArgument>>((acc, val) => {
+  const argMap = args.reduce<PrefixTree<InternalArgument>>((acc, val) => {
     if (val.type === 'flag') {
-      acc[val.longFlag] = val
+      acc.insert(val.longFlag, val)
       if (val.shortFlag) {
-        acc[val.shortFlag] = val
+        acc.insert(val.shortFlag, val)
       }
     } else {
-      acc[val.key] = val
+      acc.insert(val.key, val)
     }
 
     return acc
-  }, {})
+  }, new PrefixTree())
 
   const coerced = await coerce(parsed, opts, argMap, opts.defaultMiddlewares)
   if (!coerced.ok) {
