@@ -7,6 +7,4 @@ export abstract class Middleware {
 
   abstract keyExists (key: string, opts: StoredParserOpts): boolean
   abstract resolveKey (key: string, opts: StoredParserOpts): string | undefined
-
-  apply (): void {}
 }
