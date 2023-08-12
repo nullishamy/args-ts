@@ -9,10 +9,13 @@ export interface StoredParserOpts {
   unrecognisedArgument: 'skip' | 'throw'
   tooManyArgs: 'drop' | 'throw'
   tooManyValues: 'drop' | 'throw'
+  tooManyDefinitions: 'drop' | 'throw' | 'overwrite'
+  arrayMultipleDefinitions: 'append' | 'drop' | 'throw' | 'overwrite'
   deprecatedCommands: 'error' | 'unknown-command'
   keyEqualsValueSyntax: boolean
   shortFlagGroups: boolean
   environmentPrefix: string | undefined
+  mustProvideCommand: boolean
 }
 
 // Default to the loudest possible error modes, to alert us of programming errors
@@ -23,7 +26,10 @@ export const defaultParserOpts = {
   deprecatedCommands: 'error',
   shortFlagGroups: true,
   keyEqualsValueSyntax: true,
-  environmentPrefix: undefined
+  environmentPrefix: undefined,
+  mustProvideCommand: true,
+  tooManyDefinitions: 'throw',
+  arrayMultipleDefinitions: 'append'
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>

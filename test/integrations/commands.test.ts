@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/quotes */
+import assert from 'assert'
 import { a, Args, Command, CommandOpts, ParserOpts } from '../../src'
 import { parserOpts } from '../shared'
 import { runCommandExecution } from './utils'
@@ -39,6 +40,30 @@ describe('Command testing', () => {
     expect(result).toBe(undefined)
     expect(cmd.executionFn).toBeCalledTimes(1)
     expect(cmd.parserFn).toBeCalledTimes(1)
+  })
+
+  it('rejects when no command is passed', async () => {
+    const cmd = new MockCommand(parserOpts, {}, 'root')
+    const parser = new Args(parserOpts)
+      .command(['root'], cmd)
+
+    const result = expect(async () => await runCommandExecution(parser, '')).rejects
+    await result.toMatchInlineSnapshot(`[Error: no command provided but one was expected]`)
+  })
+
+  it('passes when commands are not required', async () => {
+    const cmd = new MockCommand(parserOpts, {}, 'root')
+    const parser = new Args({
+      ...parserOpts,
+      mustProvideCommand: false
+    })
+      .command(['root'], cmd)
+
+    const result = await parser.parse('')
+
+    assert(result.ok)
+    assert(result.val.mode === 'args')
+    expect(result.val.args).toStrictEqual({})
   })
 
   it('rejects duplicate command names', () => {

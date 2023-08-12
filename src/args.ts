@@ -240,6 +240,10 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     // If we located a command, tell coerce to use its parser instead of our own
     let coercionResult
+    if (command.isDefault && Object.values(this.commands).length > 0 && this.opts.mustProvideCommand) {
+      return Err(new CommandError('no command provided but one was expected'))
+    }
+
     if (!command.isDefault) {
       const commandParser = command.internal.parser
       coercionResult = await coerce(parseResult.val, commandParser.opts, commandParser.arguments)

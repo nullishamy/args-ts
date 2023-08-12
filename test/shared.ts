@@ -9,5 +9,8 @@ export const parserOpts: StoredParserOpts = {
   deprecatedCommands: 'error',
   shortFlagGroups: true,
   keyEqualsValueSyntax: true,
-  environmentPrefix: undefined
+  environmentPrefix: undefined,
+  mustProvideCommand: true,
+  tooManyDefinitions: 'throw',
+  arrayMultipleDefinitions: 'append'
 } as const

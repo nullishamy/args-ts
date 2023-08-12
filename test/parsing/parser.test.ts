@@ -163,19 +163,19 @@ describe('Parser tests', () => {
     ]))
   })
 
-  it('parses a single long flags without a value', () => {
+  it('parses a single long flag without a value', () => {
     const parsed = lexAndParse('--test', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['test', {
+      ['test', [{
         key: 'test',
         values: [],
         rawInput: '--test',
         type: 'long'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -187,12 +187,58 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['test', {
+      ['test', [{
         key: 'test',
         values: ['value'],
         rawInput: '--test value',
         type: 'long'
-      }]
+      }]]
+    ]))
+    expect(parsed.positionals).toEqual(new Map())
+  })
+
+  it('parses multiple definitions of a long flag', () => {
+    const parsed = lexAndParse('--test value --test value2', parserOpts, [])
+
+    expect(parsed.command).toMatchObject({
+      isDefault: true
+    })
+    expect(parsed.flags).toEqual(new Map([
+      ['test', [{
+        key: 'test',
+        values: ['value'],
+        rawInput: '--test value',
+        type: 'long'
+      },
+      {
+        key: 'test',
+        values: ['value2'],
+        rawInput: '--test value2',
+        type: 'long'
+      }]]
+    ]))
+    expect(parsed.positionals).toEqual(new Map())
+  })
+
+  it('parses multiple definitions of a short flag', () => {
+    const parsed = lexAndParse('-t value -t value2', parserOpts, [])
+
+    expect(parsed.command).toMatchObject({
+      isDefault: true
+    })
+    expect(parsed.flags).toEqual(new Map([
+      ['t', [{
+        key: 't',
+        values: ['value'],
+        rawInput: '-t value',
+        type: 'short-single'
+      },
+      {
+        key: 't',
+        values: ['value2'],
+        rawInput: '-t value2',
+        type: 'short-single'
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -204,18 +250,18 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['test', {
+      ['test', [{
         key: 'test',
         values: [],
         rawInput: '--test',
         type: 'long'
-      }],
-      ['test2', {
+      }]],
+      ['test2', [{
         key: 'test2',
         values: [],
         rawInput: '--test2',
         type: 'long'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -227,18 +273,18 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['test', {
+      ['test', [{
         key: 'test',
         values: ['value1'],
         rawInput: '--test value1',
         type: 'long'
-      }],
-      ['test2', {
+      }]],
+      ['test2', [{
         key: 'test2',
         values: ['value2'],
         rawInput: '--test2 value2',
         type: 'long'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -250,12 +296,12 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['t', {
+      ['t', [{
         key: 't',
         values: [],
         rawInput: '-t',
         type: 'short-single'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -267,12 +313,12 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['t', {
+      ['t', [{
         key: 't',
         values: ['value'],
         rawInput: '-t value',
         type: 'short-single'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })
@@ -284,12 +330,12 @@ describe('Parser tests', () => {
       isDefault: true
     })
     expect(parsed.flags).toEqual(new Map([
-      ['test', {
+      ['test', [{
         key: 'test',
         values: ['value goes here'],
         rawInput: '--test value goes here',
         type: 'long'
-      }]
+      }]]
     ]))
     expect(parsed.positionals).toEqual(new Map())
   })

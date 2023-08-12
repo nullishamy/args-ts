@@ -50,7 +50,7 @@ export interface DefaultCommand {
 
 export interface ParsedArguments {
   command: UserCommand | DefaultCommand
-  flags: Map<string, AnyParsedFlagArgument>
+  flags: Map<string, AnyParsedFlagArgument[]>
   positionals: Map<number, ParsedPositionalArgument>
 }
 
@@ -292,7 +292,7 @@ export function parse (
   opts: StoredParserOpts
 ): Result<ParsedArguments, ParseError> {
   const positionals: Map<number, ParsedPositionalArgument> = new Map()
-  const flags: Map<string, AnyParsedFlagArgument> = new Map()
+  const flags: Map<string, AnyParsedFlagArgument[]> = new Map()
 
   // 1) Determine if we have a command (and maybe) a subcommand passed in the arguments
   const rootKey = parseString(tokens, 'whitespace')
@@ -341,12 +341,14 @@ export function parse (
 
     // Flags with assignable names
     if (type === 'long' || type === 'short-single') {
-      flags.set(flag.key, flag)
+      const definitions = flags.get(flag.key) ?? []
+      definitions.push(flag)
+      flags.set(flag.key, definitions)
     }
 
     if (type === 'short-group') {
       for (const key of flag.flags) {
-        flags.set(key, flag)
+        flags.set(key, [flag])
       }
     }
   }

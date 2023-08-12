@@ -24,10 +24,10 @@ export interface CoercedSingleValue {
   coerced: CoercedValue
 }
 
-function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, argument: InternalFlagArgument, opts: StoredParserOpts): Result<AnyParsedFlagArgument | undefined, CoercionError> {
-  let foundFlag = flags.get(argument.longFlag)
-  if (argument.shortFlag && !foundFlag) {
-    foundFlag = flags.get(argument.shortFlag)
+function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument[]>, argument: InternalFlagArgument, opts: StoredParserOpts): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
+  let foundFlags = flags.get(argument.longFlag)
+  if (argument.shortFlag && !foundFlags) {
+    foundFlags = flags.get(argument.shortFlag)
   }
 
   let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
@@ -49,39 +49,43 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument>, a
     }
   }
 
-  // Groups will be checked for unrecognised flags later
-  if (foundFlag && foundFlag.type === 'short-group') {
-    return Ok(foundFlag)
-  }
-
-  if (!foundFlag && !optional && unspecifiedDefault === undefined && !envHasValue) {
+  // If no definitions were provided
+  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !envHasValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`))
   }
 
-  if (!optional && specifiedDefault === undefined && !foundFlag?.values.length && !envHasValue) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
-  }
+  for (const foundFlag of foundFlags ?? []) {
+    // Groups will be checked for unrecognised flags later
+    if (foundFlag && foundFlag.type === 'short-group') {
+      return Ok(foundFlags)
+    }
 
-  for (const dependency of dependencies) {
-    const dependencyValue = flags.get(dependency)
-    if (!dependencyValue) {
-      return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
+    // If no values were passed to a definition
+    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !envHasValue) {
+      return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
+    }
+
+    for (const dependency of dependencies) {
+      const dependencyValue = flags.get(dependency)
+      if (!dependencyValue) {
+        return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
+      }
+    }
+
+    for (const conflict of conflicts) {
+      const conflictValue = flags.get(conflict)
+      // Require both the argument we're checking against (the base) and the conflict to exist
+      if (conflictValue !== undefined && foundFlags?.length) {
+        return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.map(c => c.rawInput).join(' '), `argument '--${conflict}' conflicts with '--${argument.longFlag}'`))
+      }
+    }
+
+    if (exclusive && flags.size > 1) {
+      return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`))
     }
   }
 
-  for (const conflict of conflicts) {
-    const conflictValue = flags.get(conflict)
-    // Require both the argument we're checking against (the base) and the conflict to exist
-    if (conflictValue !== undefined && foundFlag !== undefined) {
-      return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.rawInput, `argument '--${conflict}' conflicts with '--${argument.longFlag}'`))
-    }
-  }
-
-  if (exclusive && flags.size > 1) {
-    return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`))
-  }
-
-  return Ok(foundFlag)
+  return Ok(foundFlags)
 }
 
 function validatePositionalSchematically (positionals: Map<number, ParsedPositionalArgument>, argument: InternalPositionalArgument, opts: StoredParserOpts): Result<ParsedPositionalArgument | undefined, CoercionError> {
@@ -180,11 +184,11 @@ interface ResolvedDefault {
 
 interface ResolvedUser {
   isDefault: false
-  value: ParsedPositionalArgument | ParsedLongArgument | ParsedShortArgumentSingle
+  value: ParsedPositionalArgument | ParsedLongArgument[] | ParsedShortArgumentSingle[]
 }
 
 async function resolveArgumentDefault (
-  userArgument: ParsedPositionalArgument | AnyParsedFlagArgument | undefined,
+  userArguments: ParsedPositionalArgument | AnyParsedFlagArgument[] | undefined,
   argument: InternalArgument,
   opts: StoredParserOpts
 ): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError>> {
@@ -197,7 +201,7 @@ async function resolveArgumentDefault (
    */
   const { environmentPrefix } = opts
   // Try environment
-  if (environmentPrefix && !userArgument) {
+  if (environmentPrefix && !userArguments) {
     const envValue = process.env[envKey(argument, environmentPrefix)]
     if (envValue) {
       const coercionResult = await parseSingle([envValue], argument)
@@ -220,7 +224,7 @@ async function resolveArgumentDefault (
   // TODO
 
   // No user arg, must fallback to default
-  if (!userArgument) {
+  if (!userArguments) {
     return Ok({
       isDefault: true,
       value: {
@@ -231,43 +235,118 @@ async function resolveArgumentDefault (
     })
   }
 
-  // Now fallback to argument defaults
-  // Groups cant have values, use the defaults
-  if (userArgument.type === 'short-group') {
-    if (argument.type !== 'flag') {
-      throw new InternalError(`argument.type !== flag, got ${argument.type}`)
-    }
-
+  if (!Array.isArray(userArguments)) {
     return Ok({
-      isDefault: true,
-      value: {
-        isMulti: false,
-        raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
-        coerced: argument.inner._meta.specifiedDefault
-      }
+      isDefault: false,
+      value: userArguments
     })
   }
 
-  // No user specified args, fallback
-  if (userArgument.type !== 'positional' && !userArgument.values.length) {
-    if (argument.type !== 'flag') {
-      throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+  // Now fallback to argument defaults
+  // Groups cant have values, use the defaults
+  for (const userArgument of userArguments) {
+    if (userArgument.type === 'short-group') {
+      if (argument.type !== 'flag') {
+        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
+      }
+
+      return Ok({
+        isDefault: true,
+        value: {
+          isMulti: false,
+          raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
+          coerced: argument.inner._meta.specifiedDefault
+        }
+      })
     }
 
-    return Ok({
-      isDefault: true,
-      value: {
-        isMulti: false,
-        raw: `<default value for ${getArgDenotion(argument)}`,
-        coerced: argument.inner._meta.specifiedDefault
+    // No user specified args, fallback
+    if (!userArgument.values.length) {
+      if (argument.type !== 'flag') {
+        throw new InternalError(`argument.type !== flag, got ${argument.type}`)
       }
-    })
+
+      return Ok({
+        isDefault: true,
+        value: {
+          isMulti: false,
+          raw: `<default value for ${getArgDenotion(argument)}`,
+          coerced: argument.inner._meta.specifiedDefault
+        }
+      })
+    }
   }
 
   return Ok({
     isDefault: false,
-    value: userArgument
+    // We filter in the loop above
+    value: userArguments as ParsedLongArgument[] | ParsedShortArgumentSingle[]
   })
+}
+
+function handleMultipleDefinitions (argument: InternalArgument, opts: StoredParserOpts): Result<'overwrite' | 'skip' | 'append', CoercionError> {
+  const { arrayMultipleDefinitions, tooManyDefinitions } = opts
+  if (argument.inner._meta.isMultiType) {
+    if (arrayMultipleDefinitions === 'append') {
+      return Ok('append')
+    } else if (arrayMultipleDefinitions === 'throw') {
+      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`))
+    } else if (arrayMultipleDefinitions === 'drop') {
+      return Ok('skip')
+    } else if (arrayMultipleDefinitions === 'overwrite') {
+      return Ok('overwrite')
+    }
+  } else {
+    if (tooManyDefinitions === 'throw') {
+      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`))
+    } else if (tooManyDefinitions === 'drop') {
+      return Ok('skip')
+    } else if (tooManyDefinitions === 'overwrite') {
+      return Ok('overwrite')
+    }
+  }
+
+  throw new InternalError(`unhandled: array: ${arrayMultipleDefinitions} tooMany: ${tooManyDefinitions}`)
+}
+
+function handleDefinitionChecking (
+  definition: AnyParsedFlagArgument,
+  internalArgs: Record<string, InternalArgument>,
+  opts: StoredParserOpts
+): Result<'break' | 'continue', CoercionError[]> {
+  if (definition.type === 'short-group') {
+    for (const flag of definition.flags) {
+      const argument = internalArgs[flag]
+
+      // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
+      if (!argument) {
+        const { unrecognisedArgument } = opts
+        if (unrecognisedArgument === 'throw') {
+          return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised flag '${flag}' in group '${definition.flags.join('')}'`)])
+        }
+
+        // Otherwise, skip it
+        continue
+      }
+    }
+
+    return Ok('break')
+  }
+
+  const argument = internalArgs[definition.key]
+
+  // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
+  if (argument === undefined) {
+    const { unrecognisedArgument } = opts
+    if (unrecognisedArgument === 'throw') {
+      return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised argument '${definition.rawInput}'`)])
+    }
+
+    // Otherwise, skip it
+    return Ok('break')
+  }
+
+  return Ok('continue')
 }
 
 export async function coerce (
@@ -297,7 +376,9 @@ export async function coerce (
       findResult = validatePositionalSchematically(positionals, argument, opts)
     }
 
-    if (!findResult.ok) { return Err([findResult.err]) }
+    if (!findResult.ok) {
+      return Err([findResult.err])
+    }
 
     const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts)
 
@@ -311,8 +392,25 @@ export async function coerce (
 
     let userArgument = defaultOrValue.value
 
+    // Multiple definitions found, let's see what we should do with them
+    if (Array.isArray(userArgument) && userArgument.length > 1) {
+      const multipleBehaviourResult = handleMultipleDefinitions(argument, opts)
+      if (!multipleBehaviourResult.ok) {
+        return multipleBehaviourResult
+      }
+
+      if (multipleBehaviourResult.val === 'overwrite') {
+        // Only take the last definition
+        userArgument = userArgument.slice(-1)
+      } else if (multipleBehaviourResult.val === 'skip') {
+        // Only take the first definition
+        userArgument = userArgument.slice(0, 1)
+      }
+      // Otherwise, 'append', take them all
+    }
+
     // Collate all positionals together into this one, if the positional is a multi-type
-    if (userArgument.type === 'positional' && argument.inner._meta.isMultiType) {
+    if (!Array.isArray(userArgument) && argument.inner._meta.isMultiType) {
       const positionalValues = [...positionals.values()].flatMap(p => p.values)
       userArgument = {
         type: 'positional',
@@ -323,7 +421,13 @@ export async function coerce (
     }
 
     // If the user did end up passing values (we didn't fall back to a default), run the coercion on them
-    let inputValues = userArgument.values
+    let inputValues
+
+    if (Array.isArray(userArgument)) {
+      inputValues = userArgument.flatMap(u => u.values)
+    } else {
+      inputValues = userArgument.values
+    }
 
     // User passed more than one argument, and this is not a multi type
     if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
@@ -360,37 +464,16 @@ export async function coerce (
   }
 
   // Then, iterate the parsed values, to weed out excess arguments
-  for (const value of flags.values()) {
-    if (value.type === 'short-group') {
-      for (const flag of value.flags) {
-        const argument = internalArgs[flag]
-
-        // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
-        if (!argument) {
-          const { unrecognisedArgument } = opts
-          if (unrecognisedArgument === 'throw') {
-            return Err([new CoercionError('<nothing>', value.rawInput, `unrecognised flag '${flag}' in group '${value.flags.join('')}'`)])
-          }
-
-          // Otherwise, skip it
-          continue
-        }
+  for (const definitions of flags.values()) {
+    for (const definition of definitions) {
+      const result = handleDefinitionChecking(definition, internalArgs, opts)
+      if (!result.ok) {
+        return result
       }
 
-      break
-    }
-
-    const argument = internalArgs[value.key]
-
-    // If we do not find an argument to match the given value, follow config to figure out what to do for unknown arguments
-    if (!argument) {
-      const { unrecognisedArgument } = opts
-      if (unrecognisedArgument === 'throw') {
-        return Err([new CoercionError('<nothing>', value.rawInput, `unrecognised argument '${value.rawInput}'`)])
+      if (result.val === 'break') {
+        break
       }
-
-      // Otherwise, skip it
-      continue
     }
   }
 
