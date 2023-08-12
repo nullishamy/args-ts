@@ -1,3 +1,5 @@
 export * from './argument'
+export * from './middleware'
 export * from './command'
-export * as a from './defaults'
+export * from './default-middlewares'
+export * as a from './default-arguments'

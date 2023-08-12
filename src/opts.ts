@@ -1,3 +1,6 @@
+import { Middleware } from './builder'
+import { EnvironmentMiddleware } from './builder/'
+
 type MakePassedOpts<TOpts, TDefaults extends keyof TOpts> = (
   & Omit<TOpts, TDefaults>
   & Partial<Pick<TOpts, TDefaults>>
@@ -16,6 +19,7 @@ export interface StoredParserOpts {
   shortFlagGroups: boolean
   environmentPrefix: string | undefined
   mustProvideCommand: boolean
+  defaultMiddlewares: Middleware[]
 }
 
 // Default to the loudest possible error modes, to alert us of programming errors
@@ -29,7 +33,10 @@ export const defaultParserOpts = {
   environmentPrefix: undefined,
   mustProvideCommand: true,
   tooManyDefinitions: 'throw',
-  arrayMultipleDefinitions: 'append'
+  arrayMultipleDefinitions: 'append',
+  defaultMiddlewares: [
+    new EnvironmentMiddleware('env')
+  ] as Middleware[]
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>

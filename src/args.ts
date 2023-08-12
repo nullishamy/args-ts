@@ -1,4 +1,4 @@
-import { Command, MinimalArgument } from './builder'
+import { Command, Middleware, MinimalArgument } from './builder'
 import { CoercionError, CommandError, ParseError, SchemaError } from './error'
 import { generateHelp } from './util/help'
 import { coerce, CoercedMultiValue, CoercedSingleValue } from './internal/parse/coerce'
@@ -35,6 +35,7 @@ export interface DefaultArgTypes {
 export class Args<TArgTypes = DefaultArgTypes> {
   public arguments: Record<string, InternalArgument> = {}
   public commands: Record<string, InternalCommand> = {}
+  public middlewares: Middleware[] = []
   public footerLines: string[] = []
   public headerLines: string[] = []
 
@@ -47,6 +48,11 @@ export class Args<TArgTypes = DefaultArgTypes> {
       ...defaultParserOpts,
       ...opts
     }
+  }
+
+  public middleware (middleware: Middleware): Args<TArgTypes> {
+    this.middlewares.push(middleware)
+    return this
   }
 
   public command<TName extends string, TCommand extends Command> (
@@ -246,9 +252,14 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     if (!command.isDefault) {
       const commandParser = command.internal.parser
-      coercionResult = await coerce(parseResult.val, commandParser.opts, commandParser.arguments)
+      coercionResult = await coerce(
+        parseResult.val,
+        commandParser.opts,
+        commandParser.arguments,
+        [...commandParser.opts.defaultMiddlewares, ...commandParser.middlewares]
+      )
     } else {
-      coercionResult = await coerce(parseResult.val, this.opts, this.arguments)
+      coercionResult = await coerce(parseResult.val, this.opts, this.arguments, [...this.opts.defaultMiddlewares, ...this.middlewares])
     }
 
     if (!coercionResult.ok) {

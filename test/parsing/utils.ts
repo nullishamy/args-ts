@@ -98,7 +98,7 @@ export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, ar
     return acc
   }, {})
 
-  const coerced = await coerce(parsed, opts, argMap)
+  const coerced = await coerce(parsed, opts, argMap, opts.defaultMiddlewares)
   if (!coerced.ok) {
     assert(Array.isArray(coerced.err))
     throw new Error(coerced.err.map(e => e.message).join('\n'))

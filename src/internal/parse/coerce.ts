@@ -1,4 +1,4 @@
-import { CoercionResult, MinimalArgument } from '../../builder'
+import { CoercionResult, Middleware, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { Err, Ok, Result } from '../result'
@@ -25,21 +25,26 @@ export interface CoercedSingleValue {
   coerced: CoercedValue
 }
 
-function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument[]>, argument: InternalFlagArgument, opts: StoredParserOpts): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
+function validateFlagSchematically (
+  flags: Map<string, AnyParsedFlagArgument[]>,
+  argument: InternalFlagArgument,
+  opts: StoredParserOpts,
+  middlewares: Middleware[]
+): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
   let foundFlags = flags.get(argument.longFlag)
   if (argument.shortFlag && !foundFlags) {
     foundFlags = flags.get(argument.shortFlag)
   }
 
   let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
-  const { environmentPrefix } = opts
 
-  // We need to do env lookup here to determine if some sort of value exists, so that we can correctly compute optional behaviour for the arg
-  let envHasValue: boolean
-  if (environmentPrefix) {
-    envHasValue = !!process.env[envKey(argument, environmentPrefix)]
-  } else {
-    envHasValue = false
+  // Test our middlewares to see if any of them have a value, so we know whether to reject below
+  let middlewaresHaveValue = false
+
+  for (const middleware of middlewares) {
+    if (middleware.keyExists(argument.longFlag, opts)) {
+      middlewaresHaveValue = true
+    }
   }
 
   // Must be at the top, we modify `optional` behaviour
@@ -51,7 +56,7 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument[]>,
   }
 
   // If no definitions were provided
-  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !envHasValue) {
+  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !middlewaresHaveValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`))
   }
 
@@ -62,7 +67,7 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument[]>,
     }
 
     // If no values were passed to a definition
-    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !envHasValue) {
+    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !middlewaresHaveValue) {
       return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
     }
 
@@ -89,21 +94,25 @@ function validateFlagSchematically (flags: Map<string, AnyParsedFlagArgument[]>,
   return Ok(foundFlags)
 }
 
-function validatePositionalSchematically (positionals: Map<number, ParsedPositionalArgument>, argument: InternalPositionalArgument, opts: StoredParserOpts): Result<ParsedPositionalArgument | undefined, CoercionError> {
+function validatePositionalSchematically (
+  positionals: Map<number, ParsedPositionalArgument>,
+  argument: InternalPositionalArgument,
+  opts: StoredParserOpts,
+  middlewares: Middleware[]
+): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
   const { unspecifiedDefault, optional } = argument.inner._meta
 
-  const { environmentPrefix } = opts
+  // Test our middlewares to see if any of them have a value, so we know whether to reject below
+  let middlewaresHaveValue = false
 
-  // We need to do env lookup here to determine if some sort of value exists, so that we can correctly compute optional behaviour for the arg
-  let envHasValue: boolean
-  if (environmentPrefix) {
-    envHasValue = !!process.env[envKey(argument, environmentPrefix)]
-  } else {
-    envHasValue = false
+  for (const middleware of middlewares) {
+    if (middleware.keyExists(argument.key, opts)) {
+      middlewaresHaveValue = true
+    }
   }
 
-  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !envHasValue) {
+  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !middlewaresHaveValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
   }
 
@@ -246,11 +255,6 @@ function validateCommand (command: UserCommand, opts: StoredParserOpts): Result<
   return Ok(undefined)
 }
 
-function envKey (argument: InternalArgument, prefix: string): string {
-  const key = (argument.type === 'flag' ? argument.longFlag : argument.key).toUpperCase()
-  return `${prefix}_${key}`
-}
-
 interface ResolvedDefault {
   isDefault: true
   value: CoercedSingleValue | CoercedMultiValue
@@ -264,38 +268,37 @@ interface ResolvedUser {
 async function resolveArgumentDefault (
   userArguments: ParsedPositionalArgument | AnyParsedFlagArgument[] | undefined,
   argument: InternalArgument,
-  opts: StoredParserOpts
+  opts: StoredParserOpts,
+  middlewares: Middleware[]
 ): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError[]>> {
-  /**
-   * Resolution priority
-   * 1) User args (returned at the bottom, if the conditions for defaults are not met)
-   * 2) Environment
-   * 3) Config file (TODO)
-   * 4) Argument defaults
-   */
-  const { environmentPrefix } = opts
-  // Try environment
-  if (environmentPrefix && !userArguments) {
-    const envValue = process.env[envKey(argument, environmentPrefix)]
-    if (envValue) {
-      const coercionResult = await parseSingle([envValue], argument)
-      if (!coercionResult.ok) {
-        return coercionResult
-      }
+  // Only attempt middleware resolution if the user args are not set
+  if (!userArguments) {
+    const key = argument.type === 'flag' ? argument.longFlag : argument.key
 
-      return Ok({
-        isDefault: true,
-        value: {
-          isMulti: false,
-          raw: `<default value (env) for ${getArgDenotion(argument)}>`,
-          coerced: coercionResult.val.coerced
+    for (const middleware of middlewares) {
+      if (middleware.keyExists(key, opts)) {
+        const value = middleware.resolveKey(key, opts)
+
+        if (!value) {
+          continue
         }
-      })
+
+        const coercionResult = await parseSingle([value], argument)
+        if (!coercionResult.ok) {
+          return coercionResult
+        }
+
+        return Ok({
+          isDefault: true,
+          value: {
+            isMulti: false,
+            raw: `<default value (from middleware '${middleware.identifier}') for ${getArgDenotion(argument)}>`,
+            coerced: coercionResult.val.coerced
+          }
+        })
+      }
     }
   }
-
-  // Try config files
-  // TODO
 
   // No user arg, must fallback to default
   if (!userArguments) {
@@ -426,7 +429,8 @@ function handleDefinitionChecking (
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
-  internalArgs: Record<string, InternalArgument>
+  internalArgs: Record<string, InternalArgument>,
+  middlewares: Middleware[]
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
   const { command, flags, positionals } = args
@@ -445,16 +449,16 @@ export async function coerce (
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult
     if (argument.type === 'flag') {
-      findResult = validateFlagSchematically(flags, argument, opts)
+      findResult = validateFlagSchematically(flags, argument, opts, middlewares)
     } else {
-      findResult = validatePositionalSchematically(positionals, argument, opts)
+      findResult = validatePositionalSchematically(positionals, argument, opts, middlewares)
     }
 
     if (!findResult.ok) {
       return Err([findResult.err])
     }
 
-    const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts)
+    const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts, middlewares)
 
     if (!resolutionResult.ok) { return resolutionResult }
 
