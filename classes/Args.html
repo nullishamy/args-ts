@@ -23,7 +23,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">Args</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L35">args.ts:35</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L36">args.ts:36</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -39,6 +39,7 @@
 <a href="Args.html#commands" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>commands</span></a>
 <a href="Args.html#footerLines" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>footer<wbr/>Lines</span></a>
 <a href="Args.html#headerLines" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>header<wbr/>Lines</span></a>
+<a href="Args.html#middlewares" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>middlewares</span></a>
 <a href="Args.html#opts" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>opts</span></a>
 <a href="Args.html#positionalIndex" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>positional<wbr/>Index</span></a>
 </div></section>
@@ -50,6 +51,7 @@
 <a href="Args.html#header" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>header</span></a>
 <a href="Args.html#help" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>help</span></a>
 <a href="Args.html#intoObject" class="tsd-index-link tsd-kind-method tsd-parent-kind-class tsd-is-private"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>into<wbr/>Object</span></a>
+<a href="Args.html#middleware" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>middleware</span></a>
 <a href="Args.html#parse" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>parse</span></a>
 <a href="Args.html#positional" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>positional</span></a>
 <a href="Args.html#reset" class="tsd-index-link tsd-kind-method tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg><span>reset</span></a>
@@ -74,39 +76,44 @@
 <h5>opts: <a href="../types/ParserOpts.html" class="tsd-signature-type" data-tsd-kind="Type alias">ParserOpts</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L45">args.ts:45</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L48">args.ts:48</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="arguments" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>arguments</span><a href="#arguments" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">arguments<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
+<div class="tsd-signature">arguments<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PrefixTree</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L36">args.ts:36</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L37">args.ts:37</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="commands" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>commands</span><a href="#commands" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">InternalCommand</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = {}</span></div><aside class="tsd-sources">
+<div class="tsd-signature">commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PrefixTree</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalCommand</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L37">args.ts:37</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L38">args.ts:38</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="footerLines" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>footer<wbr/>Lines</span><a href="#footerLines" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">footer<wbr/>Lines<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L38">args.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L41">args.ts:41</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="headerLines" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>header<wbr/>Lines</span><a href="#headerLines" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">header<wbr/>Lines<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L39">args.ts:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L42">args.ts:42</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="middlewares" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>middlewares</span><a href="#middlewares" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">middlewares<span class="tsd-signature-symbol">:</span> <a href="Middleware.html" class="tsd-signature-type" data-tsd-kind="Class">Middleware</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L40">args.ts:40</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="opts" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>opts</span><a href="#opts" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">opts<span class="tsd-signature-symbol">:</span> <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L41">args.ts:41</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L44">args.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="positionalIndex" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>positional<wbr/>Index</span><a href="#positionalIndex" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">positional<wbr/>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L43">args.ts:43</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L46">args.ts:46</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="arg" class="tsd-anchor"></a>
@@ -130,7 +137,7 @@
 <h5>declaration: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L120">args.ts:120</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L128">args.ts:128</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="command" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>command</span><a href="#command" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -154,7 +161,7 @@
 <h5>inherit: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L52">args.ts:52</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L60">args.ts:60</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="footer" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>footer</span><a href="#footer" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -169,7 +176,7 @@
 <h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L205">args.ts:205</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L213">args.ts:213</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="header" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>header</span><a href="#header" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -184,7 +191,7 @@
 <h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L215">args.ts:215</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L223">args.ts:223</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="help" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>help</span><a href="#help" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -192,7 +199,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L201">args.ts:201</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L209">args.ts:209</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="intoObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>into<wbr/>Object</span><a href="#intoObject" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
@@ -205,7 +212,20 @@
 <h5>coerced: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">CoercedMultiValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CoercedSingleValue</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L173">args.ts:173</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L181">args.ts:181</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="middleware" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>middleware</span><a href="#middleware" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+<li class="tsd-signature tsd-anchor-link" id="middleware.middleware-1">middleware<span class="tsd-signature-symbol">(</span>middleware<span class="tsd-signature-symbol">: </span><a href="Middleware.html" class="tsd-signature-type" data-tsd-kind="Class">Middleware</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#middleware.middleware-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>middleware: <a href="Middleware.html" class="tsd-signature-type" data-tsd-kind="Class">Middleware</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L55">args.ts:55</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="parse" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>parse</span><a href="#parse" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -220,7 +240,7 @@
 <h5>executeCommands: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ParseSuccess</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ParseError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CommandError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CoercionError</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L225">args.ts:225</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L233">args.ts:233</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="positional" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>positional</span><a href="#positional" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -242,7 +262,7 @@
 <h5>declaration: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L97">args.ts:97</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L105">args.ts:105</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="reset" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>reset</span><a href="#reset" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -250,7 +270,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L292">args.ts:292</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L305">args.ts:305</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="validate" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>validate</span><a href="#validate" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -258,7 +278,7 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">SchemaError</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/064d4b0/src/args.ts#L183">args.ts:183</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/c1d43f4/src/args.ts#L191">args.ts:191</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -291,6 +311,7 @@
 <li class="tsd-kind-property tsd-parent-kind-class"><a href="Args.html#commands" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>commands</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class"><a href="Args.html#footerLines" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>footer<wbr/>Lines</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class"><a href="Args.html#headerLines" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>header<wbr/>Lines</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="Args.html#middlewares" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>middlewares</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class"><a href="Args.html#opts" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>opts</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="Args.html#positionalIndex" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>positional<wbr/>Index</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#arg" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>arg</a></li>
@@ -299,6 +320,7 @@
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#header" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>header</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#help" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>help</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="Args.html#intoObject" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>into<wbr/>Object</a></li>
+<li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#middleware" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>middleware</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#parse" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>parse</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#positional" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>positional</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="Args.html#reset" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>reset</a></li>
