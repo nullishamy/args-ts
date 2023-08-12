@@ -336,6 +336,9 @@ async function resolveArgumentDefault (
         }
       })
     }
+    if (userArgument.negated) {
+      argument.inner.negate()
+    }
 
     // No user specified args, fallback
     if (!userArgument.values.length) {

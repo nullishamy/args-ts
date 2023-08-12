@@ -600,6 +600,25 @@ describe('Logical argument testing', () => {
     const result = await runArgsExecution(parser, '--enum x')
     expect(result.enum).toEqual('x')
   })
+
+  it('negates booleans based on prefix', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--bool'], a.bool())
+
+    const result = await runArgsExecution(parser, '--no-bool')
+    expect(result.bool).toEqual(false)
+  })
+
+  it('negates booleans based on configured prefix', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      negatedBooleanPrefix: 'nope-'
+    })
+      .arg(['--bool'], a.bool())
+
+    const result = await runArgsExecution(parser, '--nope-bool')
+    expect(result.bool).toEqual(false)
+  })
 })
 
 describe('Array testing', () => {

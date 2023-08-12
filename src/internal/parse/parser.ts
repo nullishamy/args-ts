@@ -13,6 +13,7 @@ export interface ParsedLongArgument extends ParsedArgumentBase {
   type: 'long'
   key: string
   values: string[]
+  negated: boolean
 }
 
 // -fvf
@@ -26,6 +27,7 @@ export interface ParsedShortArgumentSingle extends ParsedArgumentBase {
   type: 'short-single'
   key: string
   values: string[]
+  negated: boolean
 }
 
 // <value>
@@ -179,6 +181,8 @@ function parseLongFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<P
     return flagName
   }
 
+  const negated = flagName.val.startsWith(opts.negatedBooleanPrefix)
+
   const values = []
   const tokensToSkip: TokenType[] = ['whitespace']
   if (opts.keyEqualsValueSyntax) {
@@ -195,17 +199,19 @@ function parseLongFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<P
   if (!values.length) {
     return Ok({
       rawInput: `--${flagName.val}`,
-      key: flagName.val,
+      key: negated ? flagName.val.substring(opts.negatedBooleanPrefix.length) : flagName.val,
       type: 'long',
-      values: []
+      values: [],
+      negated
     })
   }
 
   return Ok({
     rawInput: `--${flagName.val} ${values.join(' ')}`,
-    key: flagName.val,
+    key: negated ? flagName.val.substring(opts.negatedBooleanPrefix.length) : flagName.val,
     type: 'long',
-    values
+    values,
+    negated
   })
 }
 
@@ -214,6 +220,8 @@ function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<
   if (!flagName.ok) {
     return flagName
   }
+
+  const negated = flagName.val.startsWith(opts.negatedBooleanPrefix)
 
   const tokensToSkip: TokenType[] = ['whitespace']
   if (opts.keyEqualsValueSyntax) {
@@ -232,9 +240,10 @@ function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<
   if (!values.length && flagName.val.length === 1) {
     return Ok({
       rawInput: `-${flagName.val}`,
-      key: flagName.val,
+      key: negated ? flagName.val.substring(opts.negatedBooleanPrefix.length) : flagName.val,
       type: 'short-single',
-      values: []
+      values: [],
+      negated
     })
   }
 
@@ -254,9 +263,10 @@ function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<
 
   return Ok({
     rawInput: `-${flagName.val} ${values.join(' ')}`,
-    key: flagName.val,
+    key: negated ? flagName.val.substring(opts.negatedBooleanPrefix.length) : flagName.val,
     type: 'short-single',
-    values
+    values,
+    negated
   })
 }
 

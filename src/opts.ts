@@ -19,6 +19,7 @@ export interface StoredParserOpts {
   shortFlagGroups: boolean
   environmentPrefix: string | undefined
   mustProvideCommand: boolean
+  negatedBooleanPrefix: string
   defaultMiddlewares: Middleware[]
 }
 
@@ -32,6 +33,7 @@ export const defaultParserOpts = {
   keyEqualsValueSyntax: true,
   environmentPrefix: undefined,
   mustProvideCommand: true,
+  negatedBooleanPrefix: 'no-',
   tooManyDefinitions: 'throw',
   arrayMultipleDefinitions: 'append',
   defaultMiddlewares: [

@@ -174,6 +174,7 @@ describe('Parser tests', () => {
         key: 'test',
         values: [],
         rawInput: '--test',
+        negated: false,
         type: 'long'
       }]]
     ]))
@@ -190,6 +191,7 @@ describe('Parser tests', () => {
       ['test', [{
         key: 'test',
         values: ['value'],
+        negated: false,
         rawInput: '--test value',
         type: 'long'
       }]]
@@ -207,12 +209,14 @@ describe('Parser tests', () => {
       ['test', [{
         key: 'test',
         values: ['value'],
+        negated: false,
         rawInput: '--test value',
         type: 'long'
       },
       {
         key: 'test',
         values: ['value2'],
+        negated: false,
         rawInput: '--test value2',
         type: 'long'
       }]]
@@ -231,11 +235,13 @@ describe('Parser tests', () => {
         key: 't',
         values: ['value'],
         rawInput: '-t value',
+        negated: false,
         type: 'short-single'
       },
       {
         key: 't',
         values: ['value2'],
+        negated: false,
         rawInput: '-t value2',
         type: 'short-single'
       }]]
@@ -254,11 +260,13 @@ describe('Parser tests', () => {
         key: 'test',
         values: [],
         rawInput: '--test',
+        negated: false,
         type: 'long'
       }]],
       ['test2', [{
         key: 'test2',
         values: [],
+        negated: false,
         rawInput: '--test2',
         type: 'long'
       }]]
@@ -277,12 +285,14 @@ describe('Parser tests', () => {
         key: 'test',
         values: ['value1'],
         rawInput: '--test value1',
+        negated: false,
         type: 'long'
       }]],
       ['test2', [{
         key: 'test2',
         values: ['value2'],
         rawInput: '--test2 value2',
+        negated: false,
         type: 'long'
       }]]
     ]))
@@ -299,6 +309,7 @@ describe('Parser tests', () => {
       ['t', [{
         key: 't',
         values: [],
+        negated: false,
         rawInput: '-t',
         type: 'short-single'
       }]]
@@ -316,6 +327,7 @@ describe('Parser tests', () => {
       ['t', [{
         key: 't',
         values: ['value'],
+        negated: false,
         rawInput: '-t value',
         type: 'short-single'
       }]]
@@ -333,6 +345,7 @@ describe('Parser tests', () => {
       ['test', [{
         key: 'test',
         values: ['value goes here'],
+        negated: false,
         rawInput: '--test value goes here',
         type: 'long'
       }]]

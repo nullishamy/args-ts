@@ -28,7 +28,7 @@ interface ArgumentMeta<T> {
   otherParsers: Array<MinimalArgument<CoercedValue>>
 }
 
-export type MinimalArgument<T> = Pick<Argument<T>, '_meta' | 'coerce' | 'type'>
+export type MinimalArgument<T> = Pick<Argument<T>, '_meta' | 'coerce' | 'type' | 'negate'>
 
 export abstract class Argument<T> {
   protected _specifiedDefault: T | undefined = undefined
@@ -41,6 +41,7 @@ export abstract class Argument<T> {
   protected _isMultiType: boolean = false
   protected _exclusive: boolean = false
   protected _otherParsers: Array<MinimalArgument<CoercedValue>> = []
+  protected _negated: boolean = false
 
   // Internal getter to avoid cluttering completion with ^ our private fields that need to be accessed by other internal APIs
   // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by outside people (assuming they do not break type safety)
@@ -95,6 +96,16 @@ export abstract class Argument<T> {
    */
   public requireUnlessPresent (arg: `--${string}`): Argument<T> {
     this._requiredUnlessPresent.push(arg.substring(2))
+    return this
+  }
+
+  /**
+   * Inverts the negation status for this argument. Negation is handled independently (or not at all)
+   * by each argument type as it coerces a value.
+   * @returns this
+   */
+  public negate (): Argument<T> {
+    this._negated = !this._negated
     return this
   }
 

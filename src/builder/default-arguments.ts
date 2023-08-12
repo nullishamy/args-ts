@@ -102,6 +102,12 @@ class BooleanArgument extends Argument<boolean> {
     super._optional = true
   }
 
+  negate (): Argument<boolean> {
+    this._specifiedDefault = !this._specifiedDefault
+    this._unspecifiedDefault = !this._unspecifiedDefault
+    return this
+  }
+
   async coerce (value: string): Promise<CoercionResult<boolean>> {
     if (!(value === 'true' || value === 'false')) {
       return this.err(value, new Error(`'${value}' is not a boolean`))
