@@ -93,6 +93,91 @@ class NumberArgument extends Argument<number> {
     return this
   }
 }
+class DecimalArgument extends Argument<number> {
+  private _lowerBound: number | undefined = undefined
+  private _upperBound: number | undefined = undefined
+
+  constructor () {
+    super('decimal')
+  }
+
+  async coerce (value: string): Promise<CoercionResult<number>> {
+    const num = parseFloat(value)
+    if (isNaN(num)) {
+      return this.err(value, new Error(`'${value}' is not a number`))
+    }
+
+    if (this._lowerBound && num < this._lowerBound) {
+      return this.err(value, new Error(`${value} is less than lower bound ${this._lowerBound}`))
+    }
+
+    if (this._upperBound && num > this._upperBound) {
+      return this.err(value, new Error(`${value} is greater than upper bound ${this._upperBound}`))
+    }
+
+    return this.ok(value, num)
+  }
+
+  lowerBound (bound: number): DecimalArgument {
+    this._lowerBound = bound
+    return this
+  }
+
+  upperBound (bound: number): DecimalArgument {
+    this._upperBound = bound
+    return this
+  }
+
+  inRange (lowerBound: number, upperBound: number): DecimalArgument {
+    this._lowerBound = lowerBound
+    this._upperBound = upperBound
+    return this
+  }
+}
+
+class BigIntArgument extends Argument<bigint> {
+  private _lowerBound: bigint | undefined = undefined
+  private _upperBound: bigint | undefined = undefined
+
+  constructor () {
+    super('bigint')
+  }
+
+  async coerce (value: string): Promise<CoercionResult<bigint>> {
+    let num
+    try {
+      num = BigInt(value)
+    } catch {
+      return this.err(value, new Error(`'${value}' is not a bigint`))
+    }
+
+    if (this._lowerBound && num < this._lowerBound) {
+      return this.err(value, new Error(`${value} is less than lower bound ${this._lowerBound}`))
+    }
+
+    if (this._upperBound && num > this._upperBound) {
+      return this.err(value, new Error(`${value} is greater than upper bound ${this._upperBound}`))
+    }
+
+    return this.ok(value, num)
+  }
+
+  lowerBound (bound: bigint): BigIntArgument {
+    this._lowerBound = bound
+    return this
+  }
+
+  upperBound (bound: bigint): BigIntArgument {
+    this._upperBound = bound
+    return this
+  }
+
+  inRange (lowerBound: bigint, upperBound: bigint): BigIntArgument {
+    this._lowerBound = lowerBound
+    this._upperBound = upperBound
+    return this
+  }
+}
 
 class BooleanArgument extends Argument<boolean> {
   constructor () {
@@ -103,6 +188,7 @@ class BooleanArgument extends Argument<boolean> {
   }
 
   negate (): Argument<boolean> {
+    super.negate()
     this._specifiedDefault = !this._specifiedDefault
     this._unspecifiedDefault = !this._unspecifiedDefault
     return this
@@ -135,6 +221,8 @@ class EnumArgument<T extends readonly string[]> extends Argument<T[number]> {
 export const string = makeExport<StringArgument, typeof StringArgument>(StringArgument)
 export const number = makeExport<NumberArgument, typeof NumberArgument>(NumberArgument)
 export const bool = makeExport<BooleanArgument, typeof BooleanArgument>(BooleanArgument)
+export const decimal = makeExport<DecimalArgument, typeof DecimalArgument>(DecimalArgument)
+export const bigint = makeExport<BigIntArgument, typeof BigIntArgument>(BigIntArgument)
 
 class CustomArgument<T> extends Argument<T> {
   constructor (private readonly cb: (value: string) => CoercionResult<T> | Promise<CoercionResult<T>>) {

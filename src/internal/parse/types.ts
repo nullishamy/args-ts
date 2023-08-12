@@ -39,4 +39,4 @@ export interface RuntimeValue {
   parsed: unknown[]
 }
 
-export type CoercedValue = string | boolean | number | undefined | object
+export type CoercedValue = string | boolean | number | undefined | object | bigint

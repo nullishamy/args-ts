@@ -13,6 +13,22 @@ describe('Flag integrations', () => {
     expect(result.boolean).toBe(true)
   })
 
+  it('can parse decimals', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--decimal'], a.decimal())
+
+    const result = await runArgsExecution(parser, '--decimal 1.234')
+    expect(result.decimal).toBe(1.234)
+  })
+
+  it('can parse bigints', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--chonk'], a.bigint())
+
+    const result = await runArgsExecution(parser, '--chonk 1234567891011121314')
+    expect(result.chonk).toBe(1234567891011121314n)
+  })
+
   it('can parse from an array', async () => {
     const parser = new Args(parserOpts)
       .arg(['--boolean'], a.bool())
@@ -618,6 +634,17 @@ describe('Logical argument testing', () => {
 
     const result = await runArgsExecution(parser, '--nope-bool')
     expect(result.bool).toEqual(false)
+  })
+
+  it('disables boolean negation if the prefix is empty', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      negatedBooleanPrefix: ''
+    })
+      .arg(['--bool'], a.bool())
+
+    const result = expect(async () => await runArgsExecution(parser, '--no-bool'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '--no-bool', expected '<nothing>' received '--no-bool']`)
   })
 })
 
