@@ -98,7 +98,7 @@ export class PrefixTree<V> {
       return undefined
     }
 
-    return this._delete(root, key)
+    return this._delete(root, key.substring(1))
   }
 
   toString (): string {
@@ -141,5 +141,6 @@ export class PrefixTree<V> {
     }
 
     node.children[key[0]] = this._delete(newChild, key.substring(1))
+    return node
   }
 }

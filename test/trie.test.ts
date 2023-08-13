@@ -76,4 +76,30 @@ describe('Trie tests', () => {
       isTerminal: false
     })
   })
+
+  it('can delete nodes', () => {
+    const tree = new PrefixTree<string>()
+    tree.insert('prefix', 'value')
+    tree.insert('prefax', 'value')
+
+    tree.delete('prefix')
+    expect(tree).toMatchSnapshot()
+  })
+
+  it('can fetch neighbours after deleting nearby nodes', () => {
+    const tree = new PrefixTree<string>()
+    tree.insert('prefix', 'value')
+    tree.insert('prefax', 'value')
+
+    tree.delete('prefix')
+
+    const near = tree.find('prefax')
+    assert(near !== undefined)
+    assert(near.didFind)
+    expect(near.found).toStrictEqual({
+      children: {},
+      value: 'value',
+      isTerminal: true
+    })
+  })
 })

@@ -1,5 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Trie tests can delete nodes 1`] = `
+PrefixTree {
+  "base": {
+    "p": {
+      "children": {
+        "r": {
+          "children": {
+            "e": {
+              "children": {
+                "f": {
+                  "children": {
+                    "a": {
+                      "children": {
+                        "x": {
+                          "children": {},
+                          "isTerminal": true,
+                          "value": "value",
+                        },
+                      },
+                      "isTerminal": false,
+                      "value": undefined,
+                    },
+                    "i": {
+                      "children": {
+                        "x": undefined,
+                      },
+                      "isTerminal": false,
+                      "value": undefined,
+                    },
+                  },
+                  "isTerminal": false,
+                  "value": undefined,
+                },
+              },
+              "isTerminal": false,
+              "value": undefined,
+            },
+          },
+          "isTerminal": false,
+          "value": undefined,
+        },
+      },
+      "isTerminal": false,
+      "value": undefined,
+    },
+  },
+  "mapping": Map {
+    "prefix" => "value",
+    "prefax" => "value",
+  },
+}
+`;
+
 exports[`Trie tests can insert a small string 1`] = `
 PrefixTree {
   "base": {
