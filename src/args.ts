@@ -57,13 +57,13 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     }
   }
 
-  public builtin (builtin: Builtin): Args<TArgTypes> {
-    this.builtins.push(builtin)
+  public resolver (resolver: Resolver): Args<TArgTypes> {
+    this.resolvers.push(resolver)
     return this
   }
 
-  public resolver (resolver: Resolver): Args<TArgTypes> {
-    this.resolvers.push(resolver)
+  public builtin (builtin: Builtin): Args<TArgTypes> {
+    this.builtins.push(builtin)
     return this
   }
 
