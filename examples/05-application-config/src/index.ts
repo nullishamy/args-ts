@@ -4,7 +4,8 @@ import { Args, ParserOpts, a, util, Middleware } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '05-application-config',
-  programDescription: 'description'
+  programDescription: 'description',
+  programVersion: 'v1'
 }
 
 class UserConfigMiddleware extends Middleware {

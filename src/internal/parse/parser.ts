@@ -42,13 +42,14 @@ export type AnyParsedArgument = ParsedLongArgument | ParsedShortArgumentGroup | 
 export type AnyParsedFlagArgument = ParsedLongArgument | ParsedShortArgumentSingle | ParsedShortArgumentGroup
 
 export interface UserCommand {
-  isDefault: false
+  type: 'user'
   keyParts: string[]
   internal: InternalCommand
 }
 
 export interface DefaultCommand {
-  isDefault: true
+  type: 'default'
+  key: string | undefined
 }
 
 export interface ParsedArguments {
@@ -148,7 +149,8 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Prefi
   // Coercion will confirm or deny this later.
   if (!command) {
     const commandResult = {
-      isDefault: true
+      type: 'default',
+      key: rootKey
     } as const
 
     return [commandResult, rootKey]
@@ -168,10 +170,10 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Prefi
   }
 
   const commandResult = {
-    isDefault: false,
+    type: 'user',
     internal: subcommand, // Will resolve to the root if no subcommand was found
     keyParts
-  }
+  } as const
 
   return [commandResult, lastKnownKey]
 }
@@ -322,7 +324,8 @@ export function parse (
     }
   } else {
     commandObject = {
-      isDefault: true
+      type: 'default',
+      key: undefined
     }
   }
 

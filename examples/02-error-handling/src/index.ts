@@ -2,7 +2,8 @@ import { Args, ParserOpts, a, util } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '02-error-handling',
-  programDescription: ''
+  programDescription: '',
+  programVersion: 'v1'
 }
 
 async function main (): Promise<void> {

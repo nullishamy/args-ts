@@ -1,4 +1,4 @@
-import { CoercionResult, Middleware, MinimalArgument } from '../../builder'
+import { Builtin, CoercionResult, Middleware, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { PrefixTree } from '../prefix-tree'
@@ -8,7 +8,7 @@ import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgum
 import { CoercedValue, InternalArgument, InternalFlagArgument, InternalPositionalArgument } from './types'
 
 export interface CoercedArguments {
-  command: UserCommand | DefaultCommand
+  command: UserCommand | DefaultCommand | BuiltinCommand
   args: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue>
 }
 
@@ -24,6 +24,12 @@ export interface CoercedSingleValue {
 
   raw: string
   coerced: CoercedValue
+}
+
+export interface BuiltinCommand {
+  type: 'builtin'
+  command: Builtin
+  trigger: string
 }
 
 function validateFlagSchematically (
@@ -430,17 +436,62 @@ function handleDefinitionChecking (
   return Ok('continue')
 }
 
+function matchBuiltin (args: ParsedArguments, builtins: Builtin[]): undefined | [Builtin, string] {
+  const { flags, command } = args
+
+  const keysToSearch = new Set()
+  // If a user command could not be resolved, attempt to find whatever value was there anyways
+  // It is challenging to resolve builtins at parse time, so this enables us to delay it until coercion time
+  if (command.type === 'default') {
+    if (command.key) {
+      keysToSearch.add(command.key)
+    }
+  } else {
+    keysToSearch.add(command.internal.name)
+    command.internal.aliases.forEach(alias => keysToSearch.add(alias))
+  }
+
+  for (const builtin of builtins) {
+    const matchingFlag = builtin.argumentTriggers.find(flag => flags.has(flag))
+    if (matchingFlag) {
+      return [builtin, matchingFlag]
+    }
+
+    const matchingCommand = builtin.commandTriggers.find(cmd => keysToSearch.has(cmd))
+    if (matchingCommand) {
+      return [builtin, matchingCommand]
+    }
+  }
+
+  return undefined
+}
+
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
   internalArgs: PrefixTree<InternalArgument>,
-  middlewares: Middleware[]
+  middlewares: Middleware[],
+  builtins: Builtin[]
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
   const { command, flags, positionals } = args
 
+  // Before trying commands or further coercion, see if we match a builtin
+  const builtinSearch = matchBuiltin(args, builtins)
+  if (builtinSearch) {
+    const [foundBuiltin, trigger] = builtinSearch
+    return Ok({
+      args: out,
+      command: {
+        type: 'builtin',
+        command: foundBuiltin,
+        trigger
+      }
+    })
+  }
+
   // Validate the command to make sure we can run it
-  if (!command.isDefault) {
+  if (command.type !== 'default') {
     const result = validateCommand(command, opts)
     if (!result.ok) {
       return result

@@ -1,9 +1,9 @@
-import { Command, Middleware, MinimalArgument } from './builder'
+import { Builtin, Command, Middleware, MinimalArgument } from './builder'
 import { CoercionError, CommandError, ParseError, SchemaError } from './error'
 import { generateHelp } from './util/help'
 import { coerce, CoercedMultiValue, CoercedSingleValue } from './internal/parse/coerce'
 import { tokenise } from './internal/parse/lexer'
-import { parse } from './internal/parse/parser'
+import { ParsedArguments, parse } from './internal/parse/parser'
 import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgument, InternalFlagArgument } from './internal/parse/types'
 import { Err, Ok, Result } from './internal/result'
 import { ParserOpts, StoredParserOpts, defaultParserOpts } from './opts'
@@ -36,6 +36,7 @@ export interface DefaultArgTypes {
 export class Args<TArgTypes = DefaultArgTypes> {
   public arguments: PrefixTree<InternalArgument> = new PrefixTree()
   public commands: PrefixTree<InternalCommand> = new PrefixTree()
+  public builtins: Builtin[] = []
 
   public middlewares: Middleware[] = []
   public footerLines: string[] = []
@@ -50,6 +51,11 @@ export class Args<TArgTypes = DefaultArgTypes> {
       ...defaultParserOpts,
       ...opts
     }
+  }
+
+  public builtin (builtin: Builtin): Args<TArgTypes> {
+    this.builtins.push(builtin)
+    return this
   }
 
   public middleware (middleware: Middleware): Args<TArgTypes> {
@@ -188,6 +194,29 @@ export class Args<TArgTypes = DefaultArgTypes> {
     })) as TArgTypes
   }
 
+  private intoRaw (args: ParsedArguments): Record<string | number, string[]> {
+    const { flags, positionals } = args
+    const out: Record<string | number, string[]> = {}
+
+    for (const [key, flag] of flags.entries()) {
+      out[key] = flag.flatMap(f => {
+        if (f.type === 'long') {
+          return f.values
+        } else if (f.type === 'short-group') {
+          return []
+        } else {
+          return f.values
+        }
+      })
+    }
+
+    for (const [index, positional] of positionals.entries()) {
+      out[index] = positional.values
+    }
+
+    return out
+  }
+
   public validate (): Result<this, SchemaError> {
     const positionals: InternalPositionalArgument[] = []
     const flags: InternalFlagArgument[] = []
@@ -248,20 +277,26 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     // If we located a command, tell coerce to use its parser instead of our own
     let coercionResult
-    if (command.isDefault && !this.commands.empty() && this.opts.mustProvideCommand) {
+    if (command.type === 'default' && !this.commands.empty() && this.opts.mustProvideCommand) {
       return Err(new CommandError('no command provided but one was expected'))
     }
 
-    if (!command.isDefault) {
+    if (command.type === 'user') {
       const commandParser = command.internal.parser
       coercionResult = await coerce(
         parseResult.val,
         commandParser.opts,
         commandParser.arguments,
-        [...commandParser.opts.defaultMiddlewares, ...commandParser.middlewares]
+        [...commandParser.opts.defaultMiddlewares, ...commandParser.middlewares],
+        commandParser.builtins
       )
     } else {
-      coercionResult = await coerce(parseResult.val, this.opts, this.arguments, [...this.opts.defaultMiddlewares, ...this.middlewares])
+      coercionResult = await coerce(
+        parseResult.val,
+        this.opts, this.arguments,
+        [...this.opts.defaultMiddlewares, ...this.middlewares],
+        this.builtins
+      )
     }
 
     if (!coercionResult.ok) {
@@ -271,10 +306,27 @@ export class Args<TArgTypes = DefaultArgTypes> {
     const coercion = coercionResult.val
 
     // No command was found, just return the args
-    if (coercion.command.isDefault) {
+    if (coercion.command.type === 'default') {
       return Ok({
         mode: 'args',
         args: this.intoObject(coercion.args)
+      })
+    }
+
+    // Builtin found, execute it and run, regardless of caller preference
+    // builtins will always override the 'default' behaviour, so need to run
+    if (coercion.command.type === 'builtin') {
+      let executionResult
+
+      try {
+        await coercion.command.command.run(this, this.intoRaw(parseResult.val), coercion.command.trigger)
+      } catch (err) {
+        executionResult = err
+      }
+
+      return Ok({
+        mode: 'command-exec',
+        executionResult
       })
     }
 

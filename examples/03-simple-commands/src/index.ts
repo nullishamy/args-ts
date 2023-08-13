@@ -4,7 +4,8 @@ import { Args, ParserOpts, a, Command, util } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '03-simple-commands',
-  programDescription: 'program description'
+  programDescription: 'program description',
+  programVersion: 'v1'
 }
 
 class MyCommand extends Command {

@@ -8,7 +8,7 @@ import { InternalArgument } from '../internal/parse/types'
  * @returns the generated help string
  */
 export function generateHelp (parser: Args<unknown>): string {
-  const { commands, arguments: parserArguments, opts } = parser
+  const { commands, arguments: parserArguments, opts, builtins } = parser
 
   const renderArgument = (value: InternalArgument): string => {
     const { optional, isMultiType } = value.inner._meta
@@ -57,6 +57,8 @@ export function generateHelp (parser: Args<unknown>): string {
       return `${opts.programName} ${nameString} ${cmd.parser.arguments.values().filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
     }).join('\n')
 
+  const builtinString = builtins.map(builtin => builtin.helpInfo()).join('\n')
+
   return `
 ${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${parser.headerLines.length ? '\n' + parser.headerLines.join('\n') : ''}
 
@@ -64,5 +66,8 @@ Usage: ${opts.programName} ${usageString}
 
 Commands:
 ${commandString || 'None'}
+
+Builtins:
+${builtinString || 'None'}
 ${parser.footerLines.join('\n')}`.trim()
 }

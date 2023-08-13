@@ -6,7 +6,8 @@ import { Args, ParserOpts, a, Command, util } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '04-package-manager',
-  programDescription: 'package manager utility'
+  programDescription: 'package manager utility',
+  programVersion: 'v1'
 }
 
 class Query extends Command {

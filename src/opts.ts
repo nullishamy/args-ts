@@ -9,6 +9,7 @@ type MakePassedOpts<TOpts, TDefaults extends keyof TOpts> = (
 export interface StoredParserOpts {
   programName: string
   programDescription: string
+  programVersion: string
   unrecognisedArgument: 'skip' | 'throw'
   tooManyArgs: 'drop' | 'throw'
   tooManyValues: 'drop' | 'throw'
