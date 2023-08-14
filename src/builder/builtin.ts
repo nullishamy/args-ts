@@ -4,6 +4,8 @@ export abstract class Builtin {
   public commandTriggers: string[] = []
   public argumentTriggers: string[] = []
 
+  public constructor (public readonly id: string) {}
+
   public onCommand (command: string): Builtin {
     this.commandTriggers.push(command)
     return this
@@ -20,7 +22,7 @@ export abstract class Builtin {
     return this
   }
 
-  abstract run (parser: Args<unknown>, rawArgs: Record<string | number, string[]>, trigger: string): Promise<void>
+  abstract run (parser: Args<unknown>, flags: Record<string, string[]>, positionals: string[], trigger: string): Promise<void>
 
   helpInfo (): string {
     return `${this.commandTriggers.map(cmd => `${cmd} <...args>`).join(', ')} | ${this.argumentTriggers.map(arg => `--${arg}`).join(', ')}`

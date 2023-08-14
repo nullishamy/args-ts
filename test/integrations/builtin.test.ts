@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/quotes */
 import { Args, a, builtin } from '../../src'
+import { shellCompletion } from '../../src/util'
 import { parserOpts } from '../shared'
 import { runBuiltinExecution } from './utils'
 
@@ -52,11 +54,19 @@ describe('Builtin tests', () => {
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
-    await runBuiltinExecution(parser, 'completion zsh fish bash')
+    await runBuiltinExecution(parser, 'completion zsh')
 
     expect(mockConsole).toHaveBeenCalled()
-    expect(mockConsole).toHaveBeenCalledWith('Generated completions for zsh')
-    expect(mockConsole).toHaveBeenCalledWith('Generated completions for fish')
-    expect(mockConsole).toHaveBeenCalledWith('Generated completions for bash')
+    expect(mockConsole).toHaveBeenCalledWith(shellCompletion('zsh', parser))
+  })
+
+  it('rejects command defintions if they conflict with builtins', async () => {
+    const parser = new Args(parserOpts)
+      .builtin(new builtin.ShellCompletion())
+      .arg(['--arg'], a.string().optional())
+      .arg(['--number'], a.decimal())
+
+    const result = expect(() => parser.command(['completion'], undefined as any))
+    result.toThrowErrorMatchingInlineSnapshot(`"command 'completion' conflicts with builtin 'shell-completion' (ShellCompletion)"`)
   })
 })

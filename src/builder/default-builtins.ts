@@ -1,9 +1,10 @@
 import { Args } from '../args'
+import { canCompleteShell, shellCompletion } from '../util'
 import { Builtin } from './builtin'
 
 export class Help extends Builtin {
   constructor () {
-    super()
+    super('help')
 
     this.onArgument('help')
     this.onCommand('help')
@@ -16,7 +17,7 @@ export class Help extends Builtin {
 
 export class Version extends Builtin {
   constructor () {
-    super()
+    super('version')
 
     this.onArgument('version')
   }
@@ -28,26 +29,25 @@ export class Version extends Builtin {
 
 export class ShellCompletion extends Builtin {
   constructor () {
-    super()
+    super('shell-completion')
 
     this.onCommand('completion')
   }
 
-  async run (_: Args<unknown>, args: Record<string | number, string[]>): Promise<void> {
-    const shells = Object.entries(args)
-      .filter(([k]) => {
-        const num = Number(k)
-        return !isNaN(num) && num > 0
-      })
-      .flatMap(([,v]) => v)
+  async run (parser: Args<unknown>, __: Record<string, string[]>, positionals: string[]): Promise<void> {
+    positionals = positionals.slice(1)
+    const [shell] = positionals
 
-    if (!shells) {
-      console.error('No shells provied to generate completions for')
+    if (!positionals.length || !shell) {
+      console.error('No shell provied to generate completions for')
       return
     }
 
-    for (const shell of shells) {
-      console.log(`Generated completions for ${shell}`)
+    if (!canCompleteShell(shell)) {
+      console.error(`No completions available for shell '${shell}'`)
+      return
     }
+
+    console.log(shellCompletion(shell, parser))
   }
 }

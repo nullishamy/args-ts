@@ -72,6 +72,11 @@ export class Args<TArgTypes = DefaultArgTypes> {
       throw new CommandError(`command '${name}' already declared`)
     }
 
+    const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(name))
+    if (existingBuiltin) {
+      throw new CommandError(`command '${name}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
+    }
+
     let parser = new Args<unknown>({
       ...this.opts,
       ...command.opts.parserOpts
@@ -194,12 +199,13 @@ export class Args<TArgTypes = DefaultArgTypes> {
     })) as TArgTypes
   }
 
-  private intoRaw (args: ParsedArguments): Record<string | number, string[]> {
+  private intoRaw (args: ParsedArguments): [Record<string, string[]>, string[]] {
     const { flags, positionals } = args
-    const out: Record<string | number, string[]> = {}
+    const outFlags: Record<string, string[]> = {}
+    const outPositionals: string[] = []
 
     for (const [key, flag] of flags.entries()) {
-      out[key] = flag.flatMap(f => {
+      outFlags[key] = flag.flatMap(f => {
         if (f.type === 'long') {
           return f.values
         } else if (f.type === 'short-group') {
@@ -210,11 +216,11 @@ export class Args<TArgTypes = DefaultArgTypes> {
       })
     }
 
-    for (const [index, positional] of positionals.entries()) {
-      out[index] = positional.values
+    for (const positional of positionals.values()) {
+      outPositionals.push(...positional.values)
     }
 
-    return out
+    return [outFlags, outPositionals]
   }
 
   public validate (): Result<this, SchemaError> {
@@ -319,7 +325,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       let executionResult
 
       try {
-        await coercion.command.command.run(this, this.intoRaw(parseResult.val), coercion.command.trigger)
+        await coercion.command.command.run(this, ...this.intoRaw(parseResult.val), coercion.command.trigger)
       } catch (err) {
         executionResult = err
       }
