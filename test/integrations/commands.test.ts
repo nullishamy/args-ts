@@ -59,7 +59,7 @@ describe('Command testing', () => {
     })
       .command(['root'], cmd)
 
-    const result = await parser.parse('')
+    const result = await parser.parseToResult('')
 
     assert(result.ok)
     assert(result.val.mode === 'args')

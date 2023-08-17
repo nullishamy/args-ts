@@ -269,7 +269,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     return this
   }
 
-  public async parse (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
+  public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
     const tokenResult = tokenise(Array.isArray(argString) ? argString.join(' ') : argString)
 
     if (!tokenResult.ok) {
@@ -362,6 +362,21 @@ export class Args<TArgTypes = DefaultArgTypes> {
       parsedArgs: this.intoObject(coercion.args),
       command: coercion.command.internal.inner
     })
+  }
+
+  public async parse (argString: string | string[], executeCommands = false): Promise<ParseSuccess<TArgTypes>> {
+    const result = await this.parseToResult(argString, executeCommands)
+
+    if (!result.ok) {
+      console.log(this.help())
+      const prettyProblems = [result.err].flat().map(e => {
+        return e.format()
+      })
+      console.log(`\nProblems:\n${prettyProblems.join('\n')}`)
+      process.exit(1)
+    }
+
+    return result.val
   }
 
   public reset (): void {

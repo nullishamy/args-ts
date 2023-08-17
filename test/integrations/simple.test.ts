@@ -144,7 +144,7 @@ describe('Flag integrations', () => {
       .arg(['--custom', '-c'], a.custom(customCallback))
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, with no unspecified default, expected 'custom' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--custom' is missing, with no unspecified default, expected 'custom' received '<nothing>' @ --custom]`)
   })
   it('throws if there is no tokens after the flag denotion', async () => {
     const parser = new Args(parserOpts)
@@ -159,7 +159,7 @@ describe('Flag integrations', () => {
       .arg(['--custom', '-c'], a.custom<undefined>(undefined as any))
 
     const result = expect(async () => await runArgsExecution(parser, '-c this'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'custom' failed: callback was not provided, expected 'custom' received 'this']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'custom' because callback was not provided, expected 'custom' received 'this' @ --custom]`)
   })
 
   it('can parse long flags with dashes in them', async () => {
@@ -231,7 +231,7 @@ describe('Positional integrations', () => {
       .positional('<str>', a.string())
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: positional argument 'str' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: positional argument 'str' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>' @ str]`)
   })
 })
 
@@ -294,8 +294,8 @@ describe('Other integrations (no commands)', () => {
       .arg(['--bool'], a.bool().array())
 
     await expect(async () => await runArgsExecution(parser, '--bool fff xyz')).rejects.toMatchInlineSnapshot(`
-[Error: parser 'boolean' failed: 'fff' is not a boolean, expected 'boolean' received 'fff'
-parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xyz']
+[Error: could not parse a 'boolean' because 'fff' is not a boolean, expected 'boolean' received 'fff' @ --bool
+could not parse a 'boolean' because 'xyz' is not a boolean, expected 'boolean' received 'xyz' @ --bool]
 `)
   })
 
@@ -304,7 +304,7 @@ parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xy
       .arg(['--string', '-s'], a.string())
 
     const result = expect(async () => await runArgsExecution(parser, '-s one two'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: excess argument(s) to --string: 'two', expected 'string' received 'one two']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: excess argument(s) to --string: 'two', expected 'string' received 'one two' @ --string]`)
   })
 
   it('skips when excess values are passed to an argument', async () => {
@@ -323,14 +323,14 @@ parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xy
       .arg(['--string', '-s'], a.string())
 
     const result = expect(async () => await runArgsExecution(parser, '-s "'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument 'string' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument 'string' is not declared as optional, does not have a default, and was not provided a value, expected 'string' received '<nothing>' @ --string]`)
   })
 
   it('throws if there is additional arguments', async () => {
     const parser = new Args(parserOpts)
 
     const result = expect(async () => await runArgsExecution(parser, '-c this'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '-c this', expected '<nothing>' received '-c this']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '-c this', expected '<nothing>' received '-c this' @ -c this]`)
   })
 
   it('skips if there is unrecognised arguments', async () => {
@@ -353,7 +353,7 @@ parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xy
       .arg(['--env'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'boolean' failed: 'test' is not a boolean, expected 'boolean' received 'test']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'boolean' because 'test' is not a boolean, expected 'boolean' received 'test' @ --env]`)
   })
 
   it('can fallback to the environment for a flag', async () => {
@@ -401,7 +401,7 @@ parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xy
       .arg(['--missing'], a.string())
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--missing' is missing, with no unspecified default, expected 'string' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--missing' is missing, with no unspecified default, expected 'string' received '<nothing>' @ --missing]`)
   })
 
   it('fails if an unknown flag in a group is found', async () => {
@@ -410,7 +410,7 @@ parser 'boolean' failed: 'xyz' is not a boolean, expected 'boolean' received 'xy
       .arg(['--b-bool', '-b'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, '-abc'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised flag 'c' in group 'abc', expected '<nothing>' received '-abc']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised flag 'c' in group 'abc', expected '<nothing>' received '-abc' @ c]`)
   })
 
   it('can parse short flag groups', async () => {
@@ -480,7 +480,7 @@ describe('Logical argument testing', () => {
       .arg(['--array'], a.string())
 
     const result = expect(async () => await runArgsExecution(parser, '--array value1 --array value2'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions' @ --array]`)
   })
   it('fails when dependencies are not met', async () => {
     const parser = new Args(parserOpts)
@@ -488,7 +488,7 @@ describe('Logical argument testing', () => {
       .arg(['--dependant'], a.bool().dependsOn('--dependency'))
 
     const result = expect(async () => await runArgsExecution(parser, '--dependant'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: unmet dependency '--dependency' for '--dependant', expected 'a value' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: unmet dependency '--dependency' for '--dependant', expected 'a value' received '<nothing>' @ --dependant]`)
   })
 
   it('passes when conflicts do not arise', async () => {
@@ -515,7 +515,7 @@ describe('Logical argument testing', () => {
       .arg(['--conflict'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, '--conflict --base'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--conflict' conflicts with '--base', expected '--conflict to not be passed' received '--conflict']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--conflict' conflicts with '--base', expected '--conflict to not be passed' received '--conflict' @ --base]`)
   })
 
   it('passes when no args are passed with the exclusive', async () => {
@@ -532,7 +532,7 @@ describe('Logical argument testing', () => {
       .arg(['--conflict'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, '--conflict --exclusive'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--exclusive' is exclusive and cannot be used with other arguments, expected 'no other args to be passed' received '1 other arguments']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--exclusive' is exclusive and cannot be used with other arguments, expected 'no other args to be passed' received '1 other arguments' @ --exclusive]`)
   })
 
   it('fails when strings are too short', async () => {
@@ -540,7 +540,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().min(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--string 1'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'string' failed: value must be at least length 5, got '1', expected 'string' received '1']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'string' because value must be at least length 5, got '1', expected 'string' received '1' @ --string]`)
   })
 
   it('fails when strings are blank', async () => {
@@ -548,7 +548,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().notBlank())
 
     const result = expect(async () => await runArgsExecution(parser, '--string " "'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'non-blank string' failed: ' ' does not match '/(.|\\s)*\\S(.|\\s)*/', expected 'non-blank string' received ' ']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'non-blank string' because ' ' does not match '/(.|\\s)*\\S(.|\\s)*/', expected 'non-blank string' received ' ' @ --string]`)
   })
 
   it('fails when strings are too long', async () => {
@@ -556,7 +556,7 @@ describe('Logical argument testing', () => {
       .arg(['--string'], a.string().max(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--string 123456'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'string' failed: value must be at most length 5, got '123456', expected 'string' received '123456']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'string' because value must be at most length 5, got '123456', expected 'string' received '123456' @ --string]`)
   })
 
   it('fails when numbers are below lower bounds', async () => {
@@ -564,7 +564,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().lowerBound(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 1'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 1 is less than lower bound 5, expected 'number' received '1']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'number' because 1 is less than lower bound 5, expected 'number' received '1' @ --number]`)
   })
 
   it('fails when numbers are above upper bounds', async () => {
@@ -572,7 +572,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().upperBound(5))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 10'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 10 is greater than upper bound 5, expected 'number' received '10']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'number' because 10 is greater than upper bound 5, expected 'number' received '10' @ --number]`)
   })
 
   it('fails when numbers are not in range', async () => {
@@ -580,7 +580,7 @@ describe('Logical argument testing', () => {
       .arg(['--number'], a.number().inRange(10, 20))
 
     const result = expect(async () => await runArgsExecution(parser, '--number 3'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 3 is less than lower bound 10, expected 'number' received '3']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'number' because 3 is less than lower bound 10, expected 'number' received '3' @ --number]`)
   })
 
   it('allows empty values when marked argument is provided', async () => {
@@ -598,7 +598,7 @@ describe('Logical argument testing', () => {
       .arg(['--optional'], a.string().requireUnlessPresent('--base'))
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, with no unspecified default, expected 'string' received '<nothing>']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument '--optional' is missing, with no unspecified default, expected 'string' received '<nothing>' @ --optional]`)
   })
 
   it('fails when an invalid enum value is provided', async () => {
@@ -606,7 +606,7 @@ describe('Logical argument testing', () => {
       .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
 
     const result = expect(async () => await runArgsExecution(parser, '--enum a'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'x | y | z' failed: value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'x | y | z' because value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a' @ --enum]`)
   })
 
   it('passes when a valid enum value is provided', async () => {
@@ -644,7 +644,7 @@ describe('Logical argument testing', () => {
       .arg(['--bool'], a.bool())
 
     const result = expect(async () => await runArgsExecution(parser, '--no-bool'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '--no-bool', expected '<nothing>' received '--no-bool']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: unrecognised argument '--no-bool', expected '<nothing>' received '--no-bool' @ --no-bool]`)
   })
 })
 
@@ -695,7 +695,7 @@ describe('Array testing', () => {
       .arg(['--array'], a.string().array())
 
     const result = expect(async () => await runArgsExecution(parser, '--array value1 --array value2'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions' @ --array]`)
   })
 
   it('parses arrays with many elements', async () => {
@@ -716,7 +716,7 @@ describe('Array testing', () => {
       .arg(['--array'], a.number().array())
 
     const result = expect(async () => await runArgsExecution(parser, '--array 123 783 true 1235'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 'true' is not a number, expected 'number' received 'true']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'number' because 'true' is not a number, expected 'number' received 'true' @ --array]`)
   })
 
   it('parses arrays with of bool', async () => {
@@ -738,7 +738,7 @@ describe('Array testing', () => {
       .arg(['--array'], a.number().inRange(100, 1000).array())
 
     const result = expect(async () => await runArgsExecution(parser, '--array 123 783 1235'))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'number' failed: 1235 is greater than upper bound 1000, expected 'number' received '1235']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'number' because 1235 is greater than upper bound 1000, expected 'number' received '1235' @ --array]`)
   })
 
   it('can coerce "T[] | U[]" style unions using left side parser', async () => {

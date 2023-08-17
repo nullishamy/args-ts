@@ -37,7 +37,7 @@ describe('Middleware tests', () => {
       .middleware(new MockMiddleware(existsFn, valueFn))
 
     const result = expect(async () => await runArgsExecution(parser, ''))
-    await result.rejects.toMatchInlineSnapshot(`[Error: parser 'decimal' failed: 'value' is not a number, expected 'decimal' received 'value']`)
+    await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'decimal' because 'value' is not a number, expected 'decimal' received 'value' @ --ware]`)
 
     expect(existsFn).toHaveBeenCalled()
     expect(valueFn).toHaveBeenCalled()

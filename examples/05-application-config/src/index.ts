@@ -36,7 +36,7 @@ async function main (): Promise<void> {
     // The string here is used for internal identification of the middleware
     .middleware(await (new UserConfigMiddleware('user-config')).load())
 
-  const result = util.exitOnFailure(await parser.parse(util.makeArgs(), true))
+  const result = await parser.parse(util.makeArgs(), true)
 
   if (result.mode === 'args') {
     console.log('username:', result.args.username)

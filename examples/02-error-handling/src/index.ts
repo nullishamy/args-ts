@@ -1,4 +1,4 @@
-import { Args, ParserOpts, a, util } from 'args.ts'
+import { Args, ParserOpts, a } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '02-error-handling',
@@ -11,9 +11,9 @@ async function main (): Promise<void> {
     .arg(['--boolean'], a.bool())
     .arg(['--number'], a.number())
 
-  // args.ts provides helpers for various mundane tasks, such as exiting the program if the parse fails
-  // The second arg provides additional information to print, in this case we will print the help page
-  const args = util.exitOnFailure(await parser.parse('--boolean --number test'), parser.help())
+  // The default `parse` function from args.ts will exit the program (and print the help)
+  // if it could not parse the input. If more fine grain control of errors is required, use `parseToResult`.
+  const args = await parser.parse('--boolean --number test')
   console.log(args) // <unreached>
 }
 

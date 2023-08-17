@@ -1,6 +1,6 @@
 // Command arguments rely on inference to work properly.
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Args, ParserOpts, a, Command, util } from 'args.ts'
+import { Args, ParserOpts, a, Command } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '03-simple-commands',
@@ -34,7 +34,7 @@ async function main (): Promise<void> {
 
   // args.ts can run your commands for you, provided the second argument is `true` when calling parse()
   // `parse('...', true)`, however you can also run it yourself, after it is fully parsed and validated:
-  const result = util.exitOnFailure(await parser.parse('cmd --cmd-arg hello'))
+  const result = await parser.parse('cmd --cmd-arg hello')
 
   if (result.mode !== 'command') {
     console.error(`args.ts should have given us the command information back. got ${result.mode}`)

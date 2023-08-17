@@ -17,13 +17,13 @@ describe('Edge cases', () => {
 
     const warnings: Error[] = []
     for (const naughty of strings) {
-      let result: Awaited<ReturnType<typeof parser['parse']>>
+      let result: Awaited<ReturnType<typeof parser['parseToResult']>>
 
       try {
         // Try various string formations to induce errors
-        await parser.parse(`--non-latin ${naughty}`)
-        await parser.parse(`--non-latin '${naughty}'`)
-        result = await parser.parse(`--non-latin "${naughty}"`)
+        await parser.parseToResult(`--non-latin ${naughty}`)
+        await parser.parseToResult(`--non-latin '${naughty}'`)
+        result = await parser.parseToResult(`--non-latin "${naughty}"`)
       } catch (err) {
         throw new Error(`error when parsing '${naughty}':\n${(err as Error).stack}`)
       }

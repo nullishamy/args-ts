@@ -2,7 +2,7 @@ import assert from 'assert'
 import { Args } from '../../src'
 
 export async function runArgsExecution <T> (parser: Args<T>, argString: string | string[]): Promise<T> {
-  const result = await parser.parse(argString)
+  const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
       throw new Error(result.err.map(e => e.message).join('\n'))
@@ -14,7 +14,7 @@ export async function runArgsExecution <T> (parser: Args<T>, argString: string |
 }
 
 export async function runCommandExecution (parser: Args<unknown>, argString: string | string[]): Promise<unknown> {
-  const result = await parser.parse(argString)
+  const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
       throw new Error(result.err.map(e => e.message).join('\n'))
@@ -26,7 +26,7 @@ export async function runCommandExecution (parser: Args<unknown>, argString: str
 }
 
 export async function runBuiltinExecution (parser: Args<unknown>, argString: string | string[]): Promise<unknown> {
-  const result = await parser.parse(argString)
+  const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
       throw new Error(result.err.map(e => e.message).join('\n'))

@@ -1,5 +1,6 @@
 import { Middleware } from './builder'
 import { EnvironmentMiddleware } from './builder/'
+import { Logger } from './util'
 
 type MakePassedOpts<TOpts, TDefaults extends keyof TOpts> = (
   & Omit<TOpts, TDefaults>
@@ -22,6 +23,7 @@ export interface StoredParserOpts {
   mustProvideCommand: boolean
   negatedBooleanPrefix: string
   defaultMiddlewares: Middleware[]
+  logger: Logger
 }
 
 // Default to the loudest possible error modes, to alert us of programming errors
@@ -39,7 +41,8 @@ export const defaultParserOpts = {
   arrayMultipleDefinitions: 'append',
   defaultMiddlewares: [
     new EnvironmentMiddleware('env')
-  ] as Middleware[]
+  ] as Middleware[],
+  logger: new Logger('default')
 } as const satisfies Partial<StoredParserOpts>
 
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>

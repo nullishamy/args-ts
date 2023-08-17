@@ -64,7 +64,7 @@ function validateFlagSchematically (
 
   // If no definitions were provided
   if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !middlewaresHaveValue) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`, getArgDenotion(argument)))
   }
 
   for (const foundFlag of foundFlags ?? []) {
@@ -75,13 +75,13 @@ function validateFlagSchematically (
 
     // If no values were passed to a definition
     if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !middlewaresHaveValue) {
-      return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`))
+      return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`, getArgDenotion(argument)))
     }
 
     for (const dependency of dependencies) {
       const dependencyValue = flags.get(dependency)
       if (!dependencyValue) {
-        return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`))
+        return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`, getArgDenotion(argument)))
       }
     }
 
@@ -89,12 +89,12 @@ function validateFlagSchematically (
       const conflictValue = flags.get(conflict)
       // Require both the argument we're checking against (the base) and the conflict to exist
       if (conflictValue !== undefined && foundFlags?.length) {
-        return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.map(c => c.rawInput).join(' '), `argument '--${conflict}' conflicts with '--${argument.longFlag}'`))
+        return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.map(c => c.rawInput).join(' '), `argument '--${conflict}' conflicts with '--${argument.longFlag}'`, getArgDenotion(argument)))
       }
     }
 
     if (exclusive && flags.size > 1) {
-      return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`))
+      return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`, getArgDenotion(argument)))
     }
   }
 
@@ -120,7 +120,7 @@ function validatePositionalSchematically (
   }
 
   if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !middlewaresHaveValue) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`))
+    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`, argument.key))
   }
 
   return Ok(foundFlag)
@@ -188,7 +188,7 @@ async function parseMulti (inputValues: string[], argument: InternalArgument): P
   if (groupedErrors.length && !coercedGroups.length) {
     const errors = groupedErrors.flatMap(group => {
       return group.errors.map(error => {
-        return new CoercionError(argument.inner.type, error.value, `parser '${group.parser.type}' failed: ${error.error.message}`)
+        return new CoercionError(argument.inner.type, error.value, `could not parse a '${group.parser.type}' because ${error.error.message}`, getArgDenotion(argument))
       })
     })
 
@@ -234,7 +234,7 @@ async function parseSingle (inputValues: string[], argument: InternalArgument): 
 
   if (errors.length && coerced === null) {
     return Err(errors.map(error => {
-      return new CoercionError(argument.inner.type, inputValues[0], `parser '${error.parser.type}' failed: ${error.error.message}`)
+      return new CoercionError(argument.inner.type, inputValues[0], `could not parse a '${error.parser.type}' because ${error.error.message}`, getArgDenotion(argument))
     }))
   }
 
@@ -377,7 +377,7 @@ function handleMultipleDefinitions (argument: InternalArgument, opts: StoredPars
     if (arrayMultipleDefinitions === 'append') {
       return Ok('append')
     } else if (arrayMultipleDefinitions === 'throw') {
-      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`))
+      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`, getArgDenotion(argument)))
     } else if (arrayMultipleDefinitions === 'drop') {
       return Ok('skip')
     } else if (arrayMultipleDefinitions === 'overwrite') {
@@ -385,7 +385,7 @@ function handleMultipleDefinitions (argument: InternalArgument, opts: StoredPars
     }
   } else {
     if (tooManyDefinitions === 'throw') {
-      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`))
+      return Err(new CoercionError('single definition', 'multiple definitions', `argument ${getArgDenotion(argument)}' is not permitted to have multiple definitions`, getArgDenotion(argument)))
     } else if (tooManyDefinitions === 'drop') {
       return Ok('skip')
     } else if (tooManyDefinitions === 'overwrite') {
@@ -409,7 +409,7 @@ function handleDefinitionChecking (
       if (!argument) {
         const { unrecognisedArgument } = opts
         if (unrecognisedArgument === 'throw') {
-          return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised flag '${flag}' in group '${definition.flags.join('')}'`)])
+          return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised flag '${flag}' in group '${definition.flags.join('')}'`, flag)])
         }
 
         // Otherwise, skip it
@@ -426,7 +426,7 @@ function handleDefinitionChecking (
   if (argument === undefined) {
     const { unrecognisedArgument } = opts
     if (unrecognisedArgument === 'throw') {
-      return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised argument '${definition.rawInput}'`)])
+      return Err([new CoercionError('<nothing>', definition.rawInput, `unrecognised argument '${definition.rawInput}'`, definition.rawInput)])
     }
 
     // Otherwise, skip it
@@ -568,7 +568,7 @@ export async function coerce (
       const { tooManyArgs } = opts
       if (tooManyArgs === 'throw') {
         const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
-        return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`)])
+        return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`, getArgDenotion(argument))])
       }
 
       inputValues = inputValues.slice(0, 1)

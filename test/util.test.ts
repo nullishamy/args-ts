@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/quotes */
 import { Args, Command, ParserOpts, a, util } from '../src'
-import { ArgError, ParseError } from '../src/error'
-import { Err, Ok, Result } from '../src/internal/result'
 import { parserOpts } from './shared'
 
 describe('Argv utils', () => {
@@ -145,62 +143,5 @@ program-name [help, nohelp] (--cmd-arg <string>)
 Builtins:
 None"
 `)
-  })
-})
-
-describe('Error handling utils', () => {
-  const mockExit = jest.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new Error(`process.exit called with code: ${code}`)
-  })
-
-  const mockConsole = jest.spyOn(console, 'error').mockImplementation(() => {})
-
-  afterEach(() => {
-    mockExit.mockClear()
-    mockConsole.mockClear()
-  })
-
-  it('exits for single errors', () => {
-    const err: Result<undefined, ArgError> = Err(new ArgError('error message'))
-
-    expect(() => util.exitOnFailure(err)).toThrow()
-
-    expect(mockExit).toHaveBeenCalledTimes(1)
-    expect(mockExit).toHaveBeenCalledWith(1)
-
-    expect(mockConsole).toHaveBeenCalled()
-  })
-
-  it('displays custom errors', () => {
-    const err: Result<undefined, ArgError> = Err(new ArgError('error message'))
-
-    expect(() => util.exitOnFailure(err, 'custom message')).toThrow()
-
-    expect(mockExit).toHaveBeenCalledTimes(1)
-    expect(mockExit).toHaveBeenCalledWith(1)
-
-    expect(mockConsole).toHaveBeenCalled()
-    expect(mockConsole).toHaveBeenCalledWith('custom message')
-  })
-
-  it('exits for multiple errors', () => {
-    const err: Result<undefined, ArgError[]> = Err([new ArgError('error message'), new ParseError('error message 2', '', 0)])
-
-    expect(() => util.exitOnFailure(err)).toThrow()
-
-    expect(mockExit).toHaveBeenCalledTimes(1)
-    expect(mockExit).toHaveBeenCalledWith(1)
-
-    expect(mockConsole).toHaveBeenCalled()
-  })
-
-  it('returns successful values', () => {
-    const value = {
-      test: true
-    }
-    const ok: Result<typeof value> = Ok(value)
-    const result = util.exitOnFailure(ok)
-
-    expect(result).toBe(value)
   })
 })

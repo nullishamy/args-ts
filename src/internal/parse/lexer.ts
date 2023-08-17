@@ -1,3 +1,4 @@
+import { ArgError } from '../../error'
 import { Err, Ok, Result } from '../result'
 
 export interface FlagToken {
@@ -79,9 +80,9 @@ export class TokenIterator {
   }
 }
 
-export function tokenise (argString: string): Result<TokenIterator, Error> {
+export function tokenise (argString: string): Result<TokenIterator, ArgError> {
   if (typeof argString !== 'string') {
-    return Err(new TypeError(`expected 'string', got ${typeof argString} (${argString})`))
+    return Err(new ArgError(`expected 'string', got ${typeof argString} (${argString})`))
   }
 
   const tokens: Token[] = []

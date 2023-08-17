@@ -98,10 +98,10 @@ describe('Schema validation', () => {
     const parser = new Args(parserOpts)
       .arg(['--flag', '-f'], a.string())
 
-    const result = await parser.parse(undefined as any)
+    const result = await parser.parseToResult(undefined as any)
     expect(result).toMatchInlineSnapshot(`
 {
-  "err": [TypeError: expected 'string', got undefined (undefined)],
+  "err": [Error: expected 'string', got undefined (undefined)],
   "ok": false,
 }
 `)
