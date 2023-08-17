@@ -100,6 +100,10 @@ export class Args<TArgTypes = DefaultArgTypes> {
       if (this.commands.has(alias)) {
         throw new CommandError(`command alias '${alias}' already declared`)
       }
+      const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(alias))
+      if (existingBuiltin) {
+        throw new CommandError(`command alias '${alias}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
+      }
 
       this.commands.insert(alias, {
         inner: command,

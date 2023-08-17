@@ -140,7 +140,10 @@ describe('Help generation utils', () => {
 Usage: program-name [--flag | -f <string>] [--opt-multi | -o <string...>] (--opt-req | -r <string...>) (--enum | -e <a | b | c>) (--long <number>) [--long-optional <number>] <POSITIONALREQ> [<POSITIONAL>] <POSMULTI...>
 
 Commands:
-program-name [help, nohelp] (--cmd-arg <string>)"
+program-name [help, nohelp] (--cmd-arg <string>)
+
+Builtins:
+None"
 `)
   })
 })

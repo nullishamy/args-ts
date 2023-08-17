@@ -15,7 +15,7 @@ describe('Parser tests', () => {
         name: 'cmd',
         aliases: []
       },
-      isDefault: false,
+      type: 'user',
       keyParts: ['cmd']
     })
     expect(parsed.flags).toEqual(new Map())
@@ -41,7 +41,7 @@ describe('Parser tests', () => {
         name: 'subcmd',
         aliases: []
       },
-      isDefault: false,
+      type: 'user',
       keyParts: ['cmd', 'subcmd']
     })
     expect(parsed.flags).toEqual(new Map())
@@ -73,7 +73,7 @@ describe('Parser tests', () => {
         name: 'subsubcmd',
         aliases: []
       },
-      isDefault: false,
+      type: 'user',
       keyParts: ['cmd', 'subcmd', 'subsubcmd']
     })
     expect(parsed.flags).toEqual(new Map())
@@ -84,7 +84,8 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('', parserOpts, [])
 
     expect(parsed.command).toEqual({
-      isDefault: true
+      type: 'default',
+      key: undefined
     })
     expect(parsed.flags).toEqual(new Map())
     expect(parsed.positionals).toEqual(new Map())
@@ -103,7 +104,7 @@ describe('Parser tests', () => {
         name: 'cmd',
         aliases: []
       },
-      isDefault: false,
+      type: 'user',
       keyParts: ['cmd']
     })
     expect(parsed.flags).toEqual(new Map())
@@ -121,7 +122,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('positional', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map())
     expect(parsed.positionals).toEqual(new Map([
@@ -138,7 +139,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('pos1 pos2 pos3', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map())
     expect(parsed.positionals).toEqual(new Map([
@@ -167,7 +168,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{
@@ -185,7 +186,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test value', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{
@@ -203,7 +204,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test value --test value2', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{
@@ -228,7 +229,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('-t value -t value2', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['t', [{
@@ -253,7 +254,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test --test2', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{
@@ -278,7 +279,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test value1 --test2 value2', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{
@@ -303,7 +304,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('-t', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['t', [{
@@ -321,7 +322,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('-t value', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['t', [{
@@ -339,7 +340,7 @@ describe('Parser tests', () => {
     const parsed = lexAndParse('--test "value goes here"', parserOpts, [])
 
     expect(parsed.command).toMatchObject({
-      isDefault: true
+      type: 'default'
     })
     expect(parsed.flags).toEqual(new Map([
       ['test', [{

@@ -69,4 +69,14 @@ describe('Builtin tests', () => {
     const result = expect(() => parser.command(['completion'], undefined as any))
     result.toThrowErrorMatchingInlineSnapshot(`"command 'completion' conflicts with builtin 'shell-completion' (ShellCompletion)"`)
   })
+
+  it('rejects command defintions if an alias conflicts with builtins', async () => {
+    const parser = new Args(parserOpts)
+      .builtin(new builtin.ShellCompletion())
+      .arg(['--arg'], a.string().optional())
+      .arg(['--number'], a.decimal())
+
+    const result = expect(() => parser.command(['normal', 'completion'], undefined as any))
+    result.toThrowErrorMatchingInlineSnapshot(`"Cannot read properties of undefined (reading 'opts')"`)
+  })
 })

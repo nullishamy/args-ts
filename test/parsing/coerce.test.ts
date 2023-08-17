@@ -13,7 +13,7 @@ describe('Coercion tests', () => {
     const coerced = await parseAndCoerce('--number 1', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
-      isDefault: true
+      type: 'default'
     })
     expect(coerced.args.get(flag)).toEqual({
       isMulti: false,
@@ -32,7 +32,7 @@ describe('Coercion tests', () => {
     const coerced = await parseAndCoerce('--bool true', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
-      isDefault: true
+      type: 'default'
     })
     expect(coerced.args.get(flag)).toEqual({
       isMulti: false,
@@ -51,7 +51,8 @@ describe('Coercion tests', () => {
     const coerced = await parseAndCoerce('helloworld', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
-      isDefault: true
+      type: 'default',
+      key: 'helloworld'
     })
     expect(coerced.args.get(flag)).toEqual({
       isMulti: false,
@@ -70,7 +71,7 @@ describe('Coercion tests', () => {
     const coerced = await parseAndCoerce('--string helloworld', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
-      isDefault: true
+      type: 'default'
     })
     expect(coerced.args.get(flag)).toEqual({
       isMulti: false,
@@ -89,7 +90,7 @@ describe('Coercion tests', () => {
     const coerced = await parseAndCoerce('--string "hello world"', parserOpts, [flag])
 
     expect(coerced.command).toEqual({
-      isDefault: true
+      type: 'default'
     })
     expect(coerced.args.get(flag)).toEqual({
       isMulti: false,
