@@ -8,7 +8,7 @@ import { InternalArgument } from '../internal/parse/types'
  * @returns the generated help string
  */
 export function generateHelp (parser: Args<unknown>): string {
-  const { commands, arguments: parserArguments, opts, builtins } = parser
+  const { argumentsList, commandsList, opts, builtins } = parser
 
   const renderArgument = (value: InternalArgument): string => {
     const { optional, isMultiType } = value.inner._meta
@@ -45,16 +45,16 @@ export function generateHelp (parser: Args<unknown>): string {
 
   // Filter out non primary flag args, but keep all positionals
   const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isLongFlag) || arg.type === 'positional'
-  const usageString = parserArguments.values().filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
+  const usageString = argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
 
-  const commandString = commands.entries()
-    .filter(([,v]) => !v.inner.opts.hidden && v.isBase)
-    .map(([,cmd]) => {
+  const commandString = commandsList
+    .filter(cmd => !cmd.inner.opts.hidden && cmd.isBase)
+    .map(cmd => {
       let nameString = cmd.name
       if (cmd.aliases.length) {
         nameString = `[${cmd.name}, ${cmd.aliases.join(', ')}]`
       }
-      return `${opts.programName} ${nameString} ${cmd.parser.arguments.values().filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
+      return `${opts.programName} ${nameString} ${cmd.parser.argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
     }).join('\n')
 
   const builtinString = builtins.map(builtin => builtin.helpInfo()).join('\n')

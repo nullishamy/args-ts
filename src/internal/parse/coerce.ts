@@ -470,6 +470,7 @@ export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
   internalArgs: PrefixTree<InternalArgument>,
+  internalArgsList: InternalArgument[],
   middlewares: Middleware[],
   builtins: Builtin[]
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
@@ -499,7 +500,7 @@ export async function coerce (
   }
 
   // Iterate the declarations, to weed out any missing arguments
-  for (const argument of internalArgs.values()) {
+  for (const argument of internalArgsList) {
     // Validate 'schema-level' properties, such as optionality, depedencies, etc
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult

@@ -46,10 +46,7 @@ PrefixTree {
       "value": undefined,
     },
   },
-  "mapping": Map {
-    "prefix" => "value",
-    "prefax" => "value",
-  },
+  "size": 1,
 }
 `;
 
@@ -92,8 +89,6 @@ PrefixTree {
       "value": undefined,
     },
   },
-  "mapping": Map {
-    "prefix" => "value",
-  },
+  "size": 1,
 }
 `;

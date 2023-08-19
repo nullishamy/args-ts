@@ -34,10 +34,14 @@ export interface DefaultArgTypes {
 }
 
 export class Args<TArgTypes = DefaultArgTypes> {
+  // We store both a tree and a list so that we can iterate all values efficiently
   public arguments: PrefixTree<InternalArgument> = new PrefixTree()
-  public commands: PrefixTree<InternalCommand> = new PrefixTree()
-  public builtins: Builtin[] = []
+  public argumentsList: InternalArgument[] = []
 
+  public commands: PrefixTree<InternalCommand> = new PrefixTree()
+  public commandsList: InternalCommand[] = []
+
+  public builtins: Builtin[] = []
   public middlewares: Middleware[] = []
   public footerLines: string[] = []
   public headerLines: string[] = []
@@ -96,6 +100,14 @@ export class Args<TArgTypes = DefaultArgTypes> {
       isBase: true
     })
 
+    this.commandsList.push({
+      inner: command,
+      name,
+      aliases,
+      parser,
+      isBase: true
+    })
+
     for (const alias of aliases) {
       if (this.commands.has(alias)) {
         throw new CommandError(`command alias '${alias}' already declared`)
@@ -106,6 +118,14 @@ export class Args<TArgTypes = DefaultArgTypes> {
       }
 
       this.commands.insert(alias, {
+        inner: command,
+        name,
+        aliases,
+        parser,
+        isBase: false
+      })
+
+      this.commandsList.push({
         inner: command,
         name,
         aliases,
@@ -129,11 +149,19 @@ export class Args<TArgTypes = DefaultArgTypes> {
 
     const slicedKey = key.slice(1, key.length - 1)
 
+    const index = this.positionalIndex++
     this.arguments.insert(slicedKey, {
       type: 'positional',
       inner: declaration,
       key: slicedKey,
-      index: this.positionalIndex++
+      index
+    })
+
+    this.argumentsList.push({
+      type: 'positional',
+      inner: declaration,
+      key: slicedKey,
+      index
     })
 
     // @ts-expect-error same inference problem as arg()
@@ -167,6 +195,14 @@ export class Args<TArgTypes = DefaultArgTypes> {
       shortFlag: shortFlag?.substring(1)
     })
 
+    this.argumentsList.push({
+      type: 'flag',
+      isLongFlag: true,
+      inner: declaration,
+      longFlag: longFlag.substring(2),
+      shortFlag: shortFlag?.substring(1)
+    })
+
     if (shortFlag) {
       if (!shortFlag.startsWith('-')) {
         throw new SchemaError(`short flags must start with '-', got '${shortFlag}'`)
@@ -181,6 +217,14 @@ export class Args<TArgTypes = DefaultArgTypes> {
       }
 
       this.arguments.insert(shortFlag.substring(1), {
+        type: 'flag',
+        inner: declaration,
+        isLongFlag: false,
+        longFlag: longFlag.substring(2),
+        shortFlag: shortFlag.substring(1)
+      })
+
+      this.argumentsList.push({
         type: 'flag',
         inner: declaration,
         isLongFlag: false,
@@ -231,7 +275,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     const positionals: InternalPositionalArgument[] = []
     const flags: InternalFlagArgument[] = []
 
-    for (const value of this.arguments.values()) {
+    for (const value of this.argumentsList) {
       if (value.type === 'flag') {
         flags.push(value)
       } else {
@@ -299,13 +343,16 @@ export class Args<TArgTypes = DefaultArgTypes> {
         parseResult.val,
         commandParser.opts,
         commandParser.arguments,
+        commandParser.argumentsList,
         [...commandParser.opts.defaultMiddlewares, ...commandParser.middlewares],
         commandParser.builtins
       )
     } else {
       coercionResult = await coerce(
         parseResult.val,
-        this.opts, this.arguments,
+        this.opts,
+        this.arguments,
+        this.argumentsList,
         [...this.opts.defaultMiddlewares, ...this.middlewares],
         this.builtins
       )

@@ -16,7 +16,7 @@ interface SearchMissed<T> {
 
 export class PrefixTree<V> {
   private readonly base: Record<string, Node<V> | undefined> = {}
-  private readonly mapping: Map<string, V> = new Map()
+  private size = 0
 
   find (key: string): SearchHit<V> | SearchMissed<V> | undefined {
     let found = this.base[key[0]]
@@ -89,7 +89,7 @@ export class PrefixTree<V> {
 
     found.value = value
     found.isTerminal = true
-    this.mapping.set(key, value)
+    this.size++
   }
 
   delete (key: string): Node<V> | undefined {
@@ -98,27 +98,21 @@ export class PrefixTree<V> {
       return undefined
     }
 
-    return this._delete(root, key.substring(1))
+    const result = this._delete(root, key.substring(1))
+
+    if (result) {
+      this.size--
+    }
+
+    return result
   }
 
   toString (): string {
     return JSON.stringify(this.base, undefined, 2)
   }
 
-  values (): V[] {
-    return [...this.mapping.values()]
-  }
-
-  keys (): string[] {
-    return [...this.mapping.keys()]
-  }
-
-  entries (): Array<[string, V]> {
-    return [...this.mapping.entries()]
-  }
-
   empty (): boolean {
-    return this.mapping.size === 0
+    return this.size === 0
   }
 
   private _delete (node: Node<V>, key: string): Node<V> | undefined {
