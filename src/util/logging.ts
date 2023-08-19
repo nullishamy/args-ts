@@ -1,13 +1,13 @@
 interface Stringifiable { toString: () => string }
 type LoggingFunction<T> = (...args: Stringifiable[]) => T
 
-const LEVEL_TO_CONSOLE: Record<LogLevel, (...args: unknown[]) => void> = {
-  trace: console.trace,
-  debug: console.debug,
-  info: console.log,
-  warn: console.warn,
-  error: console.error,
-  fatal: console.error
+const LEVEL_TO_CONSOLE: Record<LogLevel, () => (...args: unknown[]) => void> = {
+  trace: () => console.trace,
+  debug: () => console.debug,
+  info: () => console.log,
+  warn: () => console.warn,
+  error: () => console.error,
+  fatal: () => console.error
 }
 
 const LEVEL_TO_NUMBER: Record<LogLevel, number> = {
@@ -43,12 +43,13 @@ export class Logger {
     return (...args) => {
       const ourLevel = LEVEL_TO_NUMBER[this.level]
       const targetLevel = LEVEL_TO_NUMBER[level]
-      if (ourLevel <= targetLevel) {
+
+      if (ourLevel >= targetLevel) {
         return
       }
 
-      const fn = LEVEL_TO_CONSOLE[this.level]
-      fn(`[${this.name}]`, new Date().toLocaleString(), ...args)
+      const fn = LEVEL_TO_CONSOLE[this.level]()
+      fn(`[${this.name}]`, new Date().toISOString(), ':', ...args)
 
       if (exit) {
         process.exit()

@@ -270,6 +270,8 @@ export class Args<TArgTypes = DefaultArgTypes> {
   }
 
   public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
+    this.opts.logger.debug(`Beginning parse of input '${argString}'`)
+
     const tokenResult = tokenise(Array.isArray(argString) ? argString.join(' ') : argString)
 
     if (!tokenResult.ok) {
