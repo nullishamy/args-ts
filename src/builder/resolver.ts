@@ -1,6 +1,6 @@
 import { StoredParserOpts } from '../opts'
 
-export abstract class Middleware {
+export abstract class Resolver {
   public constructor (
     public readonly identifier: string
   ) {}

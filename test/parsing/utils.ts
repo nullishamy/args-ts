@@ -99,7 +99,7 @@ export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, ar
     return acc
   }, new PrefixTree())
 
-  const coerced = await coerce(parsed, opts, argMap, args, opts.defaultMiddlewares, [])
+  const coerced = await coerce(parsed, opts, argMap, args, opts.resolvers, [])
   if (!coerced.ok) {
     assert(Array.isArray(coerced.err))
     throw new Error(coerced.err.map(e => e.message).join('\n'))

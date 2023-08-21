@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/quotes */
-import { Args, Middleware, a } from '../../src'
+import { Args, Resolver, a } from '../../src'
 import { parserOpts } from '../shared'
 import { runArgsExecution } from './utils'
 
-class MockMiddleware extends Middleware {
+class MockResolver extends Resolver {
   constructor (
     public readonly keyExists: (key: string) => boolean,
     public readonly resolveKey: (key: string) => string | undefined,
@@ -13,14 +13,14 @@ class MockMiddleware extends Middleware {
   }
 }
 
-describe('Middleware tests', () => {
-  it('calls for middleware when resolving arguments', async () => {
+describe('Resolver tests', () => {
+  it('calls for resolver when resolving arguments', async () => {
     const existsFn = jest.fn((key: string) => key === 'ware')
     const valueFn = jest.fn(() => 'value')
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.string())
-      .middleware(new MockMiddleware(existsFn, valueFn))
+      .middleware(new MockResolver(existsFn, valueFn))
 
     const result = await runArgsExecution(parser, '')
     expect(result.ware).toBe('value')
@@ -28,13 +28,13 @@ describe('Middleware tests', () => {
     expect(valueFn).toHaveBeenCalled()
   })
 
-  it('rejects invalid middleware values', async () => {
+  it('rejects invalid resolver values', async () => {
     const existsFn = jest.fn((key: string) => key === 'ware')
     const valueFn = jest.fn(() => 'value')
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.decimal())
-      .middleware(new MockMiddleware(existsFn, valueFn))
+      .middleware(new MockResolver(existsFn, valueFn))
 
     const result = expect(async () => await runArgsExecution(parser, ''))
     await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'decimal' because 'value' is not a number, expected 'decimal' received 'value' @ --ware]`)

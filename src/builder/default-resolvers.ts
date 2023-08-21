@@ -1,7 +1,7 @@
 import { StoredParserOpts } from '../opts'
-import { Middleware } from './middleware'
+import { Resolver } from './resolver'
 
-export class EnvironmentMiddleware extends Middleware {
+export class EnvironmentResolver extends Resolver {
   keyExists (key: string, opts: StoredParserOpts): boolean {
     const envKey = `${opts.environmentPrefix}_${key.toUpperCase()}`
     return process.env[envKey] !== undefined

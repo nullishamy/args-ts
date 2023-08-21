@@ -1,4 +1,4 @@
-import { Builtin, CoercionResult, Middleware, MinimalArgument } from '../../builder'
+import { Builtin, CoercionResult, Resolver, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { PrefixTree } from '../prefix-tree'
@@ -36,7 +36,7 @@ function validateFlagSchematically (
   flags: Map<string, AnyParsedFlagArgument[]>,
   argument: InternalFlagArgument,
   opts: StoredParserOpts,
-  middlewares: Middleware[]
+  resolveres: Resolver[]
 ): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
   let foundFlags = flags.get(argument.longFlag)
   if (argument.shortFlag && !foundFlags) {
@@ -45,12 +45,12 @@ function validateFlagSchematically (
 
   let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
 
-  // Test our middlewares to see if any of them have a value, so we know whether to reject below
-  let middlewaresHaveValue = false
+  // Test our resolvers to see if any of them have a value, so we know whether to reject below
+  let resolversHaveValue = false
 
-  for (const middleware of middlewares) {
-    if (middleware.keyExists(argument.longFlag, opts)) {
-      middlewaresHaveValue = true
+  for (const resolver of resolveres) {
+    if (resolver.keyExists(argument.longFlag, opts)) {
+      resolversHaveValue = true
     }
   }
 
@@ -63,7 +63,7 @@ function validateFlagSchematically (
   }
 
   // If no definitions were provided
-  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !middlewaresHaveValue) {
+  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !resolversHaveValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`, getArgDenotion(argument)))
   }
 
@@ -74,7 +74,7 @@ function validateFlagSchematically (
     }
 
     // If no values were passed to a definition
-    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !middlewaresHaveValue) {
+    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !resolversHaveValue) {
       return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`, getArgDenotion(argument)))
     }
 
@@ -105,7 +105,7 @@ function validatePositionalSchematically (
   positionals: Map<number, ParsedPositionalArgument>,
   argument: InternalPositionalArgument,
   opts: StoredParserOpts,
-  middlewares: Middleware[]
+  middlewares: Resolver[]
 ): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
   const { unspecifiedDefault, optional } = argument.inner._meta
@@ -276,7 +276,7 @@ async function resolveArgumentDefault (
   userArguments: ParsedPositionalArgument | AnyParsedFlagArgument[] | undefined,
   argument: InternalArgument,
   opts: StoredParserOpts,
-  middlewares: Middleware[]
+  middlewares: Resolver[]
 ): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError[]>> {
   // Only attempt middleware resolution if the user args are not set
   if (!userArguments) {
@@ -471,7 +471,7 @@ export async function coerce (
   opts: StoredParserOpts,
   internalArgs: PrefixTree<InternalArgument>,
   internalArgsList: InternalArgument[],
-  middlewares: Middleware[],
+  resolvers: Resolver[],
   builtins: Builtin[]
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
@@ -505,16 +505,16 @@ export async function coerce (
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult
     if (argument.type === 'flag') {
-      findResult = validateFlagSchematically(flags, argument, opts, middlewares)
+      findResult = validateFlagSchematically(flags, argument, opts, resolvers)
     } else {
-      findResult = validatePositionalSchematically(positionals, argument, opts, middlewares)
+      findResult = validatePositionalSchematically(positionals, argument, opts, resolvers)
     }
 
     if (!findResult.ok) {
       return Err([findResult.err])
     }
 
-    const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts, middlewares)
+    const resolutionResult = await resolveArgumentDefault(findResult.val, argument, opts, resolvers)
 
     if (!resolutionResult.ok) { return resolutionResult }
 

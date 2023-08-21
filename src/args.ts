@@ -1,4 +1,4 @@
-import { Builtin, Command, Middleware, MinimalArgument } from './builder'
+import { Command, Resolver, MinimalArgument, Builtin } from './builder'
 import { CoercionError, CommandError, ParseError, SchemaError } from './error'
 import { generateHelp } from './util/help'
 import { coerce, CoercedMultiValue, CoercedSingleValue } from './internal/parse/coerce'
@@ -42,7 +42,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
   public commandsList: InternalCommand[] = []
 
   public builtins: Builtin[] = []
-  public middlewares: Middleware[] = []
+  public middlewares: Resolver[] = []
   public footerLines: string[] = []
   public headerLines: string[] = []
 
@@ -62,7 +62,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     return this
   }
 
-  public middleware (middleware: Middleware): Args<TArgTypes> {
+  public middleware (middleware: Resolver): Args<TArgTypes> {
     this.middlewares.push(middleware)
     return this
   }
@@ -344,7 +344,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
         commandParser.opts,
         commandParser.arguments,
         commandParser.argumentsList,
-        [...commandParser.opts.defaultMiddlewares, ...commandParser.middlewares],
+        [...commandParser.opts.resolvers, ...commandParser.middlewares],
         commandParser.builtins
       )
     } else {
@@ -353,7 +353,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
         this.opts,
         this.arguments,
         this.argumentsList,
-        [...this.opts.defaultMiddlewares, ...this.middlewares],
+        [...this.opts.resolvers, ...this.middlewares],
         this.builtins
       )
     }
