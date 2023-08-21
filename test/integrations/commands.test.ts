@@ -10,7 +10,7 @@ class MockCommand extends Command {
     parserOpts: ParserOpts,
     commandOpts: Partial<CommandOpts>,
     public readonly id: string,
-    public readonly parserFn: (parser: Args<unknown>) => Args<unknown> = jest.fn(p => p),
+    public readonly parserFn: (parser: Args<{}>) => Args<{}> = jest.fn(p => p),
     public readonly executionFn: (args: object) => unknown = jest.fn()
   ) {
     super({
@@ -26,7 +26,7 @@ class MockCommand extends Command {
   }
 
   run = this.runner(async (args) => this.executionFn(args))
-  args = (parser: Args<unknown>) => this.parserFn(parser)
+  args = (parser: Args<{}>) => this.parserFn(parser)
 }
 
 describe('Command testing', () => {
@@ -243,7 +243,7 @@ describe('Command testing', () => {
   })
 
   it('can run subcommand with sub specific args', async () => {
-    const parserFn = jest.fn<Args, [Args<unknown>]>(parser => {
+    const parserFn = jest.fn<Args, [Args<{}>]>(parser => {
       return parser
         .arg(['--sub-arg'], a.string())
     })

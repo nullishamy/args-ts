@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { Args } from '../../src'
 
-export async function runArgsExecution <T> (parser: Args<T>, argString: string | string[]): Promise<T> {
+export async function runArgsExecution <T extends {}> (parser: Args<T>, argString: string | string[]): Promise<T> {
   const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
@@ -13,7 +13,7 @@ export async function runArgsExecution <T> (parser: Args<T>, argString: string |
   return result.val.args
 }
 
-export async function runCommandExecution (parser: Args<unknown>, argString: string | string[]): Promise<unknown> {
+export async function runCommandExecution (parser: Args<{}>, argString: string | string[]): Promise<unknown> {
   const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {
@@ -25,7 +25,7 @@ export async function runCommandExecution (parser: Args<unknown>, argString: str
   return await result.val.command.run(result.val.parsedArgs)
 }
 
-export async function runBuiltinExecution (parser: Args<unknown>, argString: string | string[]): Promise<unknown> {
+export async function runBuiltinExecution (parser: Args<{}>, argString: string | string[]): Promise<unknown> {
   const result = await parser.parseToResult(argString)
   if (!result.ok) {
     if (Array.isArray(result.err)) {

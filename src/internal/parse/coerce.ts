@@ -4,12 +4,13 @@ import { StoredParserOpts } from '../../opts'
 import { PrefixTree } from '../prefix-tree'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
-import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedShortArgumentSingle, UserCommand } from './parser'
+import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedRestArgument, ParsedShortArgumentSingle, UserCommand } from './parser'
 import { CoercedValue, InternalArgument, InternalFlagArgument, InternalPositionalArgument } from './types'
 
 export interface CoercedArguments {
   command: UserCommand | DefaultCommand | BuiltinCommand
   args: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue>
+  rest: ParsedRestArgument | undefined
 }
 
 export interface CoercedMultiValue {
@@ -613,6 +614,7 @@ export async function coerce (
 
   return Ok({
     command,
+    rest: args.rest,
     args: out
   })
 }

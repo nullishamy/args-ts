@@ -114,7 +114,7 @@ class HelpCommand extends Command {
   })
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  args = (parser: Args<unknown>) =>
+  args = (parser: Args<{}>) =>
     parser.arg(['--cmd-arg'], a.string())
 }
 

@@ -31,9 +31,10 @@ interface ParsedArgs<T> {
 type ParseSuccess<TArgTypes> = FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>
 export interface DefaultArgTypes {
   [k: string]: CoercedValue
+  rest?: string
 }
 
-export class Args<TArgTypes = DefaultArgTypes> {
+export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   // We store both a tree and a list so that we can iterate all values efficiently
   public arguments: PrefixTree<InternalArgument> = new PrefixTree()
   public argumentsList: InternalArgument[] = []
@@ -81,7 +82,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       throw new CommandError(`command '${name}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
     }
 
-    let parser = new Args<unknown>({
+    let parser = new Args<{}>({
       ...this.opts,
       ...command.opts.parserOpts
     })
@@ -237,14 +238,19 @@ export class Args<TArgTypes = DefaultArgTypes> {
     return this
   }
 
-  private intoObject (coerced: Map<InternalArgument, CoercedMultiValue | CoercedSingleValue>): TArgTypes {
-    return Object.fromEntries([...coerced.entries()].map(([key, value]) => {
+  private intoObject (coerced: Map<InternalArgument, CoercedMultiValue | CoercedSingleValue>, rest: string | undefined): TArgTypes {
+    const out = Object.fromEntries([...coerced.entries()].map(([key, value]) => {
       if (key.type === 'flag') {
         return [key.longFlag, value.coerced]
       } else {
         return [key.key, value.coerced]
       }
     })) as TArgTypes
+    if (rest) {
+      out.rest = rest
+    }
+
+    return out
   }
 
   private intoRaw (args: ParsedArguments): [Record<string, string[]>, string[]] {
@@ -368,7 +374,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     if (coercion.command.type === 'default') {
       return Ok({
         mode: 'args',
-        args: this.intoObject(coercion.args)
+        args: this.intoObject(coercion.args, coercion.rest?.value)
       })
     }
 
@@ -394,7 +400,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
       let executionResult
 
       try {
-        await coercion.command.internal.inner.run(this.intoObject(coercion.args))
+        await coercion.command.internal.inner.run(this.intoObject(coercion.args, coercion.rest?.value))
       } catch (err) {
         executionResult = err
       }
@@ -408,7 +414,7 @@ export class Args<TArgTypes = DefaultArgTypes> {
     // Command was found, return it
     return Ok({
       mode: 'command',
-      parsedArgs: this.intoObject(coercion.args),
+      parsedArgs: this.intoObject(coercion.args, coercion.rest?.value),
       command: coercion.command.internal.inner
     })
   }

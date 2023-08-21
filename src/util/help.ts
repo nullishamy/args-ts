@@ -7,7 +7,7 @@ import { InternalArgument } from '../internal/parse/types'
  * @param parser - the parser schema to generate from
  * @returns the generated help string
  */
-export function generateHelp (parser: Args<unknown>): string {
+export function generateHelp (parser: Args<{}>): string {
   const { argumentsList, commandsList, opts, builtins } = parser
 
   const renderArgument = (value: InternalArgument): string => {

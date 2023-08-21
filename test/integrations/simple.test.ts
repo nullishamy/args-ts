@@ -209,6 +209,37 @@ describe('Flag integrations', () => {
   })
 })
 
+describe('Rest arguments', () => {
+  it('can parse rest arguments on positional based parsers', async () => {
+    const parser = new Args(parserOpts)
+      .positional('<boolean>', a.bool().array())
+
+    const result = await runArgsExecution(parser, 'true true -- false true')
+    expect(result.boolean).toEqual([true, true])
+    expect(result.rest).toEqual('false true')
+  })
+
+  it('can parse rest arguments on flag based parsers', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--flag'], a.bool())
+
+    const result = await runArgsExecution(parser, '--flag true -- false true')
+    expect(result.flag).toEqual(true)
+    expect(result.rest).toEqual('false true')
+  })
+
+  it('can parse rest arguments on mixed parsers', async () => {
+    const parser = new Args(parserOpts)
+      .positional('<boolean>', a.bool().array())
+      .arg(['--flag'], a.bool())
+
+    const result = await runArgsExecution(parser, 'true false true --flag true -- false true')
+    expect(result.flag).toEqual(true)
+    expect(result.boolean).toEqual([true, false, true])
+    expect(result.rest).toEqual('false true')
+  })
+})
+
 describe('Positional integrations', () => {
   it('can collate positionals', async () => {
     const parser = new Args(parserOpts)

@@ -31,6 +31,13 @@ export interface ParsedShortArgumentSingle extends ParsedArgumentBase {
   negated: boolean
 }
 
+//      vvvvvvvvvv
+// -f x -- abc def
+export interface ParsedRestArgument extends ParsedArgumentBase {
+  type: 'rest'
+  value: string
+}
+
 // <value>
 export interface ParsedPositionalArgument extends ParsedArgumentBase {
   type: 'positional'
@@ -38,7 +45,7 @@ export interface ParsedPositionalArgument extends ParsedArgumentBase {
   values: string[]
 }
 
-export type AnyParsedArgument = ParsedLongArgument | ParsedShortArgumentGroup | ParsedShortArgumentSingle | ParsedPositionalArgument
+export type AnyParsedArgument = ParsedLongArgument | ParsedShortArgumentGroup | ParsedShortArgumentSingle | ParsedPositionalArgument | ParsedRestArgument
 export type AnyParsedFlagArgument = ParsedLongArgument | ParsedShortArgumentSingle | ParsedShortArgumentGroup
 
 export interface UserCommand {
@@ -55,6 +62,7 @@ export interface DefaultCommand {
 export interface ParsedArguments {
   command: UserCommand | DefaultCommand
   flags: Map<string, AnyParsedFlagArgument[]>
+  rest: ParsedRestArgument | undefined
   positionals: Map<number, ParsedPositionalArgument>
 }
 
@@ -179,7 +187,7 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Prefi
 }
 
 function parseLongFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<ParsedLongArgument, ParseError> {
-  const flagName = parseUnquoted(tokens, 'whitespace')
+  const flagName = parseUnquoted(tokens)
   if (!flagName.ok) {
     return flagName
   }
@@ -273,7 +281,20 @@ function parseShortFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<
   })
 }
 
-function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyParsedFlagArgument, ParseError> {
+function parseRest (tokens: TokenIterator): ParsedRestArgument {
+  let out = ''
+  while (tokens.hasMoreTokens()) {
+    out += tokens.nextOrThrow().value
+  }
+
+  return {
+    rawInput: `-- ${out}`,
+    type: 'rest',
+    value: out
+  }
+}
+
+function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyParsedFlagArgument | ParsedRestArgument, ParseError> {
   skipWhile(tokens, token => token.type === 'whitespace')
 
   const token = tokens.current()
@@ -293,6 +314,12 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
     // Try for a long flag
     tokens.next()
     tokens.next()
+
+    // Check if we are actually parsing a flag, and not the 'rest' operator
+    if (tokens.current()?.type === 'whitespace') {
+      return Ok(parseRest(tokens))
+    }
+
     return parseLongFlag(tokens, opts)
   }
 
@@ -306,6 +333,7 @@ export function parse (
 ): Result<ParsedArguments, ParseError> {
   const positionals: Map<number, ParsedPositionalArgument> = new Map()
   const flags: Map<string, AnyParsedFlagArgument[]> = new Map()
+  let rest: ParsedRestArgument | undefined
 
   // 1) Determine if we have a command (and maybe) a subcommand passed in the arguments
   const rootKey = parseString(tokens, 'whitespace')
@@ -358,18 +386,19 @@ export function parse (
       const definitions = flags.get(flag.key) ?? []
       definitions.push(flag)
       flags.set(flag.key, definitions)
-    }
-
-    if (type === 'short-group') {
+    } else if (type === 'short-group') {
       for (const key of flag.flags) {
         flags.set(key, [flag])
       }
+    } else if (type === 'rest') {
+      rest = flag
     }
   }
 
   return Ok({
     command: commandObject,
     flags,
+    rest,
     positionals
   })
 }

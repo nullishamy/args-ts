@@ -27,7 +27,7 @@ export abstract class Command {
 
   // Must use any for it to accept the subtyping this function actually performs
   // Black magic happens later on to extract the real subtype out of this `any`
-  abstract args: <T> (parser: Args<T>) => Args<any>
+  abstract args: <T extends {}> (parser: Args<T>) => Args<any>
   abstract run: (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown>
 
   /**
@@ -50,7 +50,7 @@ export abstract class Command {
       throw new CommandError(`subcommand ${name} already registered`)
     }
 
-    let parser = new Args<unknown>({
+    let parser = new Args<{}>({
       ...this.opts,
       ...subcommand.opts.parserOpts
     })
