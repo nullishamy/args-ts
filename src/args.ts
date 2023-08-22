@@ -42,7 +42,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   public commandsList: InternalCommand[] = []
 
   public builtins: Builtin[] = []
-  public middlewares: Resolver[] = []
+  public resolvers: Resolver[] = []
   public footerLines: string[] = []
   public headerLines: string[] = []
 
@@ -62,8 +62,8 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
-  public middleware (middleware: Resolver): Args<TArgTypes> {
-    this.middlewares.push(middleware)
+  public resolver (resolver: Resolver): Args<TArgTypes> {
+    this.resolvers.push(resolver)
     return this
   }
 
@@ -334,7 +334,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
         commandParser.opts,
         commandParser.arguments,
         commandParser.argumentsList,
-        [...commandParser.opts.resolvers, ...commandParser.middlewares],
+        [...commandParser.opts.resolvers, ...commandParser.resolvers],
         commandParser.builtins
       )
     } else {
@@ -343,7 +343,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
         this.opts,
         this.arguments,
         this.argumentsList,
-        [...this.opts.resolvers, ...this.middlewares],
+        [...this.opts.resolvers, ...this.resolvers],
         this.builtins
       )
     }
@@ -421,6 +421,6 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   public reset (): void {
     this.arguments = new PrefixTree()
     this.commands = new PrefixTree()
-    this.middlewares = []
+    this.resolvers = []
   }
 }

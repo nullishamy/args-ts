@@ -20,7 +20,7 @@ describe('Resolver tests', () => {
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.string())
-      .middleware(new MockResolver(existsFn, valueFn))
+      .resolver(new MockResolver(existsFn, valueFn))
 
     const result = await runArgsExecution(parser, '')
     expect(result.ware).toBe('value')
@@ -34,7 +34,7 @@ describe('Resolver tests', () => {
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.decimal())
-      .middleware(new MockResolver(existsFn, valueFn))
+      .resolver(new MockResolver(existsFn, valueFn))
 
     const result = expect(async () => await runArgsExecution(parser, ''))
     await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'decimal' because 'value' is not a number, expected 'decimal' received 'value' @ --ware]`)

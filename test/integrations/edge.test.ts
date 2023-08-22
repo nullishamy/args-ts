@@ -2,6 +2,8 @@ import { Args, a } from '../../src'
 import { parserOpts } from '../shared'
 import { readFile } from 'fs/promises'
 import { CoercionError, ParseError } from '../../src/error'
+import path from 'path'
+
 describe('Edge cases', () => {
   const parser = new Args(parserOpts)
     .arg(['--non-latin'], a.string())
@@ -10,7 +12,7 @@ describe('Edge cases', () => {
   it('can parse the naughty strings', async () => {
     const strings: string[] = JSON.parse(
       await readFile(
-        './test/integrations/naughty-strings.json',
+        path.join(__dirname, 'naughty-strings.json'),
         { encoding: 'utf-8' }
       )
     )

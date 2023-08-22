@@ -20,7 +20,7 @@ class Query extends Command {
     })
   }
 
-  args = (parser: Args<unknown>) => parser
+  args = (parser: Args<{}>) => parser
     .arg(['--search', '-s'],
       a.string()
         .array()
@@ -59,7 +59,7 @@ class Sync extends Command {
     })
   }
 
-  args = (parser: Args<unknown>) => parser
+  args = (parser: Args<{}>) => parser
     .arg(['--search', '-s'],
       a.string()
         .array()

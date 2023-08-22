@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Args, ParserOpts, a, util, Middleware } from 'args.ts'
+import { Args, ParserOpts, a, util, Resolver } from 'args.ts'
 
 export const parserOpts: ParserOpts = {
   programName: '05-application-config',
@@ -8,7 +8,7 @@ export const parserOpts: ParserOpts = {
   programVersion: 'v1'
 }
 
-class UserConfigMiddleware extends Middleware {
+class UserConfigResolver extends Resolver {
   private data: { [k: string]: string | undefined } = {}
 
   async load (): Promise<this> {
@@ -34,7 +34,7 @@ async function main (): Promise<void> {
     .arg(['--username'], a.string())
     .arg(['--password'], a.string())
     // The string here is used for internal identification of the middleware
-    .middleware(await (new UserConfigMiddleware('user-config')).load())
+    .resolver(await (new UserConfigResolver('user-config')).load())
 
   const result = await parser.parse(util.makeArgs(), true)
 

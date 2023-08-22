@@ -18,7 +18,7 @@ class MyCommand extends Command {
     })
   }
 
-  args = (parser: Args<unknown>) =>
+  args = (parser: Args<{}>) =>
     parser.arg(['--cmd-arg'], a.string())
 
   run = this.runner(async args => {
