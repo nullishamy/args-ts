@@ -1,5 +1,6 @@
 import { Args } from '../args'
 import { InternalArgument } from '../internal/parse/types'
+import { getAliasDenotion } from '../internal/util'
 
 /**
  * Generate a help string from a parser schema.
@@ -17,11 +18,11 @@ export function generateHelp (parser: Args<{}>): string {
         return `[<${value.key.toUpperCase()}>]`
       }
 
-      if (value.shortFlag) {
+      if (value.aliases.length) {
         if (isMultiType) {
-          return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>]`
+          return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>]`
         }
-        return `[--${value.longFlag} | -${value.shortFlag} <${value.inner.type}>]`
+        return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>]`
       }
       return `[--${value.longFlag} <${value.inner.type}>]`
     } else {
@@ -32,11 +33,11 @@ export function generateHelp (parser: Args<{}>): string {
         return `<${value.key.toUpperCase()}>`
       }
 
-      if (value.shortFlag) {
+      if (value.aliases.length) {
         if (isMultiType) {
-          return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type}...>)`
+          return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>)`
         }
-        return `(--${value.longFlag} | -${value.shortFlag} <${value.inner.type}>)`
+        return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>)`
       }
 
       return `(--${value.longFlag} <${value.inner.type}>)`

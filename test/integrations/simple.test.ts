@@ -4,6 +4,35 @@ import { Args } from '../../src'
 import { a } from '../../src/builder'
 import { parserOpts } from '../shared'
 
+describe('Alias integrations', () => {
+  it('can parse a long-flag alias', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--long-flag', '--alias'], a.bool())
+
+    const result = await runArgsExecution(parser, '--alias')
+    expect(result['long-flag']).toBe(true)
+    expect(result.alias).toBe(undefined)
+  })
+
+  it('can parse a short-flag alias', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--long-flag', '-a'], a.bool())
+
+    const result = await runArgsExecution(parser, '-a')
+    expect(result['long-flag']).toBe(true)
+    expect(result.alias).toBe(undefined)
+  })
+
+  it('can falls back to unspecified default when nothing is given', async () => {
+    const parser = new Args(parserOpts)
+      .arg(['--long-flag', '-a'], a.bool())
+
+    const result = await runArgsExecution(parser, '')
+    expect(result['long-flag']).toBe(false)
+    expect(result.alias).toBe(undefined)
+  })
+})
+
 describe('Flag integrations', () => {
   it('can parse a long-flag flag', async () => {
     const parser = new Args(parserOpts)

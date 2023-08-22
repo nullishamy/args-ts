@@ -30,7 +30,7 @@ describe('Schema validation', () => {
     expect(() => {
       // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
       parser.arg(['-1'], a.string())
-    }).toThrowErrorMatchingInlineSnapshot(`"long flags must start with '--', got '-1'"`)
+    }).toThrowErrorMatchingInlineSnapshot(`"flags must match '--abcdef...' or '-abcdef' got '-1'"`)
   })
 
   it('rejects positionals not prefixed by <', () => {
@@ -57,7 +57,7 @@ describe('Schema validation', () => {
     expect(() => {
       // @ts-expect-error we are testing runtime validation, for JS users, or people who dont like playing by the rules
       parser.arg(['--flag', '1'], a.string())
-    }).toThrowErrorMatchingInlineSnapshot(`"short flags must start with '-', got '1'"`)
+    }).toThrowErrorMatchingInlineSnapshot(`"flags must match '--abcdef...' or '-abcdef' got '1'"`)
   })
 
   it('rejects long flags that do not have a valid ID', () => {
@@ -65,7 +65,7 @@ describe('Schema validation', () => {
 
     expect(() => {
       parser.arg(['--1'], a.string())
-    }).toThrowErrorMatchingInlineSnapshot(`"long flags must match '--abcdef...' got '--1'"`)
+    }).toThrowErrorMatchingInlineSnapshot(`"flags must match '--abcdef...' or '-abcdef' got '--1'"`)
   })
 
   it('rejects short flags that do not have a valid ID', () => {
@@ -73,7 +73,7 @@ describe('Schema validation', () => {
 
     expect(() => {
       parser.arg(['--flag', '-1'], a.string())
-    }).toThrowErrorMatchingInlineSnapshot(`"short flags must match '-abcdef...' got '-1'"`)
+    }).toThrowErrorMatchingInlineSnapshot(`"flags must match '--abcdef...' or '-abcdef' got '-1'"`)
   })
 
   it('rejects duplicate long flags', () => {
@@ -91,7 +91,7 @@ describe('Schema validation', () => {
 
     expect(() => {
       parser.arg(['--flag2', '-f'], a.string())
-    }).toThrowErrorMatchingInlineSnapshot(`"duplicate short flag '-f'"`)
+    }).toThrowErrorMatchingInlineSnapshot(`"duplicate alias '-f'"`)
   })
 
   it('rejects non-string input', async () => {

@@ -40,8 +40,14 @@ function validateFlagSchematically (
   resolveres: Resolver[]
 ): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
   let foundFlags = flags.get(argument.longFlag)
-  if (argument.shortFlag && !foundFlags) {
-    foundFlags = flags.get(argument.shortFlag)
+  if (argument.aliases.length && !foundFlags) {
+    for (const alias of argument.aliases) {
+      foundFlags = flags.get(alias.value)
+
+      if (foundFlags) {
+        break
+      }
+    }
   }
 
   let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
@@ -339,7 +345,7 @@ async function resolveArgumentDefault (
         isDefault: true,
         value: {
           isMulti: false,
-          raw: `<default value for group member '${argument.shortFlag}' of '${userArgument.rawInput}'`,
+          raw: `<default value for group member '${argument.longFlag}' of '${userArgument.rawInput}'`,
           coerced: argument.inner._meta.specifiedDefault
         }
       })

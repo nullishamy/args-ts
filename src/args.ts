@@ -8,8 +8,7 @@ import { InternalCommand, InternalArgument, CoercedValue, InternalPositionalArgu
 import { Err, Ok, Result } from './internal/result'
 import { ParserOpts, StoredParserOpts, defaultParserOpts } from './opts'
 import { PrefixTree } from './internal/prefix-tree'
-
-const flagValidationRegex = /-+(?:[a-z]+)/
+import { getAliasDenotion, internaliseFlagString } from './internal/util'
 
 // What happened when we parsed
 interface FoundCommand {
@@ -170,69 +169,54 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   }
 
   public arg<TArg extends CoercedValue, TLong extends string> (
-    [longFlag, shortFlag]: [`--${TLong}`, `-${string}`?],
+    [_longFlag, ..._aliases]: [`--${TLong}`, ...Array<`-${string}` | `--${string}`>],
     declaration: MinimalArgument<TArg>
   ): Args<TArgTypes & {
       // Add the key to our object of known args
       [key in TLong]: TArg
     }> {
-    if (!longFlag.startsWith('--')) {
-      throw new SchemaError(`long flags must start with '--', got '${longFlag}'`)
+    const [,longFlag] = internaliseFlagString(_longFlag)
+    const aliases = _aliases.map(a => {
+      const [type, value] = internaliseFlagString(a)
+      return {
+        type,
+        value
+      }
+    })
+
+    if (this.arguments.has(longFlag)) {
+      throw new SchemaError(`duplicate long flag '${_longFlag}'`)
     }
 
-    if (this.arguments.has(longFlag.substring(2))) {
-      throw new SchemaError(`duplicate long flag '${longFlag}'`)
+    for (const alias of aliases) {
+      if (this.arguments.has(alias.value)) {
+        throw new SchemaError(`duplicate alias '${getAliasDenotion(alias)}'`)
+      }
+
+      this.arguments.insert(alias.value, {
+        type: 'flag',
+        isLongFlag: true,
+        inner: declaration,
+        longFlag,
+        aliases
+      })
     }
 
-    if (!flagValidationRegex.test(longFlag)) {
-      throw new SchemaError(`long flags must match '--abcdef...' got '${longFlag}'`)
-    }
-
-    this.arguments.insert(longFlag.substring(2), {
+    this.arguments.insert(longFlag, {
       type: 'flag',
       isLongFlag: true,
       inner: declaration,
-      longFlag: longFlag.substring(2),
-      shortFlag: shortFlag?.substring(1)
+      longFlag,
+      aliases
     })
 
     this.argumentsList.push({
       type: 'flag',
       isLongFlag: true,
       inner: declaration,
-      longFlag: longFlag.substring(2),
-      shortFlag: shortFlag?.substring(1)
+      longFlag,
+      aliases
     })
-
-    if (shortFlag) {
-      if (!shortFlag.startsWith('-')) {
-        throw new SchemaError(`short flags must start with '-', got '${shortFlag}'`)
-      }
-
-      if (this.arguments.has(shortFlag.substring(1))) {
-        throw new SchemaError(`duplicate short flag '${shortFlag}'`)
-      }
-
-      if (!flagValidationRegex.test(shortFlag)) {
-        throw new SchemaError(`short flags must match '-abcdef...' got '${shortFlag}'`)
-      }
-
-      this.arguments.insert(shortFlag.substring(1), {
-        type: 'flag',
-        inner: declaration,
-        isLongFlag: false,
-        longFlag: longFlag.substring(2),
-        shortFlag: shortFlag.substring(1)
-      })
-
-      this.argumentsList.push({
-        type: 'flag',
-        inner: declaration,
-        isLongFlag: false,
-        longFlag: longFlag.substring(2),
-        shortFlag: shortFlag.substring(1)
-      })
-    }
 
     // @ts-expect-error can't infer this because of weird subtyping, not a priority
     return this

@@ -4,7 +4,7 @@ import { MinimalArgument, StoredParserOpts, defaultCommandOpts } from '../../src
 import { CoercedArguments, coerce } from '../../src/internal/parse/coerce'
 import { tokenise } from '../../src/internal/parse/lexer'
 import { ParsedArguments, parse } from '../../src/internal/parse/parser'
-import { CoercedValue, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
+import { CoercedValue, FlagAlias, InternalArgument, InternalCommand } from '../../src/internal/parse/types'
 import { PrefixTree } from '../../src/internal/prefix-tree'
 
 export function makeInternalCommand (
@@ -36,17 +36,17 @@ export function makeInternalCommand (
 }
 
 export function makeInternalFlag (
-  { isPrimary, long, short, inner }: {
+  { isPrimary, long, aliases, inner }: {
     isPrimary: boolean
     long: string
-    short?: string
+    aliases?: FlagAlias[]
     inner: MinimalArgument<CoercedValue>
   }): InternalArgument {
   return {
     type: 'flag',
     isLongFlag: isPrimary,
     longFlag: long,
-    shortFlag: short,
+    aliases: aliases ?? [],
     inner
   }
 }
@@ -89,8 +89,8 @@ export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, ar
   const argMap = args.reduce<PrefixTree<InternalArgument>>((acc, val) => {
     if (val.type === 'flag') {
       acc.insert(val.longFlag, val)
-      if (val.shortFlag) {
-        acc.insert(val.shortFlag, val)
+      if (val.aliases) {
+        val.aliases.forEach(a => acc.insert(a.value, val))
       }
     } else {
       acc.insert(val.key, val)

@@ -5,11 +5,16 @@ interface ArgumentBase {
   inner: MinimalArgument<CoercedValue>
 }
 
+export interface FlagAlias {
+  type: 'long' | 'short'
+  value: string
+}
+
 export interface InternalFlagArgument extends ArgumentBase {
   type: 'flag'
   isLongFlag: boolean
   longFlag: string
-  shortFlag: string | undefined
+  aliases: FlagAlias[]
 }
 
 export interface InternalPositionalArgument extends ArgumentBase {
@@ -25,7 +30,7 @@ export interface InternalCommand {
   isBase: boolean
   aliases: string[]
   inner: Command
-  parser: Args<unknown>
+  parser: Args<{}>
 }
 
 export interface ParsedPair {
