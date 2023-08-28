@@ -1,8 +1,8 @@
 import { Args, DefaultArgTypes } from '../args'
 import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
-import { ExtractArgType } from '../internal/types'
 import { CommandOpts, StoredCommandOpts, defaultCommandOpts, defaultParserOpts } from '../opts'
+import { ArgType } from '../util'
 
 /**
  * Base class for all commands, including subcommands. Any user implemented command must extend from this class.
@@ -28,14 +28,14 @@ export abstract class Command {
   // Must use any for it to accept the subtyping this function actually performs
   // Black magic happens later on to extract the real subtype out of this `any`
   abstract args: <T extends {}> (parser: Args<T>) => Args<any>
-  abstract run: (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown>
+  abstract run: (args: ArgType<ReturnType<this['args']>>) => Promise<unknown>
 
   /**
    * Creates a runner function for use with {@link Command#run}. This exists to provide type inference to the callback, which is not available without a function call.
    * @param runFn - the run function
    * @returns - the run implementation
    */
-  runner (runFn: (args: (ExtractArgType<ReturnType<this['args']>> & DefaultArgTypes)) => Promise<unknown>): (args: ExtractArgType<ReturnType<this['args']>>) => Promise<unknown> {
+  runner (runFn: (args: (ArgType<ReturnType<this['args']>> & DefaultArgTypes)) => Promise<unknown>): (args: ArgType<ReturnType<this['args']>>) => Promise<unknown> {
     return async (args) => await runFn(args)
   }
 
