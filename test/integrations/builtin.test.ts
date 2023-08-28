@@ -9,7 +9,7 @@ describe('Builtin tests', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     const parser = new Args(parserOpts)
-      .builtin(new builtin.Help())
+      .builtin(builtin.help())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
@@ -23,7 +23,7 @@ describe('Builtin tests', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     const parser = new Args(parserOpts)
-      .builtin(new builtin.Help())
+      .builtin(builtin.help())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
@@ -37,7 +37,7 @@ describe('Builtin tests', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     const parser = new Args(parserOpts)
-      .builtin(new builtin.Version())
+      .builtin(builtin.version())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
@@ -50,7 +50,7 @@ describe('Builtin tests', () => {
     const mockConsole = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     const parser = new Args(parserOpts)
-      .builtin(new builtin.ShellCompletion())
+      .builtin(builtin.completions())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
@@ -62,7 +62,7 @@ describe('Builtin tests', () => {
 
   it('rejects command defintions if they conflict with builtins', async () => {
     const parser = new Args(parserOpts)
-      .builtin(new builtin.ShellCompletion())
+      .builtin(builtin.completions())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
@@ -72,11 +72,11 @@ describe('Builtin tests', () => {
 
   it('rejects command defintions if an alias conflicts with builtins', async () => {
     const parser = new Args(parserOpts)
-      .builtin(new builtin.ShellCompletion())
+      .builtin(builtin.completions())
       .arg(['--arg'], a.string().optional())
       .arg(['--number'], a.decimal())
 
     const result = expect(() => parser.command(['normal', 'completion'], undefined as any))
-    result.toThrowErrorMatchingInlineSnapshot(`"Cannot read properties of undefined (reading 'opts')"`)
+    result.toThrowErrorMatchingInlineSnapshot(`"command 'normal' conflicts with builtin 'shell-completion' (ShellCompletion)"`)
   })
 })

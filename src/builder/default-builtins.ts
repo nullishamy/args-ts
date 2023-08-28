@@ -2,7 +2,11 @@ import { Args } from '../args'
 import { canCompleteShell, shellCompletion } from '../util'
 import { Builtin } from './builtin'
 
-export class Help extends Builtin {
+function makeExport <T, TConst extends new (...args: any[]) => T> (ArgClass: TConst): (...args: ConstructorParameters<TConst>) => T {
+  return (...args: any[]) => new ArgClass(...args)
+}
+
+class Help extends Builtin {
   constructor () {
     super('help')
 
@@ -15,7 +19,7 @@ export class Help extends Builtin {
   }
 }
 
-export class Version extends Builtin {
+class Version extends Builtin {
   constructor () {
     super('version')
 
@@ -27,7 +31,7 @@ export class Version extends Builtin {
   }
 }
 
-export class ShellCompletion extends Builtin {
+class ShellCompletion extends Builtin {
   constructor () {
     super('shell-completion')
 
@@ -51,3 +55,7 @@ export class ShellCompletion extends Builtin {
     console.log(shellCompletion(shell, parser))
   }
 }
+
+export const help = makeExport<Help, typeof Help>(Help)
+export const version = makeExport<Version, typeof Version>(Version)
+export const completions = makeExport<ShellCompletion, typeof ShellCompletion>(ShellCompletion)

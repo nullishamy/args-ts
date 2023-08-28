@@ -76,7 +76,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       throw new CommandError(`command '${name}' already declared`)
     }
 
-    const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(name))
+    const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(name) || aliases.some(a => b.commandTriggers.includes(a)))
     if (existingBuiltin) {
       throw new CommandError(`command '${name}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
     }
