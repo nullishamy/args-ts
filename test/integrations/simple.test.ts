@@ -267,6 +267,18 @@ describe('Rest arguments', () => {
     expect(result.boolean).toEqual([true, false, true])
     expect(result.rest).toEqual('false true')
   })
+
+  it('errors if the rest syntax is not enabled', async () => {
+    const parser = new Args({
+      ...parserOpts,
+      restSyntax: 'error'
+    })
+      .positional('<boolean>', a.bool().array())
+      .arg(['--flag'], a.bool())
+
+    const result = expect(async () => await runArgsExecution(parser, 'true false true --flag true -- false true'))
+    await result.rejects.toMatchInlineSnapshot(`[Error: 'rest' syntax was used, but is not enabled @ 30 : true false true --flag true -- false true]`)
+  })
 })
 
 describe('Positional integrations', () => {

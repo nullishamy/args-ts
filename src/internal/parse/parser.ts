@@ -317,6 +317,10 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
 
     // Check if we are actually parsing a flag, and not the 'rest' operator
     if (tokens.current()?.type === 'whitespace') {
+      if (opts.restSyntax === 'error') {
+        return Err(new ParseError("'rest' syntax was used, but is not enabled", tokens.intoString(), tokens.index()))
+      }
+
       return Ok(parseRest(tokens))
     }
 

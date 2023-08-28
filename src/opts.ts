@@ -16,6 +16,7 @@ export interface StoredParserOpts {
   tooManyValues: 'drop' | 'throw'
   tooManyDefinitions: 'drop' | 'throw' | 'overwrite'
   arrayMultipleDefinitions: 'append' | 'drop' | 'throw' | 'overwrite'
+  restSyntax: 'collect' | 'error'
   deprecatedCommands: 'error' | 'unknown-command'
   keyEqualsValueSyntax: boolean
   shortFlagGroups: boolean
@@ -32,6 +33,7 @@ export const defaultParserOpts = {
   tooManyArgs: 'throw',
   tooManyValues: 'throw',
   deprecatedCommands: 'error',
+  restSyntax: 'collect',
   shortFlagGroups: true,
   keyEqualsValueSyntax: true,
   environmentPrefix: undefined,
