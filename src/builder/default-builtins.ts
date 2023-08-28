@@ -10,7 +10,7 @@ export class Help extends Builtin {
     this.onCommand('help')
   }
 
-  async run (parser: Args<unknown>): Promise<void> {
+  async run (parser: Args<{}>): Promise<void> {
     console.log(parser.help())
   }
 }
@@ -22,7 +22,7 @@ export class Version extends Builtin {
     this.onArgument('version')
   }
 
-  async run (parser: Args<unknown>): Promise<void> {
+  async run (parser: Args<{}>): Promise<void> {
     console.log(`${parser.opts.programName} (${parser.opts.programVersion})`)
   }
 }
@@ -34,7 +34,7 @@ export class ShellCompletion extends Builtin {
     this.onCommand('completion')
   }
 
-  async run (parser: Args<unknown>, __: Record<string, string[]>, positionals: string[]): Promise<void> {
+  async run (parser: Args<{}>, __: Record<string, string[]>, positionals: string[]): Promise<void> {
     positionals = positionals.slice(1)
     const [shell] = positionals
 

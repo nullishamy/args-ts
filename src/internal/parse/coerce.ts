@@ -494,7 +494,8 @@ export async function coerce (
         type: 'builtin',
         command: foundBuiltin,
         trigger
-      }
+      },
+      rest: undefined
     })
   }
 

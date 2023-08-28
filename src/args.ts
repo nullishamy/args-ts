@@ -37,10 +37,10 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   // We store both a tree and a list so that we can iterate all values efficiently
   public arguments: PrefixTree<InternalArgument> = new PrefixTree()
   public argumentsList: InternalArgument[] = []
-  
+
   public commands: PrefixTree<InternalCommand> = new PrefixTree()
   public commandsList: InternalCommand[] = []
-  
+
   public resolvers: Resolver[] = []
   public builtins: Builtin[] = []
   public footerLines: string[] = []

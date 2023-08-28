@@ -13,6 +13,7 @@
         "build:watch": "tsc --watch --preserveWatchOutput",
         "cleaner": "ts-cleaner --dist lib --watch",
         "test": "jest",
+        "test:full": "COMPILE_EXAMPLES=1 jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --config jest.coverage.js",
         "test:coverage:watch": "jest --watchAll --config jest.coverage.js",

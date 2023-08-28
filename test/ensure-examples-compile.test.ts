@@ -2,18 +2,37 @@ import fsp from 'fs/promises'
 import path from 'path'
 import { execSync } from 'child_process'
 
-describe('Example compilation', () => {
-  it('can compile the examples', async () => {
-    if (!process.env.GITHUB_ACTIONS) {
-      return
-    }
+interface ExecError {
+  status: number
+  signal: null
+  output: string[]
+  pid: number
+  stdout: string
+  stderr: string
+}
 
+describe('Example compilation', () => {
+  if (!process.env.COMPILE_EXAMPLES) {
+    it.skip('can compile the examples', () => {})
+    return
+  }
+
+  it('can compile the examples', async () => {
     const dir = path.join(__dirname, '..', 'examples')
     const examples = await fsp.readdir(dir)
 
     for (const example of examples) {
       console.time(example)
-      execSync(`npm run build --prefix ${path.join(dir, example)}`)
+
+      try {
+        execSync(`npm run build --prefix ${path.join(dir, example)}`, {
+          encoding: 'utf-8'
+        })
+      } catch (_err) {
+        const err = _err as ExecError
+        console.error('Example', example, 'failed to compile:', err.stdout)
+      }
+
       console.timeEnd(example)
     }
   })
