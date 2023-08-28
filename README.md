@@ -13,8 +13,7 @@ import { Args, ParserOpts, a } from 'args.ts'
 export const parserOpts: ParserOpts = {
   programName: 'program-name',
   programDescription: 'program description',
-  unknownArgBehaviour: 'throw',
-  excessArgBehaviour: 'throw'
+  programVersion: 'v1.0',
 }
 
 const parser = new Args(parserOpts)

@@ -1,6 +1,7 @@
 .envrc
 .eslintignore
 .eslintrc
+.eslintcache
 .github/*
 .husky/*
 .nvmrc
@@ -9,3 +10,6 @@ jest*
 src/*
 test/*
 tsconfig.json
+examples/
+coverage/
+.vscode/
