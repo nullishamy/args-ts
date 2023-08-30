@@ -33,37 +33,54 @@ export interface DefaultArgTypes {
   rest?: string
 }
 
+export interface ArgsState {
+
+  arguments: PrefixTree<InternalArgument>
+  argumentsList: InternalArgument[]
+
+  commands: PrefixTree<InternalCommand>
+  commandsList: InternalCommand[]
+
+  resolvers: Resolver[]
+  builtins: Builtin[]
+  footerLines: string[]
+  headerLines: string[]
+}
+
 export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
-  // We store both a tree and a list so that we can iterate all values efficiently
-  public arguments: PrefixTree<InternalArgument> = new PrefixTree()
-  public argumentsList: InternalArgument[] = []
-
-  public commands: PrefixTree<InternalCommand> = new PrefixTree()
-  public commandsList: InternalCommand[] = []
-
-  public resolvers: Resolver[] = []
-  public builtins: Builtin[] = []
-  public footerLines: string[] = []
-  public headerLines: string[] = []
-
   public readonly opts: StoredParserOpts
+  public readonly _state: ArgsState
 
   private positionalIndex = 0
 
-  constructor (opts: ParserOpts) {
+  constructor (opts: ParserOpts, existingState?: ArgsState) {
     this.opts = {
       ...defaultParserOpts,
       ...opts
     }
+
+    this._state = existingState ?? {
+      // We store both a tree and a list so that we can iterate all values efficiently
+      arguments: new PrefixTree(),
+      argumentsList: [],
+
+      commands: new PrefixTree(),
+      commandsList: [],
+
+      resolvers: [...this.opts.resolvers],
+      builtins: [],
+      footerLines: [],
+      headerLines: []
+    }
   }
 
   public resolver (resolver: Resolver): Args<TArgTypes> {
-    this.resolvers.push(resolver)
+    this._state.resolvers.push(resolver)
     return this
   }
 
   public builtin (builtin: Builtin): Args<TArgTypes> {
-    this.builtins.push(builtin)
+    this._state.builtins.push(builtin)
     return this
   }
 
@@ -72,11 +89,11 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     command: TCommand,
     inherit = false
   ): Args<TArgTypes> {
-    if (this.commands.has(name)) {
+    if (this._state.commands.has(name)) {
       throw new CommandError(`command '${name}' already declared`)
     }
 
-    const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(name) || aliases.some(a => b.commandTriggers.includes(a)))
+    const existingBuiltin = this._state.builtins.find(b => b.commandTriggers.includes(name) || aliases.some(a => b.commandTriggers.includes(a)))
     if (existingBuiltin) {
       throw new CommandError(`command '${name}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
     }
@@ -87,12 +104,12 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     })
 
     if (inherit) {
-      parser.arguments = this.arguments
+      parser._state.arguments = this._state.arguments
     }
 
     parser = command.args(parser)
 
-    this.commands.insert(name, {
+    this._state.commands.insert(name, {
       inner: command,
       name,
       aliases,
@@ -100,7 +117,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       isBase: true
     })
 
-    this.commandsList.push({
+    this._state.commandsList.push({
       inner: command,
       name,
       aliases,
@@ -109,15 +126,15 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     })
 
     for (const alias of aliases) {
-      if (this.commands.has(alias)) {
+      if (this._state.commands.has(alias)) {
         throw new CommandError(`command alias '${alias}' already declared`)
       }
-      const existingBuiltin = this.builtins.find(b => b.commandTriggers.includes(alias))
+      const existingBuiltin = this._state.builtins.find(b => b.commandTriggers.includes(alias))
       if (existingBuiltin) {
         throw new CommandError(`command alias '${alias}' conflicts with builtin '${existingBuiltin.id}' (${existingBuiltin.constructor.name})`)
       }
 
-      this.commands.insert(alias, {
+      this._state.commands.insert(alias, {
         inner: command,
         name,
         aliases,
@@ -125,7 +142,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
         isBase: false
       })
 
-      this.commandsList.push({
+      this._state.commandsList.push({
         inner: command,
         name,
         aliases,
@@ -150,14 +167,14 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     const slicedKey = key.slice(1, key.length - 1)
 
     const index = this.positionalIndex++
-    this.arguments.insert(slicedKey, {
+    this._state.arguments.insert(slicedKey, {
       type: 'positional',
       inner: declaration,
       key: slicedKey,
       index
     })
 
-    this.argumentsList.push({
+    this._state.argumentsList.push({
       type: 'positional',
       inner: declaration,
       key: slicedKey,
@@ -184,16 +201,16 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       }
     })
 
-    if (this.arguments.has(longFlag)) {
+    if (this._state.arguments.has(longFlag)) {
       throw new SchemaError(`duplicate long flag '${_longFlag}'`)
     }
 
     for (const alias of aliases) {
-      if (this.arguments.has(alias.value)) {
+      if (this._state.arguments.has(alias.value)) {
         throw new SchemaError(`duplicate alias '${getAliasDenotion(alias)}'`)
       }
 
-      this.arguments.insert(alias.value, {
+      this._state.arguments.insert(alias.value, {
         type: 'flag',
         isLongFlag: true,
         inner: declaration,
@@ -202,7 +219,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       })
     }
 
-    this.arguments.insert(longFlag, {
+    this._state.arguments.insert(longFlag, {
       type: 'flag',
       isLongFlag: true,
       inner: declaration,
@@ -210,7 +227,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       aliases
     })
 
-    this.argumentsList.push({
+    this._state.argumentsList.push({
       type: 'flag',
       isLongFlag: true,
       inner: declaration,
@@ -265,7 +282,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     const positionals: InternalPositionalArgument[] = []
     const flags: InternalFlagArgument[] = []
 
-    for (const value of this.argumentsList) {
+    for (const value of this._state.argumentsList) {
       if (value.type === 'flag') {
         flags.push(value)
       } else {
@@ -285,9 +302,9 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
 
   public footer (line: string, append = true): Args<TArgTypes> {
     if (append) {
-      this.footerLines.push(line)
+      this._state.footerLines.push(line)
     } else {
-      this.footerLines = [line]
+      this._state.footerLines = [line]
     }
 
     return this
@@ -295,9 +312,9 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
 
   public header (line: string, append = true): Args<TArgTypes> {
     if (append) {
-      this.headerLines.push(line)
+      this._state.headerLines.push(line)
     } else {
-      this.headerLines = [line]
+      this._state.headerLines = [line]
     }
 
     return this
@@ -314,37 +331,31 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
 
     const tokens = tokenResult.val
 
-    const parseResult = parse(tokens, this.commands, this.opts)
+    const parseResult = parse(tokens, this._state, this.opts)
     if (!parseResult.ok) {
       return parseResult
     }
 
-    const { command } = parseResult.val
+    const { command: parsedCommand } = parseResult.val
 
     // If we located a command, tell coerce to use its parser instead of our own
     let coercionResult
-    if (command.type === 'default' && !this.commands.empty() && this.opts.mustProvideCommand) {
+    if (parsedCommand.type === 'default' && !this._state.commands.empty() && this.opts.mustProvideCommand) {
       return Err(new CommandError('no command provided but one was expected'))
     }
 
-    if (command.type === 'user') {
-      const commandParser = command.internal.parser
+    if (parsedCommand.type === 'user') {
+      const commandParser = parsedCommand.internal.parser
       coercionResult = await coerce(
         parseResult.val,
         commandParser.opts,
-        commandParser.arguments,
-        commandParser.argumentsList,
-        [...commandParser.opts.resolvers, ...commandParser.resolvers],
-        commandParser.builtins
+        commandParser._state
       )
     } else {
       coercionResult = await coerce(
         parseResult.val,
         this.opts,
-        this.arguments,
-        this.argumentsList,
-        [...this.opts.resolvers, ...this.resolvers],
-        this.builtins
+        this._state
       )
     }
 
@@ -352,23 +363,23 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       return coercionResult
     }
 
-    const coercion = coercionResult.val
+    const { args, parsed: { command, rest } } = coercionResult.val
 
     // No command was found, just return the args
-    if (coercion.command.type === 'default') {
+    if (command.type === 'default') {
       return Ok({
         mode: 'args',
-        args: this.intoObject(coercion.args, coercion.rest?.value)
+        args: this.intoObject(args, rest?.value)
       })
     }
 
     // Builtin found, execute it and run, regardless of caller preference
     // builtins will always override the 'default' behaviour, so need to run
-    if (coercion.command.type === 'builtin') {
+    if (command.type === 'builtin') {
       let executionResult
 
       try {
-        await coercion.command.command.run(this, ...this.intoRaw(parseResult.val), coercion.command.trigger)
+        await command.command.run(this, ...this.intoRaw(parseResult.val), command.trigger)
       } catch (err) {
         executionResult = err
       }
@@ -384,7 +395,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       let executionResult
 
       try {
-        await coercion.command.internal.inner.run(this.intoObject(coercion.args, coercion.rest?.value))
+        await command.internal.inner.run(this.intoObject(args, rest?.value))
       } catch (err) {
         executionResult = err
       }
@@ -398,8 +409,8 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     // Command was found, return it
     return Ok({
       mode: 'command',
-      parsedArgs: this.intoObject(coercion.args, coercion.rest?.value),
-      command: coercion.command.internal.inner
+      parsedArgs: this.intoObject(args, rest?.value),
+      command: command.internal.inner
     })
   }
 
@@ -418,9 +429,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return result.val
   }
 
-  public reset (): void {
-    this.arguments = new PrefixTree()
-    this.commands = new PrefixTree()
-    this.resolvers = []
+  public clone (opts: ParserOpts = this.opts): Args<TArgTypes> {
+    return new Args(opts, this._state)
   }
 }

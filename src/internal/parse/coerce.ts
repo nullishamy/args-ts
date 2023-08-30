@@ -1,16 +1,17 @@
-import { Builtin, CoercionResult, Resolver, MinimalArgument } from '../../builder'
+import { ArgsState } from '../../args'
+import { Resolver, MinimalArgument } from '../../builder'
 import { CoercionError, CommandError, InternalError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { PrefixTree } from '../prefix-tree'
 import { Err, Ok, Result } from '../result'
 import { getArgDenotion } from '../util'
-import { AnyParsedFlagArgument, DefaultCommand, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedRestArgument, ParsedShortArgumentSingle, UserCommand } from './parser'
-import { CoercedValue, InternalArgument, InternalFlagArgument, InternalPositionalArgument } from './types'
+import { AnyParsedFlagArgument, ParsedArguments, ParsedLongArgument, ParsedPositionalArgument, ParsedShortArgumentSingle } from './parser'
+import { validateCommandSchematically, validateFlagSchematically, validatePositionalSchematically, coerceMultiType } from './schematic-validation'
+import { CoercedValue, InternalArgument } from './types'
 
 export interface CoercedArguments {
-  command: UserCommand | DefaultCommand | BuiltinCommand
   args: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue>
-  rest: ParsedRestArgument | undefined
+  parsed: ParsedArguments
 }
 
 export interface CoercedMultiValue {
@@ -27,197 +28,9 @@ export interface CoercedSingleValue {
   coerced: CoercedValue
 }
 
-export interface BuiltinCommand {
-  type: 'builtin'
-  command: Builtin
-  trigger: string
-}
-
-function validateFlagSchematically (
-  flags: Map<string, AnyParsedFlagArgument[]>,
-  argument: InternalFlagArgument,
-  opts: StoredParserOpts,
-  resolveres: Resolver[]
-): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
-  let foundFlags = flags.get(argument.longFlag)
-  if (argument.aliases.length && !foundFlags) {
-    for (const alias of argument.aliases) {
-      foundFlags = flags.get(alias.value)
-
-      if (foundFlags) {
-        break
-      }
-    }
-  }
-
-  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
-
-  // Test our resolvers to see if any of them have a value, so we know whether to reject below
-  let resolversHaveValue = false
-
-  for (const resolver of resolveres) {
-    if (resolver.keyExists(argument.longFlag, opts)) {
-      resolversHaveValue = true
-    }
-  }
-
-  // Must be at the top, we modify `optional` behaviour
-  for (const presentKey of requiredUnlessPresent) {
-    const presence = flags.get(presentKey)
-    if (presence !== undefined) {
-      optional = true
-    }
-  }
-
-  // If no definitions were provided
-  if (!foundFlags?.length && !optional && unspecifiedDefault === undefined && !resolversHaveValue) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '--${argument.longFlag}' is missing, with no unspecified default`, getArgDenotion(argument)))
-  }
-
-  for (const foundFlag of foundFlags ?? []) {
-    // Groups will be checked for unrecognised flags later
-    if (foundFlag && foundFlag.type === 'short-group') {
-      return Ok(foundFlags)
-    }
-
-    // If no values were passed to a definition
-    if (!optional && specifiedDefault === undefined && !foundFlag.values.length && !resolversHaveValue) {
-      return Err(new CoercionError(argument.inner.type, '<nothing>', `argument '${argument.longFlag}' is not declared as optional, does not have a default, and was not provided a value`, getArgDenotion(argument)))
-    }
-
-    for (const dependency of dependencies) {
-      const dependencyValue = flags.get(dependency)
-      if (!dependencyValue) {
-        return Err(new CoercionError('a value', '<nothing>', `unmet dependency '--${dependency}' for '--${argument.longFlag}'`, getArgDenotion(argument)))
-      }
-    }
-
-    for (const conflict of conflicts) {
-      const conflictValue = flags.get(conflict)
-      // Require both the argument we're checking against (the base) and the conflict to exist
-      if (conflictValue !== undefined && foundFlags?.length) {
-        return Err(new CoercionError(`--${conflict} to not be passed`, conflictValue.map(c => c.rawInput).join(' '), `argument '--${conflict}' conflicts with '--${argument.longFlag}'`, getArgDenotion(argument)))
-      }
-    }
-
-    if (exclusive && flags.size > 1) {
-      return Err(new CoercionError('no other args to be passed', `${flags.size - 1} other arguments`, `argument '--${argument.longFlag}' is exclusive and cannot be used with other arguments`, getArgDenotion(argument)))
-    }
-  }
-
-  return Ok(foundFlags)
-}
-
-function validatePositionalSchematically (
-  positionals: Map<number, ParsedPositionalArgument>,
-  argument: InternalPositionalArgument,
-  opts: StoredParserOpts,
-  middlewares: Resolver[]
-): Result<ParsedPositionalArgument | undefined, CoercionError> {
-  const foundFlag = positionals.get(argument.index)
-  const { unspecifiedDefault, optional } = argument.inner._meta
-
-  // Test our middlewares to see if any of them have a value, so we know whether to reject below
-  let middlewaresHaveValue = false
-
-  for (const middleware of middlewares) {
-    if (middleware.keyExists(argument.key, opts)) {
-      middlewaresHaveValue = true
-    }
-  }
-
-  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !middlewaresHaveValue) {
-    return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`, argument.key))
-  }
-
-  return Ok(foundFlag)
-}
-
-async function parseMulti (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedMultiValue, CoercionError | CoercionError[]>> {
-  const eachParserResults: Map<MinimalArgument<CoercedValue>, Array<CoercionResult<CoercedValue>>> = new Map()
-
-  for (const value of inputValues) {
-    for (const parser of [argument.inner, ...argument.inner._meta.otherParsers]) {
-      const parsed = await parser.coerce(value)
-      const alreadyParsed = eachParserResults.get(parser) ?? []
-
-      alreadyParsed.push(parsed)
-      eachParserResults.set(parser, alreadyParsed)
-    }
-  }
-
-  interface SingleError {
-    value: string
-    error: Error
-  }
-  interface GroupedError {
-    parser: MinimalArgument<unknown>
-    errors: SingleError[]
-  }
-
-  interface CoercedGroup {
-    parser: MinimalArgument<unknown>
-    values: CoercedValue[]
-  }
-
-  const coercedGroups: CoercedGroup[] = []
-  const groupedErrors: GroupedError[] = []
-
-  for (const [parser, results] of eachParserResults.entries()) {
-    const errors: SingleError[] = []
-    const coerced = []
-
-    for (const result of results) {
-      if (result.ok) {
-        coerced.push(result.returnedValue)
-      } else {
-        errors.push({
-          value: result.passedValue,
-          error: result.error
-        })
-      }
-    }
-
-    if (errors.length) {
-      groupedErrors.push({
-        parser,
-        errors
-      })
-    } else {
-      coercedGroups.push({
-        parser,
-        values: coerced
-      })
-    }
-  }
-
-  // If no parsers could resolve the values (no succesful groups)
-  if (groupedErrors.length && !coercedGroups.length) {
-    const errors = groupedErrors.flatMap(group => {
-      return group.errors.map(error => {
-        return new CoercionError(argument.inner.type, error.value, `could not parse a '${group.parser.type}' because ${error.error.message}`, getArgDenotion(argument))
-      })
-    })
-
-    return Err(errors)
-  }
-
-  // Take the first group that managed to coerce all of the values
-  const selectedGroup = coercedGroups.slice(0, 1)[0]
-  if (!selectedGroup) {
-    throw new InternalError(`no selected group, but errors were not caught either? coerced: ${JSON.stringify(coercedGroups)}, errors: ${JSON.stringify(groupedErrors)}`)
-  }
-
-  return Ok({
-    isMulti: true,
-    coerced: selectedGroup.values,
-    raw: inputValues
-  })
-}
-
-async function parseSingle (inputValues: string[], argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError[]>> {
+async function coerceSingleArgument (inputValue: string, argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError[]>> {
   const parsers = [argument.inner, ...argument.inner._meta.otherParsers]
-  const results = await Promise.all(parsers.map(async parser => [parser, await parser.coerce(inputValues[0])] as const))
+  const results = await Promise.all(parsers.map(async parser => [parser, await parser.coerce(inputValue)] as const))
 
   const errors: Array<{
     error: Error
@@ -241,7 +54,7 @@ async function parseSingle (inputValues: string[], argument: InternalArgument): 
 
   if (errors.length && coerced === null) {
     return Err(errors.map(error => {
-      return new CoercionError(argument.inner.type, inputValues[0], `could not parse a '${error.parser.type}' because ${error.error.message}`, getArgDenotion(argument))
+      return new CoercionError(argument.inner.type, inputValue, `could not parse a '${error.parser.type}' because ${error.error.message}`, getArgDenotion(argument))
     }))
   }
 
@@ -252,21 +65,8 @@ async function parseSingle (inputValues: string[], argument: InternalArgument): 
   return Ok({
     isMulti: false,
     coerced,
-    raw: inputValues[0]
+    raw: inputValue
   })
-}
-
-function validateCommand (command: UserCommand, opts: StoredParserOpts): Result<void, CommandError> {
-  const { deprecated, deprecationMessage } = command.internal.inner.opts
-
-  // Do not run deprecated commands
-  if (deprecated && opts.deprecatedCommands === 'error') {
-    return Err(new CommandError(deprecationMessage))
-  } else if (deprecated && opts.deprecatedCommands === 'unknown-command') {
-    return Err(new CommandError(`unknown command '${command.internal.name}'`))
-  }
-
-  return Ok(undefined)
 }
 
 interface ResolvedDefault {
@@ -297,7 +97,7 @@ async function resolveArgumentDefault (
           continue
         }
 
-        const coercionResult = await parseSingle([value], argument)
+        const coercionResult = await coerceSingleArgument(value, argument)
         if (!coercionResult.ok) {
           return coercionResult
         }
@@ -350,6 +150,7 @@ async function resolveArgumentDefault (
         }
       })
     }
+
     if (userArgument.negated) {
       argument.inner.negate()
     }
@@ -378,7 +179,7 @@ async function resolveArgumentDefault (
   })
 }
 
-function handleMultipleDefinitions (argument: InternalArgument, opts: StoredParserOpts): Result<'overwrite' | 'skip' | 'append', CoercionError> {
+function handleAdditionalArgumentDefinition (argument: InternalArgument, opts: StoredParserOpts): Result<'overwrite' | 'skip' | 'append', CoercionError> {
   const { arrayMultipleDefinitions, tooManyDefinitions } = opts
   if (argument.inner._meta.isMultiType) {
     if (arrayMultipleDefinitions === 'append') {
@@ -403,7 +204,7 @@ function handleMultipleDefinitions (argument: InternalArgument, opts: StoredPars
   throw new InternalError(`unhandled: array: ${arrayMultipleDefinitions} tooMany: ${tooManyDefinitions}`)
 }
 
-function handleDefinitionChecking (
+function handleUnmatchedArgument (
   definition: AnyParsedFlagArgument,
   internalArgs: PrefixTree<InternalArgument>,
   opts: StoredParserOpts
@@ -443,72 +244,33 @@ function handleDefinitionChecking (
   return Ok('continue')
 }
 
-function matchBuiltin (args: ParsedArguments, builtins: Builtin[]): undefined | [Builtin, string] {
-  const { flags, command } = args
-
-  const keysToSearch = new Set()
-  // If a user command could not be resolved, attempt to find whatever value was there anyways
-  // It is challenging to resolve builtins at parse time, so this enables us to delay it until coercion time
-  if (command.type === 'default') {
-    if (command.key) {
-      keysToSearch.add(command.key)
-    }
-  } else {
-    keysToSearch.add(command.internal.name)
-    command.internal.aliases.forEach(alias => keysToSearch.add(alias))
-  }
-
-  for (const builtin of builtins) {
-    const matchingFlag = builtin.argumentTriggers.find(flag => flags.has(flag))
-    if (matchingFlag) {
-      return [builtin, matchingFlag]
-    }
-
-    const matchingCommand = builtin.commandTriggers.find(cmd => keysToSearch.has(cmd))
-    if (matchingCommand) {
-      return [builtin, matchingCommand]
-    }
-  }
-
-  return undefined
-}
-
 export async function coerce (
   args: ParsedArguments,
   opts: StoredParserOpts,
-  internalArgs: PrefixTree<InternalArgument>,
-  internalArgsList: InternalArgument[],
-  resolvers: Resolver[],
-  builtins: Builtin[]
+  state: ArgsState
 ): Promise<Result<CoercedArguments, CoercionError[] | CommandError>> {
   const out: Map<InternalArgument, CoercedSingleValue | CoercedMultiValue> = new Map()
   const { command, flags, positionals } = args
+  const { argumentsList, resolvers, arguments: argumentsTree } = state
 
   // Before trying commands or further coercion, see if we match a builtin
-  const builtinSearch = matchBuiltin(args, builtins)
-  if (builtinSearch) {
-    const [foundBuiltin, trigger] = builtinSearch
+  if (command.type === 'builtin') {
     return Ok({
       args: out,
-      command: {
-        type: 'builtin',
-        command: foundBuiltin,
-        trigger
-      },
-      rest: undefined
+      parsed: args
     })
   }
 
   // Validate the command to make sure we can run it
   if (command.type !== 'default') {
-    const result = validateCommand(command, opts)
+    const result = validateCommandSchematically(command, opts)
     if (!result.ok) {
       return result
     }
   }
 
   // Iterate the declarations, to weed out any missing arguments
-  for (const argument of internalArgsList) {
+  for (const argument of argumentsList) {
     // Validate 'schema-level' properties, such as optionality, depedencies, etc
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult
@@ -536,7 +298,7 @@ export async function coerce (
 
     // Multiple definitions found, let's see what we should do with them
     if (Array.isArray(userArgument) && userArgument.length > 1) {
-      const multipleBehaviourResult = handleMultipleDefinitions(argument, opts)
+      const multipleBehaviourResult = handleAdditionalArgumentDefinition(argument, opts)
       if (!multipleBehaviourResult.ok) {
         return multipleBehaviourResult
       }
@@ -589,9 +351,13 @@ export async function coerce (
 
     let coercionResult
     if (argument.inner._meta.isMultiType) {
-      coercionResult = await parseMulti(inputValues, argument)
+      coercionResult = await coerceMultiType(inputValues, argument)
     } else {
-      coercionResult = await parseSingle(inputValues, argument)
+      if (inputValues.length !== 1) {
+        throw new InternalError(`input values length was > 1, got ${inputValues} (len: ${inputValues.length})`)
+      }
+
+      coercionResult = await coerceSingleArgument(inputValues[0], argument)
     }
 
     if (!coercionResult.ok) {
@@ -608,7 +374,7 @@ export async function coerce (
   // Then, iterate the parsed values, to weed out excess arguments
   for (const definitions of flags.values()) {
     for (const definition of definitions) {
-      const result = handleDefinitionChecking(definition, internalArgs, opts)
+      const result = handleUnmatchedArgument(definition, argumentsTree, opts)
       if (!result.ok) {
         return result
       }
@@ -620,8 +386,7 @@ export async function coerce (
   }
 
   return Ok({
-    command,
-    rest: args.rest,
+    parsed: args,
     args: out
   })
 }

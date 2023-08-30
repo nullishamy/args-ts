@@ -1,3 +1,5 @@
+import { ArgsState } from '../../args'
+import { Builtin } from '../../builder'
 import { InternalError, ParseError } from '../../error'
 import { StoredParserOpts } from '../../opts'
 import { PrefixTree } from '../prefix-tree'
@@ -59,8 +61,14 @@ export interface DefaultCommand {
   key: string | undefined
 }
 
+export interface BuiltinCommand {
+  type: 'builtin'
+  command: Builtin
+  trigger: string
+}
+
 export interface ParsedArguments {
-  command: UserCommand | DefaultCommand
+  command: UserCommand | DefaultCommand | BuiltinCommand
   flags: Map<string, AnyParsedFlagArgument[]>
   rest: ParsedRestArgument | undefined
   positionals: Map<number, ParsedPositionalArgument>
@@ -149,9 +157,19 @@ function parseString (tokens: TokenIterator, ...skipPrecedingTokens: TokenType[]
   return Ok(out)
 }
 
-function extractCommand (rootKey: string, tokens: TokenIterator, commands: PrefixTree<InternalCommand>): [DefaultCommand | UserCommand, string | undefined] {
+function extractCommand (rootKey: string, tokens: TokenIterator, commands: PrefixTree<InternalCommand>, builtins: Builtin[]): [DefaultCommand | UserCommand | BuiltinCommand, string | undefined] {
   const command = commands.findOrUndefined(rootKey)
-  let lastKnownKey
+  const builtin = builtins.find(b => b.commandTriggers.includes(rootKey))
+
+  if (builtin) {
+    const commandResult = {
+      type: 'builtin',
+      command: builtin,
+      trigger: rootKey
+    } as const
+
+    return [commandResult, rootKey]
+  }
 
   // If we could not locate a command, we must assume the first argument is a positional.
   // Coercion will confirm or deny this later.
@@ -163,6 +181,8 @@ function extractCommand (rootKey: string, tokens: TokenIterator, commands: Prefi
 
     return [commandResult, rootKey]
   }
+
+  let lastKnownKey
 
   let subcommand = command
   let subcommandKey: Result<string>
@@ -332,7 +352,7 @@ function parseFlag (tokens: TokenIterator, opts: StoredParserOpts): Result<AnyPa
 
 export function parse (
   tokens: TokenIterator,
-  commands: PrefixTree<InternalCommand>,
+  { commands, builtins }: ArgsState,
   opts: StoredParserOpts
 ): Result<ParsedArguments, ParseError> {
   const positionals: Map<number, ParsedPositionalArgument> = new Map()
@@ -341,10 +361,10 @@ export function parse (
 
   // 1) Determine if we have a command (and maybe) a subcommand passed in the arguments
   const rootKey = parseString(tokens, 'whitespace')
-  let commandObject: DefaultCommand | UserCommand
+  let commandObject: DefaultCommand | UserCommand | BuiltinCommand
 
   if (rootKey.ok) {
-    const [commandResult, lastKnownKey] = extractCommand(rootKey.val, tokens, commands)
+    const [commandResult, lastKnownKey] = extractCommand(rootKey.val, tokens, commands, builtins)
     commandObject = commandResult
     if (lastKnownKey) {
       positionals.set(0, {
@@ -387,6 +407,18 @@ export function parse (
 
     // Flags with assignable names
     if (type === 'long' || type === 'short-single') {
+      // See if our flag is a builtin trigger
+      const builtin = builtins.find(b => b.argumentTriggers.includes(flag.key))
+      if (builtin) {
+        commandObject = {
+          type: 'builtin',
+          command: builtin,
+          trigger: flag.key
+        }
+      }
+
+      // Don't return though, we need to parse out all the flags.
+      // Coercion will abort early if we give them a builtin, so that it can be run
       const definitions = flags.get(flag.key) ?? []
       definitions.push(flag)
       flags.set(flag.key, definitions)

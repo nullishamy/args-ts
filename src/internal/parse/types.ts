@@ -33,15 +33,4 @@ export interface InternalCommand {
   parser: Args<{}>
 }
 
-export interface ParsedPair {
-  ident: string
-  values: string[]
-}
-
-export interface RuntimeValue {
-  pair: ParsedPair | undefined
-  argument: InternalArgument
-  parsed: unknown[]
-}
-
 export type CoercedValue = string | boolean | number | undefined | object | bigint
