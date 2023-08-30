@@ -23,6 +23,9 @@ export abstract class Command {
     }
   }
 
+  /**
+   * @internal
+   */
   public _subcommands: Record<string, InternalCommand> = {}
 
   // Must use any for it to accept the subtyping this function actually performs
