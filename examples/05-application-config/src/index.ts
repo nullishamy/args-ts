@@ -24,8 +24,14 @@ class UserConfigResolver extends Resolver {
     return this.data[key] !== undefined
   }
 
-  resolveKey (key: string): string | undefined {
-    return this.data[key]
+  resolveKey (key: string): string {
+    const value = this.data[key]
+
+    if (value === undefined) {
+      throw new TypeError()
+    }
+
+    return value
   }
 }
 

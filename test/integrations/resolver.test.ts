@@ -6,7 +6,7 @@ import { runArgsExecution } from './utils'
 class MockResolver extends Resolver {
   constructor (
     public readonly keyExists: (key: string) => boolean,
-    public readonly resolveKey: (key: string) => string | undefined,
+    public readonly resolveKey: (key: string) => string,
     id = 'mock'
   ) {
     super(id)
