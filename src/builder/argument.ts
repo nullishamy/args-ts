@@ -15,7 +15,7 @@ export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 
 export type ArgumentType = string
 
-interface ArgumentMeta<T> {
+interface ArgumentState<T> {
   specifiedDefault: T | undefined
   dependencies: string[]
   requiredUnlessPresent: string[]
@@ -28,7 +28,7 @@ interface ArgumentMeta<T> {
   otherParsers: Array<MinimalArgument<CoercedValue>>
 }
 
-export type MinimalArgument<T> = Pick<Argument<T>, '_meta' | 'coerce' | 'type' | 'negate'>
+export type MinimalArgument<T> = Pick<Argument<T>, '_state' | 'coerce' | 'type' | 'negate'>
 
 export abstract class Argument<T> {
   protected _specifiedDefault: T | undefined = undefined
@@ -44,8 +44,8 @@ export abstract class Argument<T> {
   protected _negated: boolean = false
 
   // Internal getter to avoid cluttering completion with ^ our private fields that need to be accessed by other internal APIs
-  // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by outside people (assuming they do not break type safety)
-  get _meta (): ArgumentMeta<T> {
+  // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by consumers
+  get _state (): ArgumentState<T> {
     return {
       specifiedDefault: this._specifiedDefault,
       dependencies: this._dependencies,

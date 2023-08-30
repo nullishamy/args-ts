@@ -29,7 +29,7 @@ export interface CoercedSingleValue {
 }
 
 async function coerceSingleArgument (inputValue: string, argument: InternalArgument): Promise<Result<CoercedSingleValue, CoercionError[]>> {
-  const parsers = [argument.inner, ...argument.inner._meta.otherParsers]
+  const parsers = [argument.inner, ...argument.inner._state.otherParsers]
   const results = await Promise.all(parsers.map(async parser => [parser, await parser.coerce(inputValue)] as const))
 
   const errors: Array<{
@@ -121,7 +121,7 @@ async function resolveArgumentDefault (
       value: {
         isMulti: false,
         raw: `<default value for ${getArgDenotion(argument)}>`,
-        coerced: argument.inner._meta.unspecifiedDefault
+        coerced: argument.inner._state.unspecifiedDefault
       }
     })
   }
@@ -146,7 +146,7 @@ async function resolveArgumentDefault (
         value: {
           isMulti: false,
           raw: `<default value for group member '${argument.longFlag}' of '${userArgument.rawInput}'`,
-          coerced: argument.inner._meta.specifiedDefault
+          coerced: argument.inner._state.specifiedDefault
         }
       })
     }
@@ -166,7 +166,7 @@ async function resolveArgumentDefault (
         value: {
           isMulti: false,
           raw: `<default value for ${getArgDenotion(argument)}`,
-          coerced: argument.inner._meta.specifiedDefault
+          coerced: argument.inner._state.specifiedDefault
         }
       })
     }
@@ -181,7 +181,7 @@ async function resolveArgumentDefault (
 
 function handleAdditionalArgumentDefinition (argument: InternalArgument, opts: StoredParserOpts): Result<'overwrite' | 'skip' | 'append', CoercionError> {
   const { arrayMultipleDefinitions, tooManyDefinitions } = opts
-  if (argument.inner._meta.isMultiType) {
+  if (argument.inner._state.isMultiType) {
     if (arrayMultipleDefinitions === 'append') {
       return Ok('append')
     } else if (arrayMultipleDefinitions === 'throw') {
@@ -314,7 +314,7 @@ export async function coerce (
     }
 
     // Collate all positionals together into this one, if the positional is a multi-type
-    if (!Array.isArray(userArgument) && argument.inner._meta.isMultiType) {
+    if (!Array.isArray(userArgument) && argument.inner._state.isMultiType) {
       const positionalValues = [...positionals.values()].flatMap(p => p.values)
       userArgument = {
         type: 'positional',
@@ -334,7 +334,7 @@ export async function coerce (
     }
 
     // User passed more than one argument, and this is not a multi type
-    if (!argument.inner._meta.isMultiType && inputValues.length > 1) {
+    if (!argument.inner._state.isMultiType && inputValues.length > 1) {
       // Throw if appropriate, slice off the other arguments if not (acts as a skip)
       const { tooManyArgs } = opts
       if (tooManyArgs === 'throw') {
@@ -350,7 +350,7 @@ export async function coerce (
     }
 
     let coercionResult
-    if (argument.inner._meta.isMultiType) {
+    if (argument.inner._state.isMultiType) {
       coercionResult = await coerceMultiType(inputValues, argument)
     } else {
       if (inputValues.length !== 1) {

@@ -13,7 +13,7 @@ export function generateHelp (parser: Args<{}>): string {
   const { opts } = parser
 
   const renderArgument = (value: InternalArgument): string => {
-    const { optional, isMultiType } = value.inner._meta
+    const { optional, isMultiType } = value.inner._state
     if (optional) {
       if (value.type === 'positional') {
         return `[<${value.key.toUpperCase()}>]`

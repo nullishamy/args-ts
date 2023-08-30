@@ -37,7 +37,7 @@ export function validateFlagSchematically (
     }
   }
 
-  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._meta
+  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
 
   // Test our resolvers to see if any of them have a value, so we know whether to reject below
   let resolversHaveValue = false
@@ -102,7 +102,7 @@ export function validatePositionalSchematically (
   middlewares: Resolver[]
 ): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
-  const { unspecifiedDefault, optional } = argument.inner._meta
+  const { unspecifiedDefault, optional } = argument.inner._state
 
   // Test our middlewares to see if any of them have a value, so we know whether to reject below
   let middlewaresHaveValue = false
@@ -124,7 +124,7 @@ export async function coerceMultiType (inputValues: string[], argument: Internal
   const eachParserResults: Map<MinimalArgument<CoercedValue>, Array<CoercionResult<CoercedValue>>> = new Map()
 
   for (const value of inputValues) {
-    for (const parser of [argument.inner, ...argument.inner._meta.otherParsers]) {
+    for (const parser of [argument.inner, ...argument.inner._state.otherParsers]) {
       const parsed = await parser.coerce(value)
       const alreadyParsed = eachParserResults.get(parser) ?? []
 
