@@ -12,7 +12,11 @@
 <ul class="tsd-breadcrumb">
 <li><a href="../modules.html">args.ts</a></li>
 <li><a href="Args.html">Args</a></li></ul>
-<h1>Class Args&lt;TArgTypes&gt;</h1></div> 
+<h1>Class Args&lt;TArgTypes&gt;</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>The root class for the library. Generally, it represents a configured parser which can then be used to parse arbitrary input strings.</p>
+<p>It will hold all the state needed to parse inputs. This state is modified through the various helper methods defined on this class.</p>
+</div></section> 
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -23,7 +27,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">Args</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L36">args.ts:36</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L41">args.ts:41</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -70,6 +74,8 @@
 <ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="constructor.new_Args">new <wbr/>Args<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">: </span><a href="../types/ParserOpts.html" class="tsd-signature-type" data-tsd-kind="Type alias">ParserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#constructor.new_Args" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Constructs a new parser with empty state, ready for configuration.</p>
+</div>
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -79,69 +85,77 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>opts: <a href="../types/ParserOpts.html" class="tsd-signature-type" data-tsd-kind="Type alias">ParserOpts</a></h5></li></ul></div>
+<h5>opts: <a href="../types/ParserOpts.html" class="tsd-signature-type" data-tsd-kind="Type alias">ParserOpts</a></h5>
+<div class="tsd-comment tsd-typography"><p>The parser options to use</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L53">args.ts:53</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L62">args.ts:62</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="arguments" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>arguments</span><a href="#arguments" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">arguments<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PrefixTree</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L38">args.ts:38</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L43">args.ts:43</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="argumentsList" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>arguments<wbr/>List</span><a href="#argumentsList" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">arguments<wbr/>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L39">args.ts:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L44">args.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="builtins" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>builtins</span><a href="#builtins" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">builtins<span class="tsd-signature-symbol">:</span> <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L45">args.ts:45</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L50">args.ts:50</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="commands" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>commands</span><a href="#commands" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">PrefixTree</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalCommand</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L41">args.ts:41</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L46">args.ts:46</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="commandsList" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>commands<wbr/>List</span><a href="#commandsList" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">commands<wbr/>List<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InternalCommand</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L42">args.ts:42</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L47">args.ts:47</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="footerLines" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>footer<wbr/>Lines</span><a href="#footerLines" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">footer<wbr/>Lines<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L46">args.ts:46</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L51">args.ts:51</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="headerLines" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>header<wbr/>Lines</span><a href="#headerLines" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">header<wbr/>Lines<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L47">args.ts:47</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L52">args.ts:52</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="opts" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>opts</span><a href="#opts" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">opts<span class="tsd-signature-symbol">:</span> <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L49">args.ts:49</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L54">args.ts:54</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private"><a id="positionalIndex" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>positional<wbr/>Index</span><a href="#positionalIndex" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">positional<wbr/>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L51">args.ts:51</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L56">args.ts:56</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="resolvers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolvers</span><a href="#resolvers" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">resolvers<span class="tsd-signature-symbol">:</span> <a href="Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L44">args.ts:44</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L49">args.ts:49</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="arg" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>arg</span><a href="#arg" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="arg.arg-1">arg<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">-</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span>, declaration<span class="tsd-signature-symbol">: </span><a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#arg.arg-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="arg.arg-1">arg<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>param0<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">-</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span>, arg<span class="tsd-signature-symbol">: </span><a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#arg.arg-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a flag argument to the configuration. The first long flag is used as the key in the output object
+so must be given. Any aliases after that are just used as alternatives, and will not appear in the output object</p>
+<p>If the key or any aliases exist in the config, this will throw.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -153,30 +167,47 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>__namedParameters: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">-</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h5></li>
+<h5>param0: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TLong</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">--</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">-</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The key and aliases to register</p>
+</div></li>
 <li>
-<h5>declaration: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
+<h5>arg: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The argument to register</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L171">args.ts:171</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L221">args.ts:221</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="builtin" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>builtin</span><a href="#builtin" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="builtin.builtin-1">builtin<span class="tsd-signature-symbol">(</span>builtin<span class="tsd-signature-symbol">: </span><a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#builtin.builtin-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds a <a href="Builtin-1.html">Builtin</a> to the configuration.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>builtin: <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h5></li></ul></div>
+<h5>builtin: <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h5>
+<div class="tsd-comment tsd-typography"><p>The builtin to add</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L65">args.ts:65</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L84">args.ts:84</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="command" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>command</span><a href="#command" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="command.command-1">command<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span>, command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span>, inherit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#command.command-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="command.command-1">command<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>param0<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span>, command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span>, inherit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#command.command-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds a <a href="Command.html">Command</a> to the configuration. This will enable commands / subcommands (declared on the Command itself)
+to be recognised by the parser.</p>
+<p>If a command is not recognised by the parser, it will refer to the ParserOpts.unrecognisedCommand option to determine what to do.</p>
+<p>This will throw if the command or any of its aliases are already registered, or if it conflicts with the command triggers of a registered builtin.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -188,57 +219,83 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>__namedParameters: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h5></li>
+<h5>param0: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TName</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">...</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The name and aliases to register</p>
+</div></li>
 <li>
-<h5>command: <span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span></h5></li>
+<h5>command: <span class="tsd-signature-type" data-tsd-kind="Type parameter">TCommand</span></h5>
+<div class="tsd-comment tsd-typography"><p>The command to register with</p>
+</div></li>
 <li>
-<h5>inherit: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
+<h5>inherit: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+<div class="tsd-comment tsd-typography"><p>Whether to inherit arguments from this configuration into the parser</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L70">args.ts:70</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L101">args.ts:101</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="footer" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>footer</span><a href="#footer" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="footer.footer-1">footer<span class="tsd-signature-symbol">(</span>line<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, append<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#footer.footer-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Appends or overwrites the footer lines, which are shown at the bottom of the help string.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>line: <span class="tsd-signature-type">string</span></h5></li>
+<h5>line: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The footer line to show</p>
+</div></li>
 <li>
-<h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5></li></ul></div>
+<h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+<div class="tsd-comment tsd-typography"><p>Whether to append, or overwrite</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L286">args.ts:286</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L360">args.ts:360</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="header" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>header</span><a href="#header" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="header.header-1">header<span class="tsd-signature-symbol">(</span>line<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, append<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#header.header-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Appends or overwrites the header lines, which are shown at the top of the help string.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>line: <span class="tsd-signature-type">string</span></h5></li>
+<h5>line: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The header line to show</p>
+</div></li>
 <li>
-<h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5></li></ul></div>
+<h5>append: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+<div class="tsd-comment tsd-typography"><p>Whether to append, or overwrite</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L296">args.ts:296</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L376">args.ts:376</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="help" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>help</span><a href="#help" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="help.help-1">help<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#help.help-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Generate the help string for this configuration. This is an alias for generateHelp, passing in <code>this</code>.</p>
+
+<h3>Returns</h3><p>The generated help string</p>
+</div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L282">args.ts:282</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L350">args.ts:350</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="intoObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>into<wbr/>Object</span><a href="#intoObject" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 <li class="tsd-signature tsd-anchor-link" id="intoObject.intoObject-1">into<wbr/>Object<span class="tsd-signature-symbol">(</span>coerced<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">InternalArgument</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">CoercedMultiValue</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CoercedSingleValue</span><span class="tsd-signature-symbol">&gt;</span>, rest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><a href="#intoObject.intoObject-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
+<li class="tsd-description"><code class="tsd-tag ts-flagInternal">Internal</code> 
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -248,12 +305,12 @@
 <h5>rest: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L225">args.ts:225</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L278">args.ts:278</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private"><a id="intoRaw" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>into<wbr/>Raw</span><a href="#intoRaw" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 <li class="tsd-signature tsd-anchor-link" id="intoRaw.intoRaw-1">into<wbr/>Raw<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ParsedArguments</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span><a href="#intoRaw.intoRaw-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
-<li class="tsd-description">
+<li class="tsd-description"><code class="tsd-tag ts-flagInternal">Internal</code> 
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -261,42 +318,65 @@
 <h5>args: <span class="tsd-signature-type">ParsedArguments</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L240">args.ts:240</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L296">args.ts:296</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="parse" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>parse</span><a href="#parse" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="parse.parse-1">parse<span class="tsd-signature-symbol">(</span>argString<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, executeCommands<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ParseSuccess</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#parse.parse-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Parses the provided arguments, printing the problems and exiting if the parse fails.
+Callers can use <a href="Args.html#parseToResult">parseToResult</a> if control of parse failure behaviour is required.</p>
+
+<h3>Returns</h3><p>The result of the parse, never an error</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>argString: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<h5>argString: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The arguments to parse</p>
+</div></li>
 <li>
-<h5>executeCommands: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
+<h5>executeCommands: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+<div class="tsd-comment tsd-typography"><p>Whether to execute discovered commands, or return them</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ParseSuccess</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L406">args.ts:406</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L500">args.ts:500</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="parseToResult" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>parse<wbr/>To<wbr/>Result</span><a href="#parseToResult" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="parseToResult.parseToResult-1">parse<wbr/>To<wbr/>Result<span class="tsd-signature-symbol">(</span>argString<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, executeCommands<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ParseSuccess</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ParseError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CommandError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CoercionError</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><a href="#parseToResult.parseToResult-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Attempt to parse the provided arguments, returning the result of the operation.
+This is an alternative to <a href="Args.html#parse">parse</a>, allowing the caller to control what happens in the event of parse failure.</p>
+
+<h3>Returns</h3><p>The result of the parse</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>argString: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<h5>argString: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The arguments to parse</p>
+</div></li>
 <li>
-<h5>executeCommands: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5></li></ul></div>
+<h5>executeCommands: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+<div class="tsd-comment tsd-typography"><p>Whether to execute discovered commands, or return them</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ParseSuccess</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ParseError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CommandError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">CoercionError</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L306">args.ts:306</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L393">args.ts:393</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="positional" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>positional</span><a href="#positional" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="positional.positional-1">positional<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">&lt;</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&gt;</span><span class="tsd-signature-symbol">`</span>, declaration<span class="tsd-signature-symbol">: </span><a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#positional.positional-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="positional.positional-1">positional<span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">&lt;</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&gt;</span><span class="tsd-signature-symbol">`</span>, arg<span class="tsd-signature-symbol">: </span><a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#positional.positional-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Add a positional <a href="Argument.html">Argument</a> to the configuration. Conflict behaviour with commands is described in <a href="Args.html#command">command</a>
+If a positional exists with the provided key, this will throw.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -308,12 +388,16 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>key: <span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">&lt;</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&gt;</span><span class="tsd-signature-symbol">`</span></h5></li>
+<h5>key: <span class="tsd-signature-symbol">`</span><span class="tsd-signature-type">&lt;</span><span class="tsd-signature-symbol">${</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TKey</span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-type">&gt;</span><span class="tsd-signature-symbol">`</span></h5>
+<div class="tsd-comment tsd-typography"><p>The key to use for the positional, maps to the output object.</p>
+</div></li>
 <li>
-<h5>declaration: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5></li></ul></div>
+<h5>arg: <a href="../types/MinimalArgument.html" class="tsd-signature-type" data-tsd-kind="Type alias">MinimalArgument</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The argument to register</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[ </span><span class="tsd-signature-type">key</span><span class="tsd-signature-symbol"> in </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArg</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L140">args.ts:140</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L178">args.ts:178</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="reset" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>reset</span><a href="#reset" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -321,28 +405,41 @@
 <li class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L421">args.ts:421</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L515">args.ts:515</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="resolver" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolver</span><a href="#resolver" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="resolver.resolver-1">resolver<span class="tsd-signature-symbol">(</span>resolver<span class="tsd-signature-symbol">: </span><a href="Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><a href="#resolver.resolver-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds a <a href="Resolver.html">Resolver</a> to the configuration. This has no checks for duplicate resolvers.</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>resolver: <a href="Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a></h5></li></ul></div>
+<h5>resolver: <a href="Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a></h5>
+<div class="tsd-comment tsd-typography"><p>The resolver to add</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L60">args.ts:60</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L74">args.ts:74</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="validate" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>validate</span><a href="#validate" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="validate.validate-1">validate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">SchemaError</span><span class="tsd-signature-symbol">&gt;</span><a href="#validate.validate-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Validate that the schema is okay to use. This detects problems which cannot be detected
+at a type level. This may be expensive to call, so should not be used in production.</p>
+<p>It is advised to run this in tests, and when your schema changes.
+If there <em>are</em> problems, and this is not called &amp; handled, the behaviour of the parser is undefined.</p>
+
+<h3>Returns</h3><p><code>SchemaError</code> if there is a problem, <code>this</code> otherwise</p>
+</div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Result</span><span class="tsd-signature-symbol">&lt;</span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">TArgTypes</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">SchemaError</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/args.ts#L264">args.ts:264</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/args.ts#L328">args.ts:328</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

@@ -18,7 +18,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">StoredParserOpts</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L10">opts.ts:10</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L10">opts.ts:10</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -41,96 +41,152 @@
 <a href="StoredParserOpts.html#shortFlagGroups" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>short<wbr/>Flag<wbr/>Groups</span></a>
 <a href="StoredParserOpts.html#tooManyArgs" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>too<wbr/>Many<wbr/>Args</span></a>
 <a href="StoredParserOpts.html#tooManyDefinitions" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>too<wbr/>Many<wbr/>Definitions</span></a>
-<a href="StoredParserOpts.html#tooManyValues" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>too<wbr/>Many<wbr/>Values</span></a>
 <a href="StoredParserOpts.html#unrecognisedArgument" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>unrecognised<wbr/>Argument</span></a>
+<a href="StoredParserOpts.html#unrecognisedCommand" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>unrecognised<wbr/>Command</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="arrayMultipleDefinitions" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>array<wbr/>Multiple<wbr/>Definitions</span><a href="#arrayMultipleDefinitions" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
-<div class="tsd-signature">array<wbr/>Multiple<wbr/>Definitions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;overwrite&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">array<wbr/>Multiple<wbr/>Definitions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;overwrite&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;append&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when an argument is specified multiple times. This is only for array arguments.</p>
+
+<h3>See</h3><p>arrayMultipleDefinitions for single argument behaviour</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L18">opts.ts:18</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L44">opts.ts:44</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="deprecatedCommands" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>deprecated<wbr/>Commands</span><a href="#deprecatedCommands" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">deprecated<wbr/>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;unknown-command&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">deprecated<wbr/>Commands<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;unknown-command&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when a user runs a deprecated command.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L20">opts.ts:20</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L63">opts.ts:63</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="environmentPrefix" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>environment<wbr/>Prefix</span><a href="#environmentPrefix" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">environment<wbr/>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">environment<wbr/>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>The prefix to use when falling back to environment variables for missing arguments.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L23">opts.ts:23</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L97">opts.ts:97</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="keyEqualsValueSyntax" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>key<wbr/>Equals<wbr/>Value<wbr/>Syntax</span><a href="#keyEqualsValueSyntax" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">key<wbr/>Equals<wbr/>Value<wbr/>Syntax<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
+<div class="tsd-signature">key<wbr/>Equals<wbr/>Value<wbr/>Syntax<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Whether to enable the &quot;key = value&quot; syntax:
+When enabled, the values are parsed as if normal syntax was used</p>
+<pre><code><span class="hl-1">--</span><span class="hl-2">flag</span><span class="hl-1">=</span><span class="hl-2">value</span><span class="hl-1"> -</span><span class="hl-2">x</span><br/><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-10">flag</span><span class="hl-1">: </span><span class="hl-3">&quot;value&quot;</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">x</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>Otherwise, an error is thrown.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L21">opts.ts:21</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L76">opts.ts:76</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="logger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>logger</span><a href="#logger" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">logger<span class="tsd-signature-symbol">:</span> <a href="../classes/util.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></div><aside class="tsd-sources">
+<div class="tsd-signature">logger<span class="tsd-signature-symbol">:</span> <a href="../classes/util.Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a></div>
+<div class="tsd-comment tsd-typography"><p>The logger used by the library to provide diagnostic information.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L26">opts.ts:26</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L116">opts.ts:116</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="mustProvideCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>must<wbr/>Provide<wbr/>Command</span><a href="#mustProvideCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">must<wbr/>Provide<wbr/>Command<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
+<div class="tsd-signature">must<wbr/>Provide<wbr/>Command<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Whether users must provide at least one command.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L24">opts.ts:24</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L101">opts.ts:101</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="negatedBooleanPrefix" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>negated<wbr/>Boolean<wbr/>Prefix</span><a href="#negatedBooleanPrefix" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">negated<wbr/>Boolean<wbr/>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">negated<wbr/>Boolean<wbr/>Prefix<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>The prefix to use for &quot;negated boolean&quot; syntax. An empty string means this feature is disabled.</p>
+<pre><code><span class="hl-1">--</span><span class="hl-2">no</span><span class="hl-1">-</span><span class="hl-2">flag</span><span class="hl-1"> --</span><span class="hl-2">other</span><span class="hl-1">-</span><span class="hl-2">flag</span><br/><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-10">flag</span><span class="hl-1">: </span><span class="hl-4">false</span><span class="hl-1">,</span><br/><span class="hl-1"> [</span><span class="hl-3">&#39;other-flag&#39;</span><span class="hl-1">]: </span><span class="hl-4">true</span><br/><span class="hl-1">}</span>
+</code></pre>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L25">opts.ts:25</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L112">opts.ts:112</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="programDescription" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>program<wbr/>Description</span><a href="#programDescription" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">program<wbr/>Description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">program<wbr/>Description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>The program description, shown in the help text.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L12">opts.ts:12</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L18">opts.ts:18</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="programName" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>program<wbr/>Name</span><a href="#programName" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">program<wbr/>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">program<wbr/>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>The program name, shown in the help text.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L11">opts.ts:11</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L14">opts.ts:14</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="programVersion" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>program<wbr/>Version</span><a href="#programVersion" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">program<wbr/>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
+<div class="tsd-signature">program<wbr/>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>The program version, shown in the help text.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L13">opts.ts:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L22">opts.ts:22</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="resolvers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>resolvers</span><a href="#resolvers" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">resolvers<span class="tsd-signature-symbol">:</span> <a href="../classes/Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
+<div class="tsd-signature">resolvers<span class="tsd-signature-symbol">:</span> <a href="../classes/Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a><span class="tsd-signature-symbol">[]</span></div>
+<div class="tsd-comment tsd-typography"><p>The resolvers used by default. These are copied into the ArgState when a <a href="../classes/Args.html">Args</a> parser is constructed.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L27">opts.ts:27</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L120">opts.ts:120</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="restSyntax" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>rest<wbr/>Syntax</span><a href="#restSyntax" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">rest<wbr/>Syntax<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;collect&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">rest<wbr/>Syntax<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;error&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;collect&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>Whether to enable the &quot;rest&quot; syntax:
+When enabled, the values are collected</p>
+<pre><code><span class="hl-1">--</span><span class="hl-2">flag</span><span class="hl-1"> </span><span class="hl-2">value</span><span class="hl-1"> -</span><span class="hl-2">x</span><span class="hl-1"> -- </span><span class="hl-2">the</span><span class="hl-1"> </span><span class="hl-2">rest</span><span class="hl-1"> </span><span class="hl-2">value</span><span class="hl-1"> </span><span class="hl-2">goes</span><span class="hl-1"> </span><span class="hl-2">here</span><br/><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-10">flag</span><span class="hl-1">: </span><span class="hl-3">&quot;value&quot;</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">x</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">rest</span><span class="hl-1">: </span><span class="hl-3">&quot;the rest value goes here&quot;</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>Otherwise, an error is thrown.</p>
+
+<h3>Remarks</h3><p>When this is enabled, it will overwrite any arguments with the long flag of &quot;rest&quot;</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L19">opts.ts:19</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L59">opts.ts:59</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="shortFlagGroups" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>short<wbr/>Flag<wbr/>Groups</span><a href="#shortFlagGroups" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">short<wbr/>Flag<wbr/>Groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div><aside class="tsd-sources">
+<div class="tsd-signature">short<wbr/>Flag<wbr/>Groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>Whether to enable the &quot;short flag group&quot; syntax
+When enabled, groups of short flags are parsed as if they had all been specified individually</p>
+<pre><code><span class="hl-1">-</span><span class="hl-2">xyz</span><span class="hl-1"> -</span><span class="hl-2">ab</span><br/><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1"> </span><span class="hl-10">x</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">y</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">z</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">a</span><span class="hl-1">: </span><span class="hl-4">true</span><span class="hl-1">,</span><br/><span class="hl-1"> </span><span class="hl-10">b</span><span class="hl-1">: </span><span class="hl-4">true</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>Otherwise, a group is treated as a single argument.</p>
+
+<h3>Remarks</h3><p>This feature makes the assumption that any short flag with length &gt; 1 is a group, even if it maps to a real short flag</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L22">opts.ts:22</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L93">opts.ts:93</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="tooManyArgs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>too<wbr/>Many<wbr/>Args</span><a href="#tooManyArgs" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">too<wbr/>Many<wbr/>Args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">too<wbr/>Many<wbr/>Args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when many arguments are passed to a type that only expects a single argument</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L15">opts.ts:15</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L34">opts.ts:34</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="tooManyDefinitions" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>too<wbr/>Many<wbr/>Definitions</span><a href="#tooManyDefinitions" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">too<wbr/>Many<wbr/>Definitions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;overwrite&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">too<wbr/>Many<wbr/>Definitions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;overwrite&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when an argument is specified multiple times. This is only for <em>non</em> array arguments.</p>
+
+<h3>See</h3><p>arrayMultipleDefinitions for array argument behaviour</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L17">opts.ts:17</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="tooManyValues" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><span>too<wbr/>Many<wbr/>Values</span><a href="#tooManyValues" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">too<wbr/>Many<wbr/>Values<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;drop&quot;</span></div><aside class="tsd-sources">
-<ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L16">opts.ts:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L39">opts.ts:39</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="unrecognisedArgument" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>unrecognised<wbr/>Argument</span><a href="#unrecognisedArgument" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">unrecognised<wbr/>Argument<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;skip&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;throw&quot;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">unrecognised<wbr/>Argument<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;skip&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;throw&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when an unrecognised argument (not defined in the schema) is passed in the user input.</p>
+</div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/addbddf/src/opts.ts#L14">opts.ts:14</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L26">opts.ts:26</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="unrecognisedCommand" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>unrecognised<wbr/>Command</span><a href="#unrecognisedCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">unrecognised<wbr/>Command<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;throw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;into-positional&quot;</span></div>
+<div class="tsd-comment tsd-typography"><p>What to do when an unrecognised command (not defined in the schema) is passed into the user input.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/opts.ts#L30">opts.ts:30</a></li></ul></aside></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -174,8 +230,8 @@
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#shortFlagGroups" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>short<wbr/>Flag<wbr/>Groups</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#tooManyArgs" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>too<wbr/>Many<wbr/>Args</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#tooManyDefinitions" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>too<wbr/>Many<wbr/>Definitions</a></li>
-<li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#tooManyValues" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>too<wbr/>Many<wbr/>Values</a></li>
-<li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#unrecognisedArgument" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>unrecognised<wbr/>Argument</a></li></ul></li></ul></nav></div></div>
+<li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#unrecognisedArgument" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>unrecognised<wbr/>Argument</a></li>
+<li class="tsd-kind-property tsd-parent-kind-interface"><a href="StoredParserOpts.html#unrecognisedCommand" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>unrecognised<wbr/>Command</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div><script src="../assets/main.js"></script></body></html>
