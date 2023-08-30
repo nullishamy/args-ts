@@ -45,6 +45,9 @@ export abstract class Argument<T> {
 
   // Internal getter to avoid cluttering completion with ^ our private fields that need to be accessed by other internal APIs
   // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by outside people (assuming they do not break type safety)
+  /**
+   * @internal
+   */
   get _meta (): ArgumentMeta<T> {
     return {
       specifiedDefault: this._specifiedDefault,

@@ -19,8 +19,15 @@ const LEVEL_TO_NUMBER: Record<LogLevel, number> = {
   fatal: 50
 }
 
+/**
+ * The levels which a {@link Logger} can operate at.
+ */
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
+/**
+ * The logging class used internally to (configurably) inform users about library behaviour.
+ * This is a thin wrapper around the {@link console}, and should generally be set to something above 'info' in production.
+ */
 export class Logger {
   trace = this.makeLevelFunc('trace', false)
   debug = this.makeLevelFunc('debug', false)
