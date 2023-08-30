@@ -12,11 +12,6 @@ interface ExecError {
 }
 
 describe('Example compilation', () => {
-  if (!process.env.COMPILE_EXAMPLES) {
-    it.skip('can compile the examples', () => {})
-    return
-  }
-
   it('can compile the examples', async () => {
     const dir = path.join(__dirname, '..', 'examples')
     const examples = await fsp.readdir(dir)
