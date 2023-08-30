@@ -1,6 +1,6 @@
 
 import assert from 'assert'
-import { MinimalArgument, StoredParserOpts, defaultCommandOpts } from '../../src'
+import { ArgsState, MinimalArgument, StoredParserOpts, defaultCommandOpts } from '../../src'
 import { CoercedArguments, coerce } from '../../src/internal/parse/coerce'
 import { tokenise } from '../../src/internal/parse/lexer'
 import { ParsedArguments, parse } from '../../src/internal/parse/parser'
@@ -76,7 +76,18 @@ export function lexAndParse (argStr: string, opts: StoredParserOpts, commands: I
     return acc
   }, new PrefixTree())
 
-  const parsed = parse(tokens.val, commandMap, opts)
+  const state: ArgsState = {
+    arguments: new PrefixTree(),
+    argumentsList: [],
+    commands: commandMap,
+    commandsList: commands,
+    builtins: [],
+    resolvers: opts.resolvers,
+    footerLines: [],
+    headerLines: []
+  }
+
+  const parsed = parse(tokens.val, state, opts)
   if (!parsed.ok) {
     throw parsed.err
   }
@@ -99,7 +110,18 @@ export async function parseAndCoerce (argStr: string, opts: StoredParserOpts, ar
     return acc
   }, new PrefixTree())
 
-  const coerced = await coerce(parsed, opts, argMap, args, opts.resolvers, [])
+  const state: ArgsState = {
+    arguments: argMap,
+    argumentsList: args,
+    commands: new PrefixTree(),
+    commandsList: [],
+    builtins: [],
+    resolvers: opts.resolvers,
+    footerLines: [],
+    headerLines: []
+  }
+
+  const coerced = await coerce(parsed, opts, state)
   if (!coerced.ok) {
     assert(Array.isArray(coerced.err))
     throw new Error(coerced.err.map(e => e.message).join('\n'))

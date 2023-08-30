@@ -9,10 +9,11 @@ import { getAliasDenotion } from '../internal/util'
  * @returns the generated help string
  */
 export function generateHelp (parser: Args<{}>): string {
-  const { argumentsList, commandsList, opts, builtins } = parser
+  const { argumentsList, commandsList, builtins, headerLines, footerLines } = parser._state
+  const { opts } = parser
 
   const renderArgument = (value: InternalArgument): string => {
-    const { optional, isMultiType } = value.inner._meta
+    const { optional, isMultiType } = value.inner._state
     if (optional) {
       if (value.type === 'positional') {
         return `[<${value.key.toUpperCase()}>]`
@@ -55,13 +56,13 @@ export function generateHelp (parser: Args<{}>): string {
       if (cmd.aliases.length) {
         nameString = `[${cmd.name}, ${cmd.aliases.join(', ')}]`
       }
-      return `${opts.programName} ${nameString} ${cmd.parser.argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
+      return `${opts.programName} ${nameString} ${cmd.parser._state.argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
     }).join('\n')
 
   const builtinString = builtins.map(builtin => builtin.helpInfo()).join('\n')
 
   return `
-${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${parser.headerLines.length ? '\n' + parser.headerLines.join('\n') : ''}
+${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${headerLines.length ? '\n' + headerLines.join('\n') : ''}
 
 Usage: ${opts.programName} ${usageString}
 
@@ -70,5 +71,5 @@ ${commandString || 'None'}
 
 Builtins:
 ${builtinString || 'None'}
-${parser.footerLines.join('\n')}`.trim()
+${footerLines.join('\n')}`.trim()
 }
