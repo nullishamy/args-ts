@@ -13,12 +13,18 @@
 <li><a href="../modules.html">args.ts</a></li>
 <li><a href="Builtin-1.html">Builtin</a></li></ul>
 <h1>Class Builtin<code class="tsd-tag ts-flagAbstract">Abstract</code> </h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>Represents a builtin command (such as help, version information) within a parser configuration.</p>
+<p>These are contained separately from <a href="Command.html">Command</a>s because they may be triggered by flags, and will always require
+special casing when being executed.</p>
+<p>A builtin match will always override user commands, and will halt argument coercion.</p>
+</div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
 <li><span class="target">Builtin</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L3">builder/builtin.ts:3</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L11">builder/builtin.ts:11</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -56,24 +62,24 @@
 <h5>id: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L7">builder/builtin.ts:7</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L15">builder/builtin.ts:15</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="argumentTriggers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>argument<wbr/>Triggers</span><a href="#argumentTriggers" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">argument<wbr/>Triggers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L5">builder/builtin.ts:5</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L13">builder/builtin.ts:13</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="commandTriggers" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>command<wbr/>Triggers</span><a href="#commandTriggers" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">command<wbr/>Triggers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L4">builder/builtin.ts:4</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L12">builder/builtin.ts:12</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="id" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>id</span><a href="#id" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L7">builder/builtin.ts:7</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L15">builder/builtin.ts:15</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="clearTriggers" class="tsd-anchor"></a>
@@ -81,22 +87,34 @@
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="clearTriggers.clearTriggers-1">clear<wbr/>Triggers<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a><a href="#clearTriggers.clearTriggers-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Clear all known triggers from this builtin</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <h4 class="tsd-returns-title">Returns <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L19">builder/builtin.ts:19</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L41">builder/builtin.ts:41</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="helpInfo" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>help<wbr/>Info</span><a href="#helpInfo" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="helpInfo.helpInfo-1">help<wbr/>Info<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#helpInfo.helpInfo-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Generate the help string for this builtin. Describes the triggers which this builtin runs on.</p>
+
+<h3>Returns</h3><p>The generated help string</p>
+</div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L27">builder/builtin.ts:27</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L60">builder/builtin.ts:60</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="onArgument" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on<wbr/>Argument</span><a href="#onArgument" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="onArgument.onArgument-1">on<wbr/>Argument<span class="tsd-signature-symbol">(</span>argument<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a><a href="#onArgument.onArgument-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds a flag to the known argument triggers for this builtin</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
@@ -104,39 +122,55 @@
 <h5>argument: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L14">builder/builtin.ts:14</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L32">builder/builtin.ts:32</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="onCommand" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>on<wbr/>Command</span><a href="#onCommand" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="onCommand.onCommand-1">on<wbr/>Command<span class="tsd-signature-symbol">(</span>command<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a><a href="#onCommand.onCommand-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Adds a command to the known command triggers for this builtin</p>
+
+<h3>Returns</h3><p>this</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>command: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5>command: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The command to trigger this builtin on</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Builtin-1.html" class="tsd-signature-type" data-tsd-kind="Class">Builtin</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L9">builder/builtin.ts:9</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L22">builder/builtin.ts:22</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="run" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagAbstract">Abstract</code> <span>run</span><a href="#run" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="run.run-1">run<span class="tsd-signature-symbol">(</span>parser<span class="tsd-signature-symbol">: </span><a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span>, flags<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span>, positionals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, trigger<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#run.run-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Execute a builtin.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>parser: <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
+<h5>parser: <a href="Args.html" class="tsd-signature-type" data-tsd-kind="Class">Args</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The current parser</p>
+</div></li>
 <li>
-<h5>flags: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
+<h5>flags: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>The raw flag arguments</p>
+</div></li>
 <li>
-<h5>positionals: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5></li>
+<h5>positionals: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>The raw positional arguments</p>
+</div></li>
 <li>
-<h5>trigger: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5>trigger: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The flag / command that triggered this builtin</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/builtin.ts#L25">builder/builtin.ts:25</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/builtin.ts#L54">builder/builtin.ts:54</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

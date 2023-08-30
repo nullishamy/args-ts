@@ -13,6 +13,10 @@
 <li><a href="../modules.html">args.ts</a></li>
 <li><a href="Resolver.html">Resolver</a></li></ul>
 <h1>Class Resolver<code class="tsd-tag ts-flagAbstract">Abstract</code> </h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>Represents a secondary resolution source (after user arguments) for which argument values can be obtained.</p>
+<p>These sources may be from a network, from the file system, or from the environment.</p>
+</div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
 <ul class="tsd-hierarchy">
@@ -20,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><a href="EnvironmentResolver.html" class="tsd-signature-type" data-tsd-kind="Class">EnvironmentResolver</a></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/resolver.ts#L3">builder/resolver.ts:3</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/resolver.ts#L8">builder/resolver.ts:8</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -53,14 +57,14 @@
 <h5>identifier: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Resolver.html" class="tsd-signature-type" data-tsd-kind="Class">Resolver</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/resolver.ts#L4">builder/resolver.ts:4</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/resolver.ts#L9">builder/resolver.ts:9</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="identifier" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagReadonly">Readonly</code> <span>identifier</span><a href="#identifier" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">identifier<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/resolver.ts#L5">builder/resolver.ts:5</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/resolver.ts#L10">builder/resolver.ts:10</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="keyExists" class="tsd-anchor"></a>
@@ -68,31 +72,44 @@
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
 <li class="tsd-signature tsd-anchor-link" id="keyExists.keyExists-1">key<wbr/>Exists<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><a href="#keyExists.keyExists-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Determine whether this resolver can resolve the provided key.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>key: <span class="tsd-signature-type">string</span></h5></li>
+<h5>key: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The key to check</p>
+</div></li>
 <li>
-<h5>opts: <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></h5></li></ul></div>
+<h5>opts: <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></h5>
+<div class="tsd-comment tsd-typography"><p>The parser opts</p>
+</div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/resolver.ts#L8">builder/resolver.ts:8</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/resolver.ts#L18">builder/resolver.ts:18</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="resolveKey" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagAbstract">Abstract</code> <span>resolve<wbr/>Key</span><a href="#resolveKey" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="resolveKey.resolveKey-1">resolve<wbr/>Key<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><a href="#resolveKey.resolveKey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="resolveKey.resolveKey-1">resolve<wbr/>Key<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, opts<span class="tsd-signature-symbol">: </span><a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#resolveKey.resolveKey-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Resolve the provided key to its string value.</p>
+<p>This value should not be validated in any way other than ensuring it is not nullish.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>key: <span class="tsd-signature-type">string</span></h5></li>
+<h5>key: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The key to resolve</p>
+</div></li>
 <li>
-<h5>opts: <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<h5>opts: <a href="../interfaces/StoredParserOpts.html" class="tsd-signature-type" data-tsd-kind="Interface">StoredParserOpts</a></h5>
+<div class="tsd-comment tsd-typography"><p>The parser opts</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/aa056f7/src/builder/resolver.ts#L9">builder/resolver.ts:9</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/nullishamy/args-ts/blob/9fbc821/src/builder/resolver.ts#L26">builder/resolver.ts:26</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
