@@ -33,6 +33,11 @@ export interface DefaultArgTypes {
   rest?: string
 }
 
+/**
+ * The root class for the library. Generally, it represents a configured parser which can then be used to parse arbitrary input strings.
+ *
+ * It will hold all the state needed to parse inputs. This state is modified through the various helper methods defined on this class.
+ */
 export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
   // We store both a tree and a list so that we can iterate all values efficiently
   public arguments: PrefixTree<InternalArgument> = new PrefixTree()
@@ -50,6 +55,10 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
 
   private positionalIndex = 0
 
+  /**
+   * Constructs a new parser with empty state, ready for configuration.
+   * @param opts - The parser options to use
+   */
   constructor (opts: ParserOpts) {
     this.opts = {
       ...defaultParserOpts,
@@ -57,16 +66,38 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     }
   }
 
+  /**
+   * Adds a {@link Resolver} to the configuration. This has no checks for duplicate resolvers.
+   * @param resolver - The resolver to add
+   * @returns this
+   */
   public resolver (resolver: Resolver): Args<TArgTypes> {
     this.resolvers.push(resolver)
     return this
   }
 
+  /**
+   * Adds a {@link Builtin} to the configuration.
+   * @param builtin - The builtin to add
+   * @returns this
+   */
   public builtin (builtin: Builtin): Args<TArgTypes> {
     this.builtins.push(builtin)
     return this
   }
 
+  /**
+   * Adds a {@link Command} to the configuration. This will enable commands / subcommands (declared on the Command itself)
+   * to be recognised by the parser.
+   *
+   * If a command is not recognised by the parser, it will refer to the {@link ParserOpts.unrecognisedCommand} option to determine what to do.
+   *
+   * This will throw if the command or any of its aliases are already registered, or if it conflicts with the command triggers of a registered builtin.
+   * @param param0 - The name and aliases to register
+   * @param command - The command to register with
+   * @param inherit - Whether to inherit arguments from this configuration into the parser
+   * @returns this
+   */
   public command<TName extends string, TCommand extends Command> (
     [name, ...aliases]: [`${TName}`, ...string[]],
     command: TCommand,
@@ -137,9 +168,16 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
+  /**
+   * Add a positional {@link Argument} to the configuration. Conflict behaviour with commands is described in {@link command}
+   * If a positional exists with the provided key, this will throw.
+   * @param key - The key to use for the positional, maps to the output object.
+   * @param arg - The argument to register
+   * @returns this
+   */
   public positional<TArg extends CoercedValue, TKey extends string> (
     key: `<${TKey}>`,
-    declaration: MinimalArgument<TArg>
+    arg: MinimalArgument<TArg>
   ): Args<TArgTypes & {
       [key in TKey]: TArg
     }> {
@@ -148,18 +186,21 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     }
 
     const slicedKey = key.slice(1, key.length - 1)
+    if (this.arguments.has(slicedKey)) {
+      throw new SchemaError(`duplicate positional key '${slicedKey}'`)
+    }
 
     const index = this.positionalIndex++
     this.arguments.insert(slicedKey, {
       type: 'positional',
-      inner: declaration,
+      inner: arg,
       key: slicedKey,
       index
     })
 
     this.argumentsList.push({
       type: 'positional',
-      inner: declaration,
+      inner: arg,
       key: slicedKey,
       index
     })
@@ -168,9 +209,18 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
+  /**
+   * Add a flag argument to the configuration. The first long flag is used as the key in the output object
+   * so must be given. Any aliases after that are just used as alternatives, and will not appear in the output object
+   *
+   * If the key or any aliases exist in the config, this will throw.
+   * @param param0 - The key and aliases to register
+   * @param arg - The argument to register
+   * @returns this
+   */
   public arg<TArg extends CoercedValue, TLong extends string> (
     [_longFlag, ..._aliases]: [`--${TLong}`, ...Array<`-${string}` | `--${string}`>],
-    declaration: MinimalArgument<TArg>
+    arg: MinimalArgument<TArg>
   ): Args<TArgTypes & {
       // Add the key to our object of known args
       [key in TLong]: TArg
@@ -196,7 +246,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       this.arguments.insert(alias.value, {
         type: 'flag',
         isLongFlag: true,
-        inner: declaration,
+        inner: arg,
         longFlag,
         aliases
       })
@@ -205,7 +255,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     this.arguments.insert(longFlag, {
       type: 'flag',
       isLongFlag: true,
-      inner: declaration,
+      inner: arg,
       longFlag,
       aliases
     })
@@ -213,7 +263,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     this.argumentsList.push({
       type: 'flag',
       isLongFlag: true,
-      inner: declaration,
+      inner: arg,
       longFlag,
       aliases
     })
@@ -222,6 +272,9 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
+  /**
+   * @internal
+   */
   private intoObject (coerced: Map<InternalArgument, CoercedMultiValue | CoercedSingleValue>, rest: string | undefined): TArgTypes {
     const out = Object.fromEntries([...coerced.entries()].map(([key, value]) => {
       if (key.type === 'flag') {
@@ -237,6 +290,9 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return out
   }
 
+  /**
+   * @internal
+   */
   private intoRaw (args: ParsedArguments): [Record<string, string[]>, string[]] {
     const { flags, positionals } = args
     const outFlags: Record<string, string[]> = {}
@@ -261,6 +317,14 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return [outFlags, outPositionals]
   }
 
+  /**
+   * Validate that the schema is okay to use. This detects problems which cannot be detected
+   * at a type level. This may be expensive to call, so should not be used in production.
+   *
+   * It is advised to run this in tests, and when your schema changes.
+   * If there *are* problems, and this is not called & handled, the behaviour of the parser is undefined.
+   * @returns `SchemaError` if there is a problem, `this` otherwise
+   */
   public validate (): Result<this, SchemaError> {
     const positionals: InternalPositionalArgument[] = []
     const flags: InternalFlagArgument[] = []
@@ -279,10 +343,20 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return Ok(this)
   }
 
+  /**
+   * Generate the help string for this configuration. This is an alias for {@link generateHelp}, passing in `this`.
+   * @returns The generated help string
+   */
   public help (): string {
     return generateHelp(this)
   }
 
+  /**
+   * Appends or overwrites the footer lines, which are shown at the bottom of the help string.
+   * @param line - The footer line to show
+   * @param append - Whether to append, or overwrite
+   * @returns this
+   */
   public footer (line: string, append = true): Args<TArgTypes> {
     if (append) {
       this.footerLines.push(line)
@@ -293,6 +367,12 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
+  /**
+   * Appends or overwrites the header lines, which are shown at the top of the help string.
+   * @param line - The header line to show
+   * @param append - Whether to append, or overwrite
+   * @returns this
+   */
   public header (line: string, append = true): Args<TArgTypes> {
     if (append) {
       this.headerLines.push(line)
@@ -303,6 +383,13 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     return this
   }
 
+  /**
+   * Attempt to parse the provided arguments, returning the result of the operation.
+   * This is an alternative to {@link parse}, allowing the caller to control what happens in the event of parse failure.
+   * @param argString - The arguments to parse
+   * @param executeCommands - Whether to execute discovered commands, or return them
+   * @returns The result of the parse
+   */
   public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
     this.opts.logger.debug(`Beginning parse of input '${argString}'`)
 
@@ -403,6 +490,13 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     })
   }
 
+  /**
+   * Parses the provided arguments, printing the problems and exiting if the parse fails.
+   * Callers can use {@link parseToResult} if control of parse failure behaviour is required.
+   * @param argString - The arguments to parse
+   * @param executeCommands - Whether to execute discovered commands, or return them
+   * @returns The result of the parse, never an error
+   */
   public async parse (argString: string | string[], executeCommands = false): Promise<ParseSuccess<TArgTypes>> {
     const result = await this.parseToResult(argString, executeCommands)
 

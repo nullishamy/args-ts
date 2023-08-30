@@ -70,3 +70,7 @@ parser.arg(['--custom'], new CustomParseClass())
 These fetchers can both be async, and the parser will await all promises returned.
 
 You can look at the `examples/` directory and the tests for a more up to date and feature complete usage guide!
+
+## Documentation
+
+The API docs are hosted [here, on Github Pages](https:/amy.is-a.dev/args-ts)
