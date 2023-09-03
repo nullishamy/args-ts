@@ -15,7 +15,7 @@ export abstract class Resolver {
    * @param key - The key to check
    * @param opts - The parser opts
    */
-  abstract keyExists (key: string, opts: StoredParserOpts): boolean
+  abstract keyExists (key: string, opts: StoredParserOpts): Promise<boolean>
   /**
    * Resolve the provided key to its string value.
    *
@@ -23,5 +23,5 @@ export abstract class Resolver {
    * @param key - The key to resolve
    * @param opts - The parser opts
    */
-  abstract resolveKey (key: string, opts: StoredParserOpts): string
+  abstract resolveKey (key: string, opts: StoredParserOpts): Promise<string>
 }

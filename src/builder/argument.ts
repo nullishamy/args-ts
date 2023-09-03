@@ -17,7 +17,7 @@ export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 export type ArgumentType = string
 
 interface ArgumentState<T> {
-  resolveDefault: (specificity: 'specified' | 'unspecified') => T | undefined
+  resolveDefault: (specificity: 'specified' | 'unspecified') => Promise<T | undefined>
   dependencies: string[]
   requiredUnlessPresent: string[]
   conflicts: string[]
@@ -88,7 +88,7 @@ export abstract class Argument<T> {
     }
   }
 
-  protected resolveDefault (specificity: 'specified' | 'unspecified'): T | undefined {
+  protected async resolveDefault (specificity: 'specified' | 'unspecified'): Promise<T | undefined> {
     if (specificity === 'specified') {
       return this._specifiedDefault
     }

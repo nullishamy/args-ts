@@ -244,7 +244,7 @@ describe('Rest arguments', () => {
 
     const result = await runArgsExecution(parser, 'true true -- false true')
     expect(result.boolean).toEqual([true, true])
-    expect(result.rest).toEqual('false true')
+    expect(result['--']).toEqual('false true')
   })
 
   it('can parse rest arguments on flag based parsers', async () => {
@@ -253,7 +253,7 @@ describe('Rest arguments', () => {
 
     const result = await runArgsExecution(parser, '--flag true -- false true')
     expect(result.flag).toEqual(true)
-    expect(result.rest).toEqual('false true')
+    expect(result['--']).toEqual('false true')
   })
 
   it('can parse rest arguments on mixed parsers', async () => {
@@ -264,7 +264,7 @@ describe('Rest arguments', () => {
     const result = await runArgsExecution(parser, 'true false true --flag true -- false true')
     expect(result.flag).toEqual(true)
     expect(result.boolean).toEqual([true, false, true])
-    expect(result.rest).toEqual('false true')
+    expect(result['--']).toEqual('false true')
   })
 
   it('errors if the rest syntax is not enabled', async () => {
