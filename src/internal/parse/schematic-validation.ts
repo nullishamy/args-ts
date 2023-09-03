@@ -24,7 +24,7 @@ export function validateFlagSchematically (
   flags: Map<string, AnyParsedFlagArgument[]>,
   argument: InternalFlagArgument,
   opts: StoredParserOpts,
-  resolveres: Resolver[]
+  resolvers: Resolver[]
 ): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
   let foundFlags = flags.get(argument.longFlag)
   if (argument.aliases.length && !foundFlags) {
@@ -37,12 +37,13 @@ export function validateFlagSchematically (
     }
   }
 
-  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
+  let { resolveDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
+  const [specifiedDefault, unspecifiedDefault] = [resolveDefault('specified'), resolveDefault('unspecified')]
 
   // Test our resolvers to see if any of them have a value, so we know whether to reject below
   let resolversHaveValue = false
 
-  for (const resolver of resolveres) {
+  for (const resolver of resolvers) {
     if (resolver.keyExists(argument.longFlag, opts)) {
       resolversHaveValue = true
     }
@@ -102,7 +103,8 @@ export function validatePositionalSchematically (
   middlewares: Resolver[]
 ): Result<ParsedPositionalArgument | undefined, CoercionError> {
   const foundFlag = positionals.get(argument.index)
-  const { unspecifiedDefault, optional } = argument.inner._state
+  const { resolveDefault, optional } = argument.inner._state
+  const unspecifiedDefault = resolveDefault('unspecified')
 
   // Test our middlewares to see if any of them have a value, so we know whether to reject below
   let middlewaresHaveValue = false

@@ -65,7 +65,6 @@ describe('Flag integrations', () => {
     const result = await runArgsExecution(parser, ['--boolean', 'false'])
     expect(result.boolean).toBe(false)
   })
-
   it('can parse long-flag quoted strings', async () => {
     const parser = new Args(parserOpts)
       .arg(['--string', '-s'], a.string())
@@ -380,11 +379,8 @@ could not parse a 'boolean' because 'xyz' is not a boolean, expected 'boolean' r
   })
 
   it('skips when excess values are passed to an argument', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      tooManyArgs: 'drop'
-    })
-      .arg(['--string', '-s'], a.string())
+    const parser = new Args(parserOpts)
+      .arg(['--string', '-s'], a.string().opt('tooManyArgs', 'drop'))
 
     const result = await runArgsExecution(parser, '-s one two')
     expect(result.string).toBe('one')
@@ -523,33 +519,23 @@ describe('Logical argument testing', () => {
   })
 
   it('drops multiple definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      tooManyDefinitions: 'drop'
-    })
-      .arg(['--array'], a.string())
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().opt('tooManyDefinitions', 'drop'))
 
     const result = await runArgsExecution(parser, '--array value1 --array value2')
     expect(result.array).toStrictEqual('value1')
   })
 
   it('overwrites multiple definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      tooManyDefinitions: 'overwrite'
-    })
-      .arg(['--array'], a.string())
-
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().opt('tooManyDefinitions', 'overwrite'))
     const result = await runArgsExecution(parser, '--array value1 --array value2')
     expect(result.array).toStrictEqual('value2')
   })
 
   it('throws when multiple definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      tooManyDefinitions: 'throw'
-    })
-      .arg(['--array'], a.string())
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().opt('tooManyDefinitions', 'throw'))
 
     const result = expect(async () => await runArgsExecution(parser, '--array value1 --array value2'))
     await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions' @ --array]`)
@@ -675,7 +661,7 @@ describe('Logical argument testing', () => {
 
   it('fails when an invalid enum value is provided', async () => {
     const parser = new Args(parserOpts)
-      .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
+      .arg(['--enum'], a.oneOf('x', 'y', 'z'))
 
     const result = expect(async () => await runArgsExecution(parser, '--enum a'))
     await result.rejects.toMatchInlineSnapshot(`[Error: could not parse a 'x | y | z' because value must be one of 'x, y, z' got 'a', expected 'x | y | z' received 'a' @ --enum]`)
@@ -683,7 +669,7 @@ describe('Logical argument testing', () => {
 
   it('passes when a valid enum value is provided', async () => {
     const parser = new Args(parserOpts)
-      .arg(['--enum'], a.oneOf(['x', 'y', 'z'] as const))
+      .arg(['--enum'], a.oneOf('x', 'y', 'z'))
 
     const result = await runArgsExecution(parser, '--enum x')
     expect(result.enum).toEqual('x')
@@ -738,33 +724,24 @@ describe('Array testing', () => {
   })
 
   it('drops to arrays with multiple definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      arrayMultipleDefinitions: 'drop'
-    })
-      .arg(['--array'], a.string().array())
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().array().opt('arrayMultipleDefinitions', 'drop'))
 
     const result = await runArgsExecution(parser, '--array value1 --array value2')
     expect(result.array).toStrictEqual(['value1'])
   })
 
   it('overwrites to arrays with multiple definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      arrayMultipleDefinitions: 'overwrite'
-    })
-      .arg(['--array'], a.string().array())
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().array().opt('arrayMultipleDefinitions', 'overwrite'))
 
     const result = await runArgsExecution(parser, '--array value1 --array value2')
     expect(result.array).toStrictEqual(['value2'])
   })
 
   it('throws when multiple array definitions', async () => {
-    const parser = new Args({
-      ...parserOpts,
-      arrayMultipleDefinitions: 'throw'
-    })
-      .arg(['--array'], a.string().array())
+    const parser = new Args(parserOpts)
+      .arg(['--array'], a.string().array().opt('arrayMultipleDefinitions', 'throw'))
 
     const result = expect(async () => await runArgsExecution(parser, '--array value1 --array value2'))
     await result.rejects.toMatchInlineSnapshot(`[Error: argument --array' is not permitted to have multiple definitions, expected 'single definition' received 'multiple definitions' @ --array]`)
