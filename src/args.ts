@@ -30,7 +30,7 @@ interface ParsedArgs<T> {
 type ParseSuccess<TArgTypes> = FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>
 export interface DefaultArgTypes {
   [k: string]: CoercedValue
-  rest?: string
+  ['--']?: string
 }
 
 export interface ArgsState {
@@ -302,7 +302,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       }
     })) as TArgTypes
     if (rest) {
-      out.rest = rest
+      out['--'] = rest
     }
 
     return out
