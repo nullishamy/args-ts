@@ -15,6 +15,7 @@
         "test": "jest --testPathIgnorePatterns 'ensure-examples-compile.test.ts'",
         "test:full": "npm run build && jest && npm run test:types",
         "test:types": "jest --config jest.config.tsd.js",
+        "test:types:watch": "jest --config jest.config.tsd.js --watch",
         "test:watch": "npm run test -- --watch",
         "test:coverage": "npm run test -- --config jest.coverage.js",
         "test:coverage:watch": "npm run test -- --watchAll --config jest.coverage.js",
