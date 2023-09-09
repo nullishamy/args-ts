@@ -20,11 +20,11 @@ class UserConfigResolver extends Resolver {
     return this
   }
 
-  keyExists (key: string): boolean {
+  async keyExists (key: string): Promise<boolean> {
     return this.data[key] !== undefined
   }
 
-  resolveKey (key: string): string {
+  async resolveKey (key: string): Promise<string> {
     const value = this.data[key]
 
     if (value === undefined) {

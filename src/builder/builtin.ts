@@ -58,8 +58,21 @@ export abstract class Builtin {
    * @returns The generated help string
    */
   public helpInfo (): string {
-    return `${this.commandTriggers.map(cmd => `${cmd} <...args>`).join(', ')} | ${this.argumentTriggers.map(arg => `--${arg}`).join(', ')}`
+    const commands = this.commandTriggers.map(cmd => `${cmd} <...args>`).join(', ')
+    const args = this.argumentTriggers.map(arg => `--${arg}`).join(', ')
+
+    if (commands && args) {
+      return `${commands} | ${args}`
+    }
+
+    if (commands) {
+      return commands
+    }
+
+    if (args) {
+      return args
+    }
+
+    return `${this.constructor.name} | no triggers`
   }
 }
-
-export type BuiltinType = 'help' | 'completion' | 'version' | 'fallback'

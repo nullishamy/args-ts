@@ -1,6 +1,6 @@
 
 import assert from 'assert'
-import { ArgsState, MinimalArgument, StoredParserOpts, defaultCommandOpts } from '../../src'
+import { ArgsState, Command, MinimalArgument, StoredParserOpts, defaultCommandOpts, defaultParserOpts } from '../../src'
 import { CoercedArguments, coerce } from '../../src/internal/parse/coerce'
 import { tokenise } from '../../src/internal/parse/lexer'
 import { ParsedArguments, parse } from '../../src/internal/parse/parser'
@@ -20,17 +20,18 @@ export function makeInternalCommand (
     aliases: aliases ?? [],
     isBase: true,
     inner: {
+      log: defaultParserOpts.logger,
       _subcommands: subcommands ?? {},
-      args: p => p,
+      args: (p: any) => p,
       opts: {
         description: description ?? `${name} command description`,
         parserOpts: opts,
         ...defaultCommandOpts
       },
-      run: p => p,
-      runner: p => p,
-      subcommand: p => ({} as any)
-    },
+      run: (p: any) => p,
+      runner: (p: any) => p,
+      subcommand: (p: any) => ({} as any)
+    } as unknown as Command,
     parser: ({} as any)
   }
 }

@@ -2,6 +2,7 @@ interface Stringifiable { toString: () => string }
 type LoggingFunction<T> = (...args: Stringifiable[]) => T
 
 const LEVEL_TO_CONSOLE: Record<LogLevel, () => (...args: unknown[]) => void> = {
+  internal: () => console.trace,
   trace: () => console.trace,
   debug: () => console.debug,
   info: () => console.log,
@@ -11,7 +12,8 @@ const LEVEL_TO_CONSOLE: Record<LogLevel, () => (...args: unknown[]) => void> = {
 }
 
 const LEVEL_TO_NUMBER: Record<LogLevel, number> = {
-  trace: 0,
+  internal: 0,
+  trace: 1,
   debug: 10,
   info: 20,
   warn: 30,
@@ -22,13 +24,14 @@ const LEVEL_TO_NUMBER: Record<LogLevel, number> = {
 /**
  * The levels which a {@link Logger} can operate at.
  */
-export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'
+export type LogLevel = 'internal' | 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal'
 
 /**
  * The logging class used internally to (configurably) inform users about library behaviour.
  * This is a thin wrapper around the {@link console}, and should generally be set to something above 'info' in production.
  */
 export class Logger {
+  internal = this.makeLevelFunc('internal', false)
   trace = this.makeLevelFunc('trace', false)
   debug = this.makeLevelFunc('debug', false)
   info = this.makeLevelFunc('info', false)
@@ -51,12 +54,12 @@ export class Logger {
       const ourLevel = LEVEL_TO_NUMBER[this.level]
       const targetLevel = LEVEL_TO_NUMBER[level]
 
-      if (ourLevel >= targetLevel) {
+      if (ourLevel > targetLevel) {
         return
       }
 
-      const fn = LEVEL_TO_CONSOLE[this.level]()
-      fn(`[${this.name}]`, new Date().toISOString(), ':', ...args)
+      const fn = LEVEL_TO_CONSOLE[level]()
+      fn(`[${level.toUpperCase()}]`.padEnd(7), `[${this.name}]`, new Date().toISOString(), ':', ...args)
 
       if (exit) {
         process.exit()

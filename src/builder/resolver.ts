@@ -13,9 +13,10 @@ export abstract class Resolver {
   /**
    * Determine whether this resolver can resolve the provided key.
    * @param key - The key to check
+   * @param userDidPassArg - Whether the user provided an argument or not
    * @param opts - The parser opts
    */
-  abstract keyExists (key: string, opts: StoredParserOpts): Promise<boolean>
+  abstract keyExists (key: string, userDidPassArg: boolean, opts: StoredParserOpts): Promise<boolean>
   /**
    * Resolve the provided key to its string value.
    *

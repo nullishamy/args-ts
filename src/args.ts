@@ -116,9 +116,9 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
    * @param inherit - Whether to inherit arguments from this configuration into the parser
    * @returns this
    */
-  public command<TName extends string, TCommand extends Command> (
-    [name, ...aliases]: [`${TName}`, ...string[]],
-    command: TCommand,
+  public command (
+    [name, ...aliases]: [string, ...string[]],
+    command: Command,
     inherit = false
   ): Args<TArgTypes> {
     if (this._state.commands.has(name)) {
@@ -409,7 +409,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
    * @returns The result of the parse
    */
   public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
-    this.opts.logger.debug(`Beginning parse of input '${argString}'`)
+    this.opts.logger.internal(`Beginning parse of input '${argString}'`)
 
     const tokenResult = tokenise(Array.isArray(argString) ? argString.join(' ') : argString)
 

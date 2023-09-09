@@ -2,13 +2,14 @@ import { Args, DefaultArgTypes } from '../args'
 import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
 import { CommandOpts, StoredCommandOpts, defaultCommandOpts, defaultParserOpts } from '../opts'
-import { ArgType } from '../util'
+import { ArgType, Logger } from '../util'
 
 /**
  * Base class for all commands, including subcommands. Any user implemented command must extend from this class.
  */
 export abstract class Command {
   public readonly opts: StoredCommandOpts
+  protected readonly log: Logger
 
   constructor (
     opts: CommandOpts
@@ -21,6 +22,8 @@ export abstract class Command {
         ...opts.parserOpts
       }
     }
+
+    this.log = this.opts.parserOpts.logger
   }
 
   /**

@@ -9,12 +9,6 @@ export const parserOpts: ParserOpts = {
   programVersion: 'v1'
 }
 
-// Provide a custom resolver for the username key.
-// This does have the downside that it will *always* try and resolve the key
-// whether the user provides the flag or not.
-//
-// If this distinction matters, use an Argument and override the `resolveDefault` method
-// to control the behaviour dependant on specificity
 class UsernamePromptResolver extends Resolver {
   private readonly rl: readline.Interface
   constructor (id: string) {
@@ -25,9 +19,9 @@ class UsernamePromptResolver extends Resolver {
     })
   }
 
-  async keyExists (key: string): Promise<boolean> {
+  async keyExists (key: string, userDidPassArg: boolean): Promise<boolean> {
     // We only care about resolving our username argument
-    return key === 'username'
+    return key === 'username' && userDidPassArg
   }
 
   async resolveKey (): Promise<string> {
