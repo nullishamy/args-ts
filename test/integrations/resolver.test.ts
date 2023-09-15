@@ -5,8 +5,8 @@ import { runArgsExecution } from './utils'
 
 class MockResolver extends Resolver {
   constructor (
-    public readonly keyExists: (key: string) => boolean,
-    public readonly resolveKey: (key: string) => string,
+    public readonly keyExists: (key: string) => Promise<boolean>,
+    public readonly resolveKey: (key: string) => Promise<string>,
     id = 'mock'
   ) {
     super(id)
@@ -15,8 +15,8 @@ class MockResolver extends Resolver {
 
 describe('Resolver tests', () => {
   it('calls for resolver when resolving arguments', async () => {
-    const existsFn = jest.fn((key: string) => key === 'ware')
-    const valueFn = jest.fn(() => 'value')
+    const existsFn = jest.fn(async (key: string) => key === 'ware')
+    const valueFn = jest.fn(async () => 'value')
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.string())
@@ -29,8 +29,8 @@ describe('Resolver tests', () => {
   })
 
   it('rejects invalid resolver values', async () => {
-    const existsFn = jest.fn((key: string) => key === 'ware')
-    const valueFn = jest.fn(() => 'value')
+    const existsFn = jest.fn(async (key: string) => key === 'ware')
+    const valueFn = jest.fn(async () => 'value')
 
     const parser = new Args(parserOpts)
       .arg(['--ware'], a.decimal())
