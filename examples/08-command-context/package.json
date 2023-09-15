@@ -1,0 +1,17 @@
+{
+  "name": "08-command-context",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --enable-source-maps lib/index.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "args.ts": "file:../..",
+    "typescript": "^5.1.6"
+  }
+}
