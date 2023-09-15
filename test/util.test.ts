@@ -124,7 +124,7 @@ describe('Help generation utils', () => {
       .arg(['--flag', '-f'], a.string().optional())
       .arg(['--opt-multi', '-o'], a.string().array().optional())
       .arg(['--opt-req', '-r'], a.string().array())
-      .arg(['--enum', '-e'], a.oneOf(['a', 'b', 'c']))
+      .arg(['--enum', '-e'], a.oneOf('a', 'b', 'c'))
       .arg(['--long'], a.number())
       .arg(['--long-optional'], a.number().optional())
       .positional('<positionalreq>', a.string())

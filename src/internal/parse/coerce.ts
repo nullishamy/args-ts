@@ -83,15 +83,15 @@ async function resolveArgumentDefault (
   userArguments: ParsedPositionalArgument | AnyParsedFlagArgument[] | undefined,
   argument: InternalArgument,
   opts: StoredParserOpts,
-  middlewares: Resolver[]
+  resolvers: Resolver[]
 ): Promise<Result<ResolvedDefault | ResolvedUser, CoercionError[]>> {
   // Only attempt middleware resolution if the user args are not set
   if (!userArguments) {
     const key = argument.type === 'flag' ? argument.longFlag : argument.key
 
-    for (const middleware of middlewares) {
-      if (middleware.keyExists(key, opts)) {
-        const value = middleware.resolveKey(key, opts)
+    for (const resolver of resolvers) {
+      if (await resolver.keyExists(key, opts)) {
+        const value = await resolver.resolveKey(key, opts)
 
         if (!value) {
           continue
@@ -106,7 +106,7 @@ async function resolveArgumentDefault (
           isDefault: true,
           value: {
             isMulti: false,
-            raw: `<default value (from middleware '${middleware.identifier}') for ${getArgDenotion(argument)}>`,
+            raw: `<default value (from middleware '${resolver.identifier}') for ${getArgDenotion(argument)}>`,
             coerced: coercionResult.val.coerced
           }
         })
@@ -121,7 +121,7 @@ async function resolveArgumentDefault (
       value: {
         isMulti: false,
         raw: `<default value for ${getArgDenotion(argument)}>`,
-        coerced: argument.inner._state.unspecifiedDefault
+        coerced: await argument.inner._state.resolveDefault('unspecified')
       }
     })
   }
@@ -146,7 +146,7 @@ async function resolveArgumentDefault (
         value: {
           isMulti: false,
           raw: `<default value for group member '${argument.longFlag}' of '${userArgument.rawInput}'`,
-          coerced: argument.inner._state.specifiedDefault
+          coerced: await argument.inner._state.resolveDefault('specified')
         }
       })
     }
@@ -166,7 +166,7 @@ async function resolveArgumentDefault (
         value: {
           isMulti: false,
           raw: `<default value for ${getArgDenotion(argument)}`,
-          coerced: argument.inner._state.specifiedDefault
+          coerced: await argument.inner._state.resolveDefault('specified')
         }
       })
     }
@@ -179,8 +179,8 @@ async function resolveArgumentDefault (
   })
 }
 
-function handleAdditionalArgumentDefinition (argument: InternalArgument, opts: StoredParserOpts): Result<'overwrite' | 'skip' | 'append', CoercionError> {
-  const { arrayMultipleDefinitions, tooManyDefinitions } = opts
+function handleAdditionalArgumentDefinition (argument: InternalArgument): Result<'overwrite' | 'skip' | 'append', CoercionError> {
+  const { arrayMultipleDefinitions, tooManyDefinitions } = argument.inner._state.opts
   if (argument.inner._state.isMultiType) {
     if (arrayMultipleDefinitions === 'append') {
       return Ok('append')
@@ -275,9 +275,9 @@ export async function coerce (
     // Do NOT consider 'value-level' properties such as value correctness
     let findResult
     if (argument.type === 'flag') {
-      findResult = validateFlagSchematically(flags, argument, opts, resolvers)
+      findResult = await validateFlagSchematically(flags, argument, opts, resolvers)
     } else {
-      findResult = validatePositionalSchematically(positionals, argument, opts, resolvers)
+      findResult = await validatePositionalSchematically(positionals, argument, opts, resolvers)
     }
 
     if (!findResult.ok) {
@@ -298,7 +298,7 @@ export async function coerce (
 
     // Multiple definitions found, let's see what we should do with them
     if (Array.isArray(userArgument) && userArgument.length > 1) {
-      const multipleBehaviourResult = handleAdditionalArgumentDefinition(argument, opts)
+      const multipleBehaviourResult = handleAdditionalArgumentDefinition(argument)
       if (!multipleBehaviourResult.ok) {
         return multipleBehaviourResult
       }
@@ -336,7 +336,7 @@ export async function coerce (
     // User passed more than one argument, and this is not a multi type
     if (!argument.inner._state.isMultiType && inputValues.length > 1) {
       // Throw if appropriate, slice off the other arguments if not (acts as a skip)
-      const { tooManyArgs } = opts
+      const { tooManyArgs } = argument.inner._state.opts
       if (tooManyArgs === 'throw') {
         const pretty = inputValues.slice(1).map(s => `'${s}'`).join(', ')
         return Err([new CoercionError(argument.inner.type, inputValues.join(' '), `excess argument(s) to ${getArgDenotion(argument)}: ${pretty}`, getArgDenotion(argument))])

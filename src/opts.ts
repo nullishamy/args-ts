@@ -29,20 +29,6 @@ export interface StoredParserOpts {
    */
   unrecognisedCommand: 'into-positional' | 'throw'
   /**
-   * What to do when many arguments are passed to a type that only expects a single argument
-   */
-  tooManyArgs: 'drop' | 'throw'
-  /**
-   * What to do when an argument is specified multiple times. This is only for *non* array arguments.
-   * @see arrayMultipleDefinitions for array argument behaviour
-   */
-  tooManyDefinitions: 'drop' | 'throw' | 'overwrite'
-  /**
-   * What to do when an argument is specified multiple times. This is only for array arguments.
-   * @see arrayMultipleDefinitions for single argument behaviour
-   */
-  arrayMultipleDefinitions: 'append' | 'drop' | 'throw' | 'overwrite'
-  /**
    * Whether to enable the "rest" syntax:
    * When enabled, the values are collected
    * ```
@@ -128,7 +114,6 @@ export interface StoredParserOpts {
 export const defaultParserOpts = {
   unrecognisedArgument: 'throw',
   unrecognisedCommand: 'into-positional',
-  tooManyArgs: 'throw',
   deprecatedCommands: 'error',
   restSyntax: 'collect',
   shortFlagGroups: true,
@@ -136,8 +121,6 @@ export const defaultParserOpts = {
   environmentPrefix: undefined,
   mustProvideCommand: true,
   negatedBooleanPrefix: 'no-',
-  tooManyDefinitions: 'throw',
-  arrayMultipleDefinitions: 'append',
   logger: new Logger('default'),
   resolvers: [
     new EnvironmentResolver('env')
@@ -145,7 +128,7 @@ export const defaultParserOpts = {
 } as const satisfies Partial<StoredParserOpts>
 
 /**
- * @see StoredParserOpts for documentation
+ * @see {@link StoredParserOpts} for documentation
  */
 export type ParserOpts = MakePassedOpts<StoredParserOpts, keyof typeof defaultParserOpts>
 
@@ -185,7 +168,7 @@ export const defaultCommandOpts = {
 
 // Must override `parserOpts` in `StoredCommandOpts` so users can pass their single value around
 /**
- * @see StoredCommandOpts for documentation
+ * @see {@link StoredCommandOpts} for documentation
  */
 export type CommandOpts = (
   & Omit<StoredCommandOpts, 'parserOpts' | keyof typeof defaultCommandOpts>
@@ -194,3 +177,30 @@ export type CommandOpts = (
     parserOpts: ParserOpts
   }
 )
+
+export interface ArgumentOpts {
+  /**
+   * What to do when many arguments are passed to a type that only expects a single argument
+   */
+  tooManyArgs: 'drop' | 'throw'
+  /**
+   * What to do when an argument is specified multiple times. This is only for *non* array arguments.
+   * @see arrayMultipleDefinitions for array argument behaviour
+   */
+  tooManyDefinitions: 'drop' | 'throw' | 'overwrite'
+  /**
+   * What to do when an argument is specified multiple times. This is only for array arguments.
+   * @see arrayMultipleDefinitions for single argument behaviour
+   */
+  arrayMultipleDefinitions: 'append' | 'drop' | 'throw' | 'overwrite'
+}
+
+/**
+ * The default argument options to use. Set as the default when an {@link Argument} is constructed.
+ * Subject to change. These are opinionated defaults.
+*/
+export const defaultArgumentOpts = {
+  tooManyArgs: 'throw',
+  tooManyDefinitions: 'throw',
+  arrayMultipleDefinitions: 'append'
+} as const satisfies Partial<ArgumentOpts>

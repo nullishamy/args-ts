@@ -204,8 +204,10 @@ class BooleanArgument extends Argument<boolean> {
 }
 
 class EnumArgument<T extends readonly string[]> extends Argument<T[number]> {
-  constructor (private readonly validValues: T) {
+  private readonly validValues: T
+  constructor (...validValues: T) {
     super(validValues.join(' | '))
+    this.validValues = validValues
   }
 
   async coerce (value: string): Promise<CoercionResult<T[number]>> {
@@ -244,6 +246,6 @@ export const custom = <T> (...args: ConstructorParameters<typeof CustomArgument<
   return new CustomArgument<T>(...args)
 }
 
-export const oneOf = <T extends readonly string[]> (...args: ConstructorParameters<typeof EnumArgument<T>>): EnumArgument<T> => {
+export const oneOf = <T extends readonly string[]> (...args: T): EnumArgument<T> => {
   return new EnumArgument<T>(...args)
 }

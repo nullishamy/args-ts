@@ -20,12 +20,12 @@ export function validateCommandSchematically (command: UserCommand, opts: Stored
   return Ok(undefined)
 }
 
-export function validateFlagSchematically (
+export async function validateFlagSchematically (
   flags: Map<string, AnyParsedFlagArgument[]>,
   argument: InternalFlagArgument,
   opts: StoredParserOpts,
-  resolveres: Resolver[]
-): Result<AnyParsedFlagArgument[] | undefined, CoercionError> {
+  resolvers: Resolver[]
+): Promise<Result<AnyParsedFlagArgument[] | undefined, CoercionError>> {
   let foundFlags = flags.get(argument.longFlag)
   if (argument.aliases.length && !foundFlags) {
     for (const alias of argument.aliases) {
@@ -37,13 +37,14 @@ export function validateFlagSchematically (
     }
   }
 
-  let { specifiedDefault, unspecifiedDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
+  let { resolveDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
+  const [specifiedDefault, unspecifiedDefault] = await Promise.all([resolveDefault('specified'), resolveDefault('unspecified')])
 
   // Test our resolvers to see if any of them have a value, so we know whether to reject below
   let resolversHaveValue = false
 
-  for (const resolver of resolveres) {
-    if (resolver.keyExists(argument.longFlag, opts)) {
+  for (const resolver of resolvers) {
+    if (await resolver.keyExists(argument.longFlag, opts)) {
       resolversHaveValue = true
     }
   }
@@ -95,25 +96,26 @@ export function validateFlagSchematically (
   return Ok(foundFlags)
 }
 
-export function validatePositionalSchematically (
+export async function validatePositionalSchematically (
   positionals: Map<number, ParsedPositionalArgument>,
   argument: InternalPositionalArgument,
   opts: StoredParserOpts,
-  middlewares: Resolver[]
-): Result<ParsedPositionalArgument | undefined, CoercionError> {
+  resolvers: Resolver[]
+): Promise<Result<ParsedPositionalArgument | undefined, CoercionError>> {
   const foundFlag = positionals.get(argument.index)
-  const { unspecifiedDefault, optional } = argument.inner._state
+  const { resolveDefault, optional } = argument.inner._state
+  const unspecifiedDefault = await resolveDefault('unspecified')
 
-  // Test our middlewares to see if any of them have a value, so we know whether to reject below
-  let middlewaresHaveValue = false
+  // Test our resolvers to see if any of them have a value, so we know whether to reject below
+  let resolversHaveValue = false
 
-  for (const middleware of middlewares) {
-    if (middleware.keyExists(argument.key, opts)) {
-      middlewaresHaveValue = true
+  for (const middleware of resolvers) {
+    if (await middleware.keyExists(argument.key, opts)) {
+      resolversHaveValue = true
     }
   }
 
-  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !middlewaresHaveValue) {
+  if (!optional && unspecifiedDefault === undefined && !foundFlag?.values && !resolversHaveValue) {
     return Err(new CoercionError(argument.inner.type, '<nothing>', `positional argument '${argument.key}' is not declared as optional, does not have a default, and was not provided a value`, argument.key))
   }
 

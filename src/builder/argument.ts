@@ -1,4 +1,5 @@
 import { CoercedValue } from '../internal/parse/types'
+import { ArgumentOpts, defaultArgumentOpts } from '../opts'
 
 interface CoercionResultOk<T> {
   ok: true
@@ -16,32 +17,36 @@ export type CoercionResult<T> = CoercionResultOk<T> | CoercionResultErr
 export type ArgumentType = string
 
 interface ArgumentState<T> {
-  specifiedDefault: T | undefined
+  resolveDefault: (specificity: 'specified' | 'unspecified') => Promise<T | undefined>
   dependencies: string[]
   requiredUnlessPresent: string[]
   conflicts: string[]
-  unspecifiedDefault: T | undefined
   description: string | undefined
   optional: boolean
   isMultiType: boolean
   exclusive: boolean
   otherParsers: Array<MinimalArgument<CoercedValue>>
+  opts: ArgumentOpts
 }
 
+/**
+ * @internal
+ */
 export type MinimalArgument<T> = Pick<Argument<T>, '_state' | 'coerce' | 'type' | 'negate'>
 
 export abstract class Argument<T> {
   protected _specifiedDefault: T | undefined = undefined
+  protected _unspecifiedDefault: T | undefined = undefined
   protected _dependencies: string[] = []
   protected _conflicts: string[] = []
   protected _requiredUnlessPresent: string[] = []
-  protected _unspecifiedDefault: T | undefined = undefined
   protected _description: string | undefined
   protected _optional: boolean = false
   protected _isMultiType: boolean = false
   protected _exclusive: boolean = false
   protected _otherParsers: Array<MinimalArgument<CoercedValue>> = []
   protected _negated: boolean = false
+  protected _opts: ArgumentOpts = { ...defaultArgumentOpts }
 
   // Internal getter to avoid cluttering completion with ^ our private fields that need to be accessed by other internal APIs
   // Conveniently also means we encapsulate our data, so it cannot be easily tampered with by consumers
@@ -50,16 +55,16 @@ export abstract class Argument<T> {
    */
   get _state (): ArgumentState<T> {
     return {
-      specifiedDefault: this._specifiedDefault,
+      resolveDefault: this.resolveDefault.bind(this),
       dependencies: this._dependencies,
-      unspecifiedDefault: this._unspecifiedDefault,
       requiredUnlessPresent: this._requiredUnlessPresent,
       description: this._description,
       conflicts: this._conflicts,
       optional: this._optional,
       isMultiType: this._isMultiType,
       exclusive: this._exclusive,
-      otherParsers: this._otherParsers
+      otherParsers: this._otherParsers,
+      opts: this._opts
     }
   }
 
@@ -83,6 +88,14 @@ export abstract class Argument<T> {
     }
   }
 
+  protected async resolveDefault (specificity: 'specified' | 'unspecified'): Promise<T | undefined> {
+    if (specificity === 'specified') {
+      return this._specifiedDefault
+    }
+
+    return this._unspecifiedDefault
+  }
+
   /**
    * Try to coerce a string value into the (`T`) type of this Argument.
    *
@@ -99,6 +112,30 @@ export abstract class Argument<T> {
    */
   public requireUnlessPresent (arg: `--${string}`): Argument<T> {
     this._requiredUnlessPresent.push(arg.substring(2))
+    return this
+  }
+
+  /**
+   * Sets a single option on this argument.
+   * This does not copy the provided value.
+   * @param key - The key to set
+   * @param value - The value to set the key to
+   * @returns this
+   */
+  public opt <K extends keyof ArgumentOpts> (key: K, value: ArgumentOpts[K]): Argument<T> {
+    this._opts[key] = value
+    return this
+  }
+
+  /**
+   * Configures a new options object for this argument.
+   * This will not deep copy the provided object, which may be mutated
+   * by subsequent calls on this object.
+   * @param newOpts - The new options to set
+   * @returns this
+   */
+  public opts (newOpts: ArgumentOpts): Argument<T> {
+    this._opts = newOpts
     return this
   }
 

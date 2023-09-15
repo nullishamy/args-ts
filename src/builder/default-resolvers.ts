@@ -3,13 +3,13 @@ import { StoredParserOpts } from '../opts'
 import { Resolver } from './resolver'
 
 export class EnvironmentResolver extends Resolver {
-  keyExists (key: string, opts: StoredParserOpts): boolean {
+  async keyExists (key: string, opts: StoredParserOpts): Promise<boolean> {
     const envKey = `${opts.environmentPrefix}_${key.toUpperCase()}`
     const platform = currentPlatform()
     return platform.getEnv(envKey) !== undefined
   }
 
-  resolveKey (key: string, opts: StoredParserOpts): string {
+  async resolveKey (key: string, opts: StoredParserOpts): Promise<string> {
     const envKey = `${opts.environmentPrefix}_${key.toUpperCase()}`
     const platform = currentPlatform()
     const value = platform.getEnv(envKey)
