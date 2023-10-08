@@ -17,11 +17,11 @@ export function getAliasDenotion (alias: FlagAlias): string {
   }
 }
 
-const flagValidationRegex = /-+(?:[a-z]+)/
+const flagValidationRegex = /-+(?:[a-zA-Z]+)/
 
 export function internaliseFlagString (flag: string): ['long' | 'short', string] {
   if (!flagValidationRegex.test(flag)) {
-    throw new SchemaError(`flags must match '--abcdef...' or '-abcdef' got '${flag}'`)
+    throw new SchemaError(`flags must match '--abcdefABCDEF' or '-abcdefABCDEF' got '${flag}'`)
   }
 
   // Long flag

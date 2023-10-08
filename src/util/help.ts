@@ -21,9 +21,9 @@ export function generateHelp (parser: Args<{}>): string {
 
       if (value.aliases.length) {
         if (isMultiType) {
-          return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>]`
+          return `[--${value.longFlag} | ${value.aliases.map(getAliasDenotion).join(' | ')} <${value.inner.type}...>]`
         }
-        return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>]`
+        return `[--${value.longFlag} | ${value.aliases.map(getAliasDenotion).join(' | ')} <${value.inner.type}>]`
       }
       return `[--${value.longFlag} <${value.inner.type}>]`
     } else {
@@ -36,9 +36,9 @@ export function generateHelp (parser: Args<{}>): string {
 
       if (value.aliases.length) {
         if (isMultiType) {
-          return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>)`
+          return `(--${value.longFlag} | ${value.aliases.map(getAliasDenotion).join(' | ')} <${value.inner.type}...>)`
         }
-        return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>)`
+        return `(--${value.longFlag} | ${value.aliases.map(getAliasDenotion).join(' | ')} <${value.inner.type}>)`
       }
 
       return `(--${value.longFlag} <${value.inner.type}>)`

@@ -37,6 +37,8 @@ export async function validateFlagSchematically (
     }
   }
 
+  const userDidProvideArgs = (foundFlags ?? []).length > 0
+
   let { resolveDefault, optional, dependencies, conflicts, exclusive, requiredUnlessPresent } = argument.inner._state
   const [specifiedDefault, unspecifiedDefault] = await Promise.all([resolveDefault('specified'), resolveDefault('unspecified')])
 
@@ -44,7 +46,7 @@ export async function validateFlagSchematically (
   let resolversHaveValue = false
 
   for (const resolver of resolvers) {
-    if (await resolver.keyExists(argument.longFlag, opts)) {
+    if (await resolver.keyExists(argument.longFlag, userDidProvideArgs, opts)) {
       resolversHaveValue = true
     }
   }
@@ -110,7 +112,7 @@ export async function validatePositionalSchematically (
   let resolversHaveValue = false
 
   for (const middleware of resolvers) {
-    if (await middleware.keyExists(argument.key, opts)) {
+    if (await middleware.keyExists(argument.key, foundFlag !== undefined, opts)) {
       resolversHaveValue = true
     }
   }
