@@ -73,4 +73,4 @@ You can look at the `examples/` directory and the tests for a more up to date an
 
 ## Documentation
 
-The API docs are hosted [here, on Github Pages](https://amy.is-a.dev/args-ts)
+The API docs are hosted [here, on Github Pages](https://amy.is-a.dev/args-ts/)
