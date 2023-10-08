@@ -16,10 +16,10 @@ interface FoundCommand {
   executionResult: unknown
 }
 
-interface ReturnedCommand<T> {
+interface ReturnedCommand<TArgs, TCommand> {
   mode: 'command'
-  command: Command
-  parsedArgs: T
+  command: TCommand
+  parsedArgs: TArgs
 }
 
 interface ParsedArgs<T> {
@@ -27,7 +27,7 @@ interface ParsedArgs<T> {
   args: T
 }
 
-type ParseSuccess<TArgTypes> = FoundCommand | ReturnedCommand<TArgTypes> | ParsedArgs<TArgTypes>
+type ParseSuccess<TArgTypes, TCommand> = FoundCommand | ReturnedCommand<TArgTypes, TCommand> | ParsedArgs<TArgTypes>
 export interface DefaultArgTypes {
   [k: string]: CoercedValue
   ['--']?: string
@@ -52,7 +52,7 @@ export interface ArgsState {
  *
  * It will hold all the state needed to parse inputs. This state is modified through the various helper methods defined on this class.
  */
-export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
+export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes, TCommandType extends Command = Command> {
   public readonly opts: StoredParserOpts
   public readonly _state: ArgsState
 
@@ -116,11 +116,11 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
    * @param inherit - Whether to inherit arguments from this configuration into the parser
    * @returns this
    */
-  public command<TName extends string, TCommand extends Command> (
-    [name, ...aliases]: [`${TName}`, ...string[]],
-    command: TCommand,
+  public command <T extends Command> (
+    [name, ...aliases]: [string, ...string[]],
+    command: T,
     inherit = false
-  ): Args<TArgTypes> {
+  ): Args<TArgTypes, T> {
     if (this._state.commands.has(name)) {
       throw new CommandError(`command '${name}' already declared`)
     }
@@ -183,6 +183,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
       })
     }
 
+    // @ts-expect-error erased commands can't resolve into concrete type
     return this
   }
 
@@ -408,8 +409,8 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
    * @param executeCommands - Whether to execute discovered commands, or return them
    * @returns The result of the parse
    */
-  public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes>, ParseError | CoercionError[] | CommandError>> {
-    this.opts.logger.debug(`Beginning parse of input '${argString}'`)
+  public async parseToResult (argString: string | string[], executeCommands = false): Promise<Result<ParseSuccess<TArgTypes, TCommandType>, ParseError | CoercionError[] | CommandError>> {
+    this.opts.logger.internal(`Beginning parse of input '${argString}'`)
 
     const tokenResult = tokenise(Array.isArray(argString) ? argString.join(' ') : argString)
 
@@ -495,6 +496,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
     }
 
     // Command was found, return it
+    // @ts-expect-error erased commands can't resolve into concrete type
     return Ok({
       mode: 'command',
       parsedArgs: this.intoObject(args, rest?.value),
@@ -509,7 +511,7 @@ export class Args<TArgTypes extends DefaultArgTypes = DefaultArgTypes> {
    * @param executeCommands - Whether to execute discovered commands, or return them
    * @returns The result of the parse, never an error
    */
-  public async parse (argString: string | string[], executeCommands = false): Promise<ParseSuccess<TArgTypes>> {
+  public async parse (argString: string | string[], executeCommands = false): Promise<ParseSuccess<TArgTypes, TCommandType>> {
     const result = await this.parseToResult(argString, executeCommands)
 
     if (!result.ok) {

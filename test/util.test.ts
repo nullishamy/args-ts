@@ -135,7 +135,7 @@ describe('Help generation utils', () => {
     expect(util.generateHelp(parser)).toMatchInlineSnapshot(`
 "program-name  - program description 
 
-Usage: program-name [--flag-f<string>] [--opt-multi-o<string...>] (--opt-req-r<string...>) (--enum-e<a | b | c>) (--long <number>) [--long-optional <number>] <POSITIONALREQ> [<POSITIONAL>] <POSMULTI...>
+Usage: program-name [--flag | -f <string>] [--opt-multi | -o <string...>] (--opt-req | -r <string...>) (--enum | -e <a | b | c>) (--long <number>) [--long-optional <number>] <POSITIONALREQ> [<POSITIONAL>] <POSMULTI...>
 
 Commands:
 program-name [help, nohelp] (--cmd-arg <string>)

@@ -90,7 +90,7 @@ async function resolveArgumentDefault (
     const key = argument.type === 'flag' ? argument.longFlag : argument.key
 
     for (const resolver of resolvers) {
-      if (await resolver.keyExists(key, opts)) {
+      if (await resolver.keyExists(key, false, opts)) {
         const value = await resolver.resolveKey(key, opts)
 
         if (!value) {

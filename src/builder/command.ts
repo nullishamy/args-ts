@@ -2,13 +2,16 @@ import { Args, DefaultArgTypes } from '../args'
 import { CommandError } from '../error'
 import { InternalCommand } from '../internal/parse/types'
 import { CommandOpts, StoredCommandOpts, defaultCommandOpts, defaultParserOpts } from '../opts'
-import { ArgType } from '../util'
+import { ArgType, Logger } from '../util'
+
+export type CommandRunner<TThis extends Command, TRest extends unknown[]> = (args: ArgType<ReturnType<TThis['args']>>, ...rest: TRest) => Promise<unknown>
 
 /**
  * Base class for all commands, including subcommands. Any user implemented command must extend from this class.
  */
 export abstract class Command {
   public readonly opts: StoredCommandOpts
+  protected readonly log: Logger
 
   constructor (
     opts: CommandOpts
@@ -21,6 +24,8 @@ export abstract class Command {
         ...opts.parserOpts
       }
     }
+
+    this.log = this.opts.parserOpts.logger
   }
 
   /**
@@ -31,15 +36,17 @@ export abstract class Command {
   // Must use any for it to accept the subtyping this function actually performs
   // Black magic happens later on to extract the real subtype out of this `any`
   abstract args: <T extends {}> (parser: Args<T>) => Args<any>
-  abstract run: (args: ArgType<ReturnType<this['args']>>) => Promise<unknown>
+  abstract run: CommandRunner<this, []>
 
   /**
    * Creates a runner function for use with {@link Command#run}. This exists to provide type inference to the callback, which is not available without a function call.
    * @param runFn - the run function
    * @returns - the run implementation
    */
-  runner (runFn: (args: (ArgType<ReturnType<this['args']>> & DefaultArgTypes)) => Promise<unknown>): (args: ArgType<ReturnType<this['args']>>) => Promise<unknown> {
-    return async (args) => await runFn(args)
+  runner<T extends unknown[]> (
+    runFn: (args: (ArgType<ReturnType<this['args']>> & DefaultArgTypes), ...rest: T) => Promise<unknown>
+  ): (args: ArgType<ReturnType<this['args']>>, ...rest: T) => Promise<unknown> {
+    return async (args, ...rest) => await runFn(args, ...rest)
   }
 
   /**
