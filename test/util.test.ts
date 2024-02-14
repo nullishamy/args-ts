@@ -105,7 +105,7 @@ describe('Argv utils', () => {
 class HelpCommand extends Command {
   constructor (opts: ParserOpts) {
     super({
-      description: 'help',
+      description: 'shows the help',
       parserOpts: opts
     })
   }
@@ -118,9 +118,26 @@ class HelpCommand extends Command {
     parser.arg(['--cmd-arg'], a.string())
 }
 
+class SingleCommand extends Command {
+  constructor (opts: ParserOpts) {
+    super({
+      description: 'is a single command',
+      parserOpts: opts
+    })
+  }
+
+  run = this.runner(async (args) => {
+  })
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  args = (parser: Args<{}>) =>
+    parser.arg(['--single-arg'], a.string())
+}
+
 describe('Help generation utils', () => {
   it('can generate help for parsers', () => {
     const parser = new Args(parserOpts)
+      .arg(['--bool-flag'], a.bool())
       .arg(['--flag', '-f'], a.string().optional())
       .arg(['--opt-multi', '-o'], a.string().array().optional())
       .arg(['--opt-req', '-r'], a.string().array())
@@ -131,17 +148,33 @@ describe('Help generation utils', () => {
       .positional('<positional>', a.string().optional())
       .positional('<posmulti>', a.number().array())
       .command(['help', 'nohelp'], new HelpCommand(parserOpts))
+      .command(['single'], new SingleCommand(parserOpts))
 
+    /* eslint-disable no-tabs */
     expect(util.generateHelp(parser)).toMatchInlineSnapshot(`
-"program-name  - program description 
+"program-name - program description [version v1]
 
-Usage: program-name [--flag-f<string>] [--opt-multi-o<string...>] (--opt-req-r<string...>) (--enum-e<a | b | c>) (--long <number>) [--long-optional <number>] <POSITIONALREQ> [<POSITIONAL>] <POSMULTI...>
+USAGE:
+program-name [--bool-flag <boolean>]  [--flag <string>]  [--opt-multi <string>]  [--opt-req <string>]  [--enum <a | b | c>]
+[--long <number>]  [--long-optional <number>]  <positionalreq>  <positional>  <posmulti>
 
-Commands:
-program-name [help, nohelp] (--cmd-arg <string>)
+OPTIONS
+	--bool-flag ... boolean (optional)
+	-f, --flag ... string (optional)
+	-o, --opt-multi ... string (optional)
+	-r, --opt-req ... string
+	-e, --enum ... a | b | c
+	--long ... number
+	--long-optional ... number (optional)
 
-Builtins:
-None"
+	<positionalreq> ... string
+	<positional> ... string (optional)
+	<posmulti> ... number
+
+COMMANDS
+	[help, nohelp] - shows the help
+	single - is a single command"
 `)
   })
+/* eslint-enable no-tabs */
 })

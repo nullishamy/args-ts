@@ -24,6 +24,13 @@ const parser = new Args(parserOpts)
     .arg(['--optional'], a.string().optional()) 
 
 const result = await parser.parse('-l "hello world"') 
+
+// Make sure we only parsed args, and did not accept a subcommand etc
+if (result.mode !== 'args') {
+  throw new Error('expected args')
+}
+
+const args = result.args
 // { 'long-arg': 'hello world', optional: undefined }
 ```
 

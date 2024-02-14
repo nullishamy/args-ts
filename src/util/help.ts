@@ -1,6 +1,5 @@
 import { Args } from '../args'
-import { InternalArgument } from '../internal/parse/types'
-import { getAliasDenotion } from '../internal/util'
+import { chunkArray } from '../internal/util'
 
 /**
  * Generate a help string from a parser schema.
@@ -9,67 +8,90 @@ import { getAliasDenotion } from '../internal/util'
  * @returns the generated help string
  */
 export function generateHelp (parser: Args<{}>): string {
-  const { argumentsList, commandsList, builtins, headerLines, footerLines } = parser._state
+  const { headerLines, commandsList, argumentsList } = parser._state
   const { opts } = parser
 
-  const renderArgument = (value: InternalArgument): string => {
-    const { optional, isMultiType } = value.inner._state
-    if (optional) {
-      if (value.type === 'positional') {
-        return `[<${value.key.toUpperCase()}>]`
+  const header = `${opts.programName} - ${opts.programDescription} [version ${opts.programVersion}]`
+  const usageOptions = chunkArray(
+    5,
+    argumentsList.map((a) => {
+      if (a.type === 'flag') {
+        return `[--${a.longFlag} <${a.inner.type}>]`
+      }
+      return `<${a.key}>`
+    })
+  )
+    .map((a) => a.join('  '))
+    .join('\n')
+
+  const usage = `${opts.programName} ${usageOptions}`
+  const flags = argumentsList
+    .filter((a) => a.type === 'flag')
+    .map((a) => {
+      if (a.type !== 'flag') throw new TypeError()
+
+      const { description } = a.inner._state
+      let flagValues
+
+      if (a.aliases.length) {
+        const values = a.aliases.map((a) => {
+          if (a.type === 'long') {
+            return `--${a.value}`
+          } else {
+            return `-${a.value}`
+          }
+        })
+
+        values.push(`--${a.longFlag}`)
+
+        flagValues = values.join(', ')
+      } else {
+        flagValues = `--${a.longFlag}`
       }
 
-      if (value.aliases.length) {
-        if (isMultiType) {
-          return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>]`
-        }
-        return `[--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>]`
+      return `\t${flagValues} ... ${description ?? a.inner.type}${
+        a.inner._state.optional ? ' (optional)' : ''
+      }`
+    })
+    .join('\n')
+
+  const positionals = argumentsList
+    .filter((a) => a.type === 'positional')
+    .map((a) => {
+      if (a.type !== 'positional') throw new TypeError()
+
+      const { description } = a.inner._state
+      return `\t<${a.key}> ... ${description ?? a.inner.type}${
+        a.inner._state.optional ? ' (optional)' : ''
+      }`
+    })
+    .join('\n')
+
+  const commands = commandsList
+    .filter((c) => !c.inner.opts.hidden && c.isBase)
+    .map((c) => {
+      if (c.aliases.length) {
+        return `\t[${[c.name, ...c.aliases].join(', ')}] - ${
+          c.inner.opts.description
+        }`
       }
-      return `[--${value.longFlag} <${value.inner.type}>]`
-    } else {
-      if (value.type === 'positional') {
-        if (isMultiType) {
-          return `<${value.key.toUpperCase()}...>`
-        }
-        return `<${value.key.toUpperCase()}>`
-      }
 
-      if (value.aliases.length) {
-        if (isMultiType) {
-          return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}...>)`
-        }
-        return `(--${value.longFlag}${value.aliases.map(getAliasDenotion).join(' | ')}<${value.inner.type}>)`
-      }
-
-      return `(--${value.longFlag} <${value.inner.type}>)`
-    }
-  }
-
-  // Filter out non primary flag args, but keep all positionals
-  const filterPrimary = (arg: InternalArgument): boolean => (arg.type === 'flag' && arg.isLongFlag) || arg.type === 'positional'
-  const usageString = argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')
-
-  const commandString = commandsList
-    .filter(cmd => !cmd.inner.opts.hidden && cmd.isBase)
-    .map(cmd => {
-      let nameString = cmd.name
-      if (cmd.aliases.length) {
-        nameString = `[${cmd.name}, ${cmd.aliases.join(', ')}]`
-      }
-      return `${opts.programName} ${nameString} ${cmd.parser._state.argumentsList.filter(filterPrimary).map(arg => renderArgument(arg)).join(' ')}`
-    }).join('\n')
-
-  const builtinString = builtins.map(builtin => builtin.helpInfo()).join('\n')
+      return `\t${c.name} - ${c.inner.opts.description}`
+    })
+    .join('\n')
 
   return `
-${opts.programName} ${opts.programDescription && ` - ${opts.programDescription}`} ${headerLines.length ? '\n' + headerLines.join('\n') : ''}
+${header}
+${headerLines.join('\n')}
+USAGE:
+${usage}
 
-Usage: ${opts.programName} ${usageString}
+OPTIONS
+${flags}
 
-Commands:
-${commandString || 'None'}
+${positionals}
 
-Builtins:
-${builtinString || 'None'}
-${footerLines.join('\n')}`.trim()
+COMMANDS
+${commands}
+`.trim()
 }
